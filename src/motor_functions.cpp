@@ -65,3 +65,12 @@ void wallStakeTipMogoPosition() {
 		wallStake.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	}
 }
+
+void runIntake() {
+	hook.move(127);
+	intake.move(127);
+}
+void stopIntake() {
+	hook.move(0);
+	intake.move(0);
+}

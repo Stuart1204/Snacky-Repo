@@ -1,12 +1,12 @@
 #include "main.h"
 #include "lemlib/api.hpp"
-#include "lemlib/timer.hpp"
 #include "pros/motors.h"
 #include "pros/rtos.hpp"
 #include "pros/screen.h"
 #include "pros/screen.hpp"
 #include "globals.hpp"
 #include "teleOp_functions.cpp"
+#include "autons.hpp"
 
 // pros screen formatting
 void screen()
@@ -34,14 +34,6 @@ void on_center_button()
 	}
 }
 
-void runIntake() {
-	hook.move(127);
-	intake.move(127);
-}
-void stopIntake() {
-	hook.move(0);
-	intake.move(0);
-}
 // initializing all robot functions
 void initialize()
 {
@@ -63,25 +55,8 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
-	 // set position to x:0, y:0, heading:0
-    chassis.setPose(-165, 45, 180);
-	chassis.moveToPose(-165, 0, 90, 2000);
-	runIntake();
-	lemlib::Timer timer1(750);
-	stopIntake();
-	chassis.moveToPose(-120, 0, 90, 2000);
-	stopIntake();runIntake();
-	lemlib::Timer timer2(100);
-	stopIntake();
-	chassis.moveToPose(-70, 60, 270, 2000);
-	mogoMech.set_value(true);
-	chassis.moveToPose(-60, 120, 0, 2000);
-	runIntake();
-	lemlib::Timer timer3(750);
-	stopIntake();
-	chassis.moveToPose(-60,0, 180 , 2000);
-	chassis.waitUntilDone();
-	lemlib::Pose pose = chassis.getPose();
+	// set position to x:0, y:0, heading:0
+	chassis.
 	printf("X: %f, Y: %f, Theta: %f\n ", pose.x, pose.y, pose.theta);
 }
 
