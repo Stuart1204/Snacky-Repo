@@ -1,5 +1,6 @@
 #include "main.h"
 #include "lemlib/api.hpp"
+#include "lemlib/pose.hpp"
 #include "pros/motors.h"
 #include "pros/rtos.hpp"
 #include "pros/screen.h"
@@ -56,13 +57,16 @@ void competition_initialize() {}
 
 void autonomous() {
 	// set position to x:0, y:0, heading:0
-	chassis.
-	printf("X: %f, Y: %f, Theta: %f\n ", pose.x, pose.y, pose.theta);
+
+	testing_auton();
+
+	lemlib:lemlib::Pose pose = chassis.getPose();
+	pros::screen::print(pros::E_TEXT_SMALL, 3, "X: %f, Y: %f, Theta: %f\n ", pose.x, pose.y, pose.theta);
 }
 
 void opcontrol()
 {
-	// int counter = 20;
+	// int counter = 20; 
     while (true) {
 		pros::delay(20);
 		mogoMechControls();

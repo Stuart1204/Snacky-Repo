@@ -34,7 +34,7 @@ bool loadWallStake() {
 bool scoreWallStake() {
 	wallStake.set_brake_mode(MOTOR_BRAKE_HOLD);
 	if (armDirection) {
-		if(wallStake.get_position() < 1000) {
+		if(wallStake.get_position() < 1100) {
 			wallStake.move(127);
 		} 
 		else {
@@ -56,13 +56,18 @@ bool scoreWallStake() {
 }
 
 void wallStakeTipMogoPosition() {
-	if (wallStake.get_position() < 1500) {
+	if (wallStake.get_position() < 1600) {
 		wallStake.set_brake_mode(MOTOR_BRAKE_HOLD);
 		wallStake.move(70);
 	} 
 	else {
-		wallStake.move(0);
 		wallStake.set_brake_mode(MOTOR_BRAKE_BRAKE);
+
+		if(wallStake.get_position() < 1600) {
+			wallStake.move(5);
+		} else {
+			wallStake.move(-6);
+		}
 	}
 }
 

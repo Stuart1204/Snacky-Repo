@@ -1,3 +1,4 @@
+#include "main.h"
 #include "lemlib/api.hpp"
 #include "pros/adi.h"
 #include "pros/motors.h"
@@ -28,8 +29,7 @@
 #define imuPort 4
 #define ringTrackerPort 9
 
-#define horizontalEncoderPort1 'C'
-#define horizontalEncoderPort2 'D'
+#define verticalEncoderPort 5
 
 //drivetrain specs
 #define driveTrackWidth 11.775
@@ -70,12 +70,11 @@ inline pros::Imu inertial_sensor(imuPort); // port 4
 // optical sensor to track ring at the top
 inline pros::Optical ringTracker(ringTrackerPort);
 
-
-// back tracking wheel encoder
-inline pros::adi::Encoder horizontal_encoder(horizontalEncoderPort1, horizontalEncoderPort2, false); // ports C and D, not reversed
+// rotation sensorxs
+inline pros::Rotation verticalEncoder(-verticalEncoderPort);
 
 // back tracking wheel
-inline lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, 2.75, -3.1); // 2.75" wheel diameter, - offset from tracking center
+inline lemlib::TrackingWheel vertical_tracking_wheel(&verticalEncoder, 2.125, 0.65); // 2.75" wheel diameter, - offset from tracking center
 
 // drivetrain settings
 inline lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
@@ -88,7 +87,7 @@ inline lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
 
 // Odometry sensors struct
 inline lemlib::OdomSensors sensors{
-	nullptr, 
+	&vertical_tracking_wheel, 
 	nullptr,			  
 	nullptr,
 	nullptr,			  
@@ -96,15 +95,15 @@ inline lemlib::OdomSensors sensors{
 };
 
 // lateral motion controller
-inline lemlib::ControllerSettings linearController(11, // proportional gain (kP)
+inline lemlib::ControllerSettings linearController(8, // proportional gain (kP)
                                             0, // integral gain (kI)
-                                            7, // derivative gain (kD)
+                                            33, // derivative gain (kD)
                                             3, // anti windup
                                             1, // small error range, in inches
                                             100, // small error range timeout, in milliseconds
                                             3, // large error range, in inches
                                             500, // large error range timeout, in milliseconds
-                                            5 // maximum acceleration (slew)
+                                            20 // maximum acceleration (slew)
 );
 
 // angular motion controller
