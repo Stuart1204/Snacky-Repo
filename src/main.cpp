@@ -58,7 +58,7 @@ void competition_initialize() {}
 void autonomous() {
 	// set position to x:0, y:0, heading:0
 
-	testing_auton();
+	mogoRushRed();
 
 	lemlib:lemlib::Pose pose = chassis.getPose();
 	pros::screen::print(pros::E_TEXT_SMALL, 3, "X: %f, Y: %f, Theta: %f\n ", pose.x, pose.y, pose.theta);
@@ -76,11 +76,13 @@ void opcontrol()
 		initiateWallStakeLoading();
 		intakeControls();
 		wallStakeTipPositionControl();
+		detectWallStake();
 		
+
 		
 		std::cout << pros::millis();
 		std::cout << "hello" <<"\n";
-		// pros::screen::print(pros::E_TEXT_SMALL, 3, "position: %f", wallStake.get_position());
+		pros::screen::print(pros::E_TEXT_SMALL, 3, "position: %d", wallStakeAligner.get_proximity());
 		// std::cout <<"hello" <<"\n";
     }
 }

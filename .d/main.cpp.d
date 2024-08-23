@@ -30,7 +30,7 @@ bin/main.cpp.o: src/main.cpp include/main.h include/api.h \
  include/lemlib/logger/infoSink.hpp \
  include/lemlib/logger/telemetrySink.hpp include/pros/screen.hpp \
  src/globals.hpp src/teleOp_functions.cpp src/teleOp_functions.hpp \
- src/motor_functions.hpp src/autons.hpp
+ src/motor_functions.hpp include/lemlib/timer.hpp src/autons.hpp
 include/main.h:
 include/api.h:
 include/pros/adi.h:
@@ -116,4 +116,5 @@ src/globals.hpp:
 src/teleOp_functions.cpp:
 src/teleOp_functions.hpp:
 src/motor_functions.hpp:
+include/lemlib/timer.hpp:
 src/autons.hpp:

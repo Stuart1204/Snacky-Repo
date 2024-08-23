@@ -1,4 +1,5 @@
 #include "teleOp_functions.hpp"
+#include "lemlib/timer.hpp"
 
 void mogoMechControls() {
     if (controller.get_digital_new_press(DIGITAL_R2)) {
@@ -112,6 +113,14 @@ void wallStakeTipPositionControl() {
 			else {
 				wallStake.move(0);
 			}
+		}
+	}
+}
+
+void detectWallStake() {
+	if(ringInWallStake) {
+		if(wallStakeAligner.get_saturation() < 5) {
+			controller.rumble("-");
 		}
 	}
 }

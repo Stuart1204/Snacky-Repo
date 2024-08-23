@@ -6,6 +6,7 @@ bool scoreWallStake();
 
 void wallStakeTipMogoPosition();
 
-void runIntake();
+void spinIntake(int speed);
 
 void stopIntake();
+void reverseIntake();

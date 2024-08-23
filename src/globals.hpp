@@ -27,7 +27,8 @@
 
 //sensor ports
 #define imuPort 4
-#define ringTrackerPort 9
+#define ringTrackerPort 8
+#define wallStakeAlignerPort 9
 
 #define verticalEncoderPort 5
 
@@ -43,6 +44,8 @@ inline bool positionSetting;
 
 inline bool scoreStake;
 inline bool armDirection = true;
+
+inline bool ringInWallStake = false;
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,6 +72,8 @@ inline pros::Imu inertial_sensor(imuPort); // port 4
 
 // optical sensor to track ring at the top
 inline pros::Optical ringTracker(ringTrackerPort);
+// optical sensor to align with wall stake
+inline pros::Optical wallStakeAligner(wallStakeAlignerPort);
 
 // rotation sensorxs
 inline pros::Rotation verticalEncoder(-verticalEncoderPort);
@@ -111,9 +116,9 @@ inline lemlib::ControllerSettings angularController(3.5, // proportional gain (k
                                              0, // integral gain (kI)
                                              30, // derivative gain (kD)
                                              3, // anti windup
-                                             1, // small error range, in degrees
+                                             3, // small error range, in degrees
                                              100, // small error range timeout, in milliseconds
-                                             3, // large error range, in degrees
+                                             5, // large error range, in degrees
                                              500, // large error range timeout, in milliseconds
                                              0 // maximum acceleration (slew)
 );

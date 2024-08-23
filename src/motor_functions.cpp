@@ -28,6 +28,7 @@ bool loadWallStake() {
 		intake.move(0);
 		hook.move(0);
 		return false;
+		ringInWallStake = true;
 	}
 }
 
@@ -53,6 +54,7 @@ bool scoreWallStake() {
 			return false;
 		}
 	}
+	ringInWallStake = false;
 }
 
 void wallStakeTipMogoPosition() {
@@ -71,10 +73,16 @@ void wallStakeTipMogoPosition() {
 	}
 }
 
-void runIntake() {
-	hook.move(127);
-	intake.move(127);
+void spinIntake(int speed) {
+	hook.move(speed);
+	intake.move(speed);
 }
+
+void reverseIntake() {
+	hook.move(-127);
+	intake.move(-127);
+}
+
 void stopIntake() {
 	hook.move(0);
 	intake.move(0);

@@ -16,6 +16,8 @@ inline void intakeControls();
 
 inline void wallStakeTipPositionControl();
 
+inline void detectWallStake();
+
 inline bool mogoState = false;
 inline bool diggerState = false;
 inline bool wallStakePositionState = false;

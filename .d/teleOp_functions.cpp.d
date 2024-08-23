@@ -30,7 +30,7 @@ bin/teleOp_functions.cpp.o: src/teleOp_functions.cpp \
  include/lemlib/logger/baseSink.hpp include/fmt/args.h \
  include/lemlib/logger/message.hpp include/lemlib/logger/infoSink.hpp \
  include/lemlib/logger/telemetrySink.hpp include/pros/screen.hpp \
- src/motor_functions.hpp
+ src/motor_functions.hpp include/lemlib/timer.hpp
 src/teleOp_functions.hpp:
 include/main.h:
 include/api.h:
@@ -115,3 +115,4 @@ include/lemlib/logger/infoSink.hpp:
 include/lemlib/logger/telemetrySink.hpp:
 include/pros/screen.hpp:
 src/motor_functions.hpp:
+include/lemlib/timer.hpp:
