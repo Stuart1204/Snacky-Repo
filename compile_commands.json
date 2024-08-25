@@ -101,11 +101,11 @@
             "-funwind-tables",
             "--std=gnu++20",
             "-o",
-            "bin/autons.cpp.o",
-            "src/autons.cpp"
+            "bin/teleOp_functions.cpp.o",
+            "src/teleOp_functions.cpp"
         ],
         "directory": "/Users/owenfong/Documents/GitHub/16610A-2024-2025",
-        "file": "src/autons.cpp"
+        "file": "src/teleOp_functions.cpp"
     },
     {
         "arguments": [
@@ -137,10 +137,10 @@
             "-funwind-tables",
             "--std=gnu++20",
             "-o",
-            "bin/teleOp_functions.cpp.o",
-            "src/teleOp_functions.cpp"
+            "bin/autons.cpp.o",
+            "src/autons.cpp"
         ],
         "directory": "/Users/owenfong/Documents/GitHub/16610A-2024-2025",
-        "file": "src/teleOp_functions.cpp"
+        "file": "src/autons.cpp"
     }
 ]
