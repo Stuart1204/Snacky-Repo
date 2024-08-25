@@ -116,11 +116,12 @@ void wallStakeTipPositionControl() {
 		}
 	}
 }
-
+ 
 void detectWallStake() {
 	if(ringInWallStake) {
-		if(wallStakeAligner.get_saturation() < 5) {
-			controller.rumble("-");
+		if(wallStakeAligner.get_proximity() > 90) {
+			controller.rumble(".");
 		}
+		lastProximity = wallStakeAligner.get_proximity();
 	}
 }

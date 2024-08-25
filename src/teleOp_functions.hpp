@@ -22,3 +22,5 @@ inline bool mogoState = false;
 inline bool diggerState = false;
 inline bool wallStakePositionState = false;
 inline bool Xstate = false;
+
+inline int lastProximity = 255;

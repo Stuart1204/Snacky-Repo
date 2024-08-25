@@ -21,14 +21,14 @@ bool loadWallStake() {
 	else if (hook.get_position() > destinationPosition) {
 		intake.move(-70);
 		hook.move(-70);
-		pros::screen::print(pros::E_TEXT_SMALL, 1, "difference: %f", hook.get_position() - destinationPosition);
         return true;
 	} 
 	else {
 		intake.move(0);
 		hook.move(0);
-		return false;
 		ringInWallStake = true;
+		pros::screen::print(pros::E_TEXT_SMALL, 4, "bool: %d", ringInWallStake);
+		return false;
 	}
 }
 
@@ -51,10 +51,10 @@ bool scoreWallStake() {
 		else {
 			armDirection = true;
 			wallStake.move(0);
+			ringInWallStake = false;
 			return false;
 		}
 	}
-	ringInWallStake = false;
 }
 
 void wallStakeTipMogoPosition() {

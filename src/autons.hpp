@@ -5,4 +5,8 @@ void testing_auton();
 
 void nonMogoRushRed();
 
-void mogoRushRed();
+void mogoRushRedClearCorner();
+
+void mogoRushRedCarry();
+
+void nonMogoRushBlue();

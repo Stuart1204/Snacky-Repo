@@ -1,6 +1,7 @@
 #include "main.h"
 #include "lemlib/api.hpp"
 #include "lemlib/pose.hpp"
+#include "pros/colors.h"
 #include "pros/motors.h"
 #include "pros/rtos.hpp"
 #include "pros/screen.h"
@@ -8,20 +9,6 @@
 #include "globals.hpp"
 #include "teleOp_functions.cpp"
 #include "autons.hpp"
-
-// pros screen formatting
-void screen()
-{
-	// loop forever
-	while (true)
-	{
-		lemlib::Pose pose = chassis.getPose();			// get the current position of the robot
-		pros::lcd::print(0, "x: %f", pose.x);			// print the x position
-		pros::lcd::print(1, "y: %f", pose.y);			// print the y position
-		pros::lcd::print(2, "heading: %f", pose.theta); // print the heading
-		pros::delay(10);
-	}
-}
 
 void on_center_button()
 {
@@ -37,7 +24,7 @@ void on_center_button()
 
 // initializing all robot functions
 void initialize()
-{
+{	
 	chassis.calibrate();
 	chassis.setPose(0, 0, 0);
 	leftMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
@@ -58,7 +45,7 @@ void competition_initialize() {}
 void autonomous() {
 	// set position to x:0, y:0, heading:0
 
-	mogoRushRed();
+	nonMogoRushBlue();
 
 	lemlib:lemlib::Pose pose = chassis.getPose();
 	pros::screen::print(pros::E_TEXT_SMALL, 3, "X: %f, Y: %f, Theta: %f\n ", pose.x, pose.y, pose.theta);
@@ -66,7 +53,7 @@ void autonomous() {
 
 void opcontrol()
 {
-	// int counter = 20; 
+	lemlib:lemlib::Pose pose = chassis.getPose();
     while (true) {
 		pros::delay(20);
 		mogoMechControls();
@@ -77,12 +64,11 @@ void opcontrol()
 		intakeControls();
 		wallStakeTipPositionControl();
 		detectWallStake();
-		
 
-		
-		std::cout << pros::millis();
-		std::cout << "hello" <<"\n";
-		pros::screen::print(pros::E_TEXT_SMALL, 3, "position: %d", wallStakeAligner.get_proximity());
-		// std::cout <<"hello" <<"\n";
+		pros::screen::print(TEXT_MEDIUM, 3, "wallStake proximity%i\n", wallStakeAligner.get_proximity());
+		pose = chassis.getPose();			// get the current position of the robot
+		pros::screen::print(TEXT_MEDIUM,0, "x: %f", pose.x);			// print the x position
+		pros::screen::print(TEXT_MEDIUM,1, "y: %f", pose.y);			// print the y position
+		pros::screen::print(TEXT_MEDIUM,2, "heading: %f", pose.theta); // print the heading
     }
-}
+} 
