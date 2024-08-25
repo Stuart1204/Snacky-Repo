@@ -10,3 +10,5 @@ void mogoRushRedClearCorner();
 void mogoRushRedCarry();
 
 void nonMogoRushBlue();
+
+void mogoRushBlue();

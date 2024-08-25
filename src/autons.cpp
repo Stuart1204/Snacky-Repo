@@ -160,3 +160,42 @@ void nonMogoRushBlue() {
 	chassis.waitUntilDone();
 	wallStake.move(127);
 }
+
+void mogoRushBlue() {
+	chassis.setPose(52, -60, -90);
+	chassis.moveToPose(9, -38, -60, 1500, {.minSpeed = 127});
+	intake.move(127);
+	chassis.waitUntilDone();
+	diggerMech.set_value(true);
+	chassis.swingToHeading(-135, lemlib::DriveSide::RIGHT, 1000);
+	chassis.waitUntilDone();
+	intake.move(0);
+	chassis.waitUntilDone();
+	diggerMech.set_value(false);
+	chassis.swingToHeading(80, lemlib::DriveSide::LEFT, 1500, {.direction = lemlib::AngularDirection::CW_CLOCKWISE, .minSpeed = 20, .earlyExitRange = 20});
+	chassis.waitUntilDone();
+	chassis.moveToPoint(18, -56, 1500, {.forwards = false});
+	pros::delay(600);
+	mogoMech.set_value(true);
+	pros::delay(200);
+	spinIntake(127);
+	pros::delay(400);
+	stopIntake();
+	mogoMech.set_value(false);
+	chassis.turnToPoint(24, -24, 1000, { .forwards = false, .direction = lemlib::AngularDirection::CCW_COUNTERCLOCKWISE, .earlyExitRange = 15});
+	chassis.moveToPoint(24, -20, 1500, {.forwards = false});
+	chassis.waitUntilDone();
+	mogoMech.set_value(true);
+	spinIntake(127);
+	pros::delay(800);
+	stopIntake();
+	mogoMech.set_value(false);
+	chassis.waitUntilDone();
+	spinIntake(127);
+	chassis.turnToPoint(43, -5, 1500, {.earlyExitRange = 15});
+	chassis.moveToPoint(50, 0, 1500, {.maxSpeed = 40});
+	chassis.waitUntilDone();
+	chassis.turnToHeading(-90, 0, {.direction = lemlib::AngularDirection::CCW_COUNTERCLOCKWISE});
+	stopIntake();
+	chassis.moveToPoint(60, 0, 1300, {.forwards = false});
+}
