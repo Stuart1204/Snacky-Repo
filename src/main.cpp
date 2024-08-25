@@ -45,15 +45,18 @@ void competition_initialize() {}
 void autonomous() {
 	// set position to x:0, y:0, heading:0
 
-	nonMogoRushBlue();
+	mogoRushRedClearCorner();
 
-	lemlib:lemlib::Pose pose = chassis.getPose();
+	lemlib::Pose pose = chassis.getPose();
 	pros::screen::print(pros::E_TEXT_SMALL, 3, "X: %f, Y: %f, Theta: %f\n ", pose.x, pose.y, pose.theta);
 }
 
 void opcontrol()
 {
 	lemlib:lemlib::Pose pose = chassis.getPose();
+	int now = hook.get_position();
+	int target = now += 500;
+	std::cout<<"now: " <<now <<"\n";
     while (true) {
 		pros::delay(20);
 		mogoMechControls();
@@ -63,8 +66,10 @@ void opcontrol()
 		initiateWallStakeLoading();
 		intakeControls();
 		wallStakeTipPositionControl();
-		detectWallStake();
-
+		if (hook.get_position() >= target) {
+			std::cout<<"reached" <<"\n";
+		}
+		std::cout <<hook.get_position()<<"\n";
 		pros::screen::print(TEXT_MEDIUM, 3, "wallStake proximity%i\n", wallStakeAligner.get_proximity());
 		pose = chassis.getPose();			// get the current position of the robot
 		pros::screen::print(TEXT_MEDIUM,0, "x: %f", pose.x);			// print the x position
