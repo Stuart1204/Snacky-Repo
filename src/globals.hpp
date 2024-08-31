@@ -28,9 +28,10 @@
 //sensor ports
 #define imuPort 4
 #define ringTrackerPort 8
-#define wallStakeAlignerPort 9
+#define wallStakeAlignerPort 1
 
 #define verticalEncoderPort 5
+#define horizontalEncoderPort 9
 
 //drivetrain specs
 #define driveTrackWidth 11.775
@@ -72,15 +73,17 @@ inline pros::Imu inertial_sensor(imuPort); // port 4
 
 // optical sensor to track ring at the top
 inline pros::Optical ringTracker(ringTrackerPort);
-// optical sensor to align with wall stake
-inline pros::Optical wallStakeAligner(wallStakeAlignerPort);
+// distance sensor to align with wall stake
+inline pros::Distance wallStakeAligner(wallStakeAlignerPort);
+// inline pros::Optical wallStakeAligner(wallStakeAlignerPort);
 
 // rotation sensorxs
 inline pros::Rotation verticalEncoder(-verticalEncoderPort);
+inline pros::Rotation horizontalEncoder(horizontalEncoderPort);
 
 // back tracking wheel
 inline lemlib::TrackingWheel vertical_tracking_wheel(&verticalEncoder, 2.125, 0.65); // 2.75" wheel diameter, - offset from tracking center
-
+inline lemlib::TrackingWheel horizontal_tracking_wheel(&horizontalEncoder, 2.125, -3.75);
 // drivetrain settings
 inline lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
                               &rightMotors, // right motor group

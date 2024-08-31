@@ -52,6 +52,7 @@ void drivetrainControls() {
 // 		loadStake = loadWallStake();
 // 	}
 // }
+
 void initiateWallStakeLoading() {
     if (controller.get_digital_new_press(DIGITAL_X)) {
 		Xstate = !Xstate;
@@ -116,3 +117,22 @@ void wallStakeTipPositionControl() {
 		}
 	}
 }
+
+void homing() {
+    if (controller.get_digital(DIGITAL_A)) {
+		int currentT = pros::c::millis();
+		std::cout <<"currentT" <<currentT <<"\n";
+		if (currentT - prevT >= interval) {
+			prevT = currentT;
+			std::cout <<"prevT"<<prevT << "\n";
+			int currentD = wallStakeAligner.get();
+			std::cout <<"currentD" <<currentD <<"\n";
+			if (prevD != 0 && (prevD - currentD) >= 20 && prevD <= 150) {
+				controller.rumble(". ");
+				std::cout <<"prevD" <<prevD <<"\n";
+			}
+			prevD = currentD;
+		}
+	}
+}
+ 

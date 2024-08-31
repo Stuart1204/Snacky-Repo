@@ -53,10 +53,7 @@ void autonomous() {
 
 void opcontrol()
 {
-	lemlib:lemlib::Pose pose = chassis.getPose();
-	int now = hook.get_position();
-	int target = now += 500;
-	std::cout<<"now: " <<now <<"\n";
+	lemlib::Pose pose = chassis.getPose();
     while (true) {
 		pros::delay(20);
 		mogoMechControls();
@@ -65,15 +62,13 @@ void opcontrol()
 		drivetrainControls();
 		initiateWallStakeLoading();
 		intakeControls();
+		homing();
 		wallStakeTipPositionControl();
-		if (hook.get_position() >= target) {
-			std::cout<<"reached" <<"\n";
-		}
-		std::cout <<hook.get_position()<<"\n";
-		pros::screen::print(TEXT_MEDIUM, 3, "wallStake proximity%i\n", wallStakeAligner.get_proximity());
+		// pros::screen::print(TEXT_MEDIUM, 3, "wallStake proximity%i\n", wallStakeAligner.get_proximity());
 		pose = chassis.getPose();			// get the current position of the robot
 		pros::screen::print(TEXT_MEDIUM,0, "x: %f", pose.x);			// print the x position
 		pros::screen::print(TEXT_MEDIUM,1, "y: %f", pose.y);			// print the y position
 		pros::screen::print(TEXT_MEDIUM,2, "heading: %f", pose.theta); // print the heading
+		std::cout <<"distance" << wallStakeAligner.get(); "\n";
     }
 } 

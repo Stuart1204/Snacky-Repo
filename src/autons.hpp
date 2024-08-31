@@ -12,3 +12,5 @@ void mogoRushRedCarry();
 void nonMogoRushBlue();
 
 void mogoRushBlue();
+
+void skillsAuton();
