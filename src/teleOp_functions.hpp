@@ -22,8 +22,10 @@ inline bool mogoState = false;
 inline bool diggerState = false;
 inline bool wallStakePositionState = false;
 inline bool Xstate = false;
+inline bool wallStakeGoDown = false;
 
 inline int prevT = 0;
 inline int prevD = 0;
-inline int interval = 500;
+inline int counter = 0;
+inline int interval = 60;
 inline int lastProximity = 255;

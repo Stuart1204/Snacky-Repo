@@ -78,12 +78,14 @@ void intakeControls() {
     if (controller.get_digital(DIGITAL_L1)) {   
 		hook.move(127);
 		intake.move(127);
-		// if (ringTracker.get_hue() >= 200 && ringTracker.get_hue() <= 230) {
-		// 	lemlib::Timer timer(300);
-		// 	if (timer.isDone()) {
-		// 		hook.move(-127);
-		// 	}
-		// }
+		std::cout <<"currentT" <<pros::c::millis() <<" colour" <<ringTracker.get_hue() << " distance" <<ringTracker.get_proximity() <<" speed" <<hook.get_voltage() <<" counter" << counter<<"\n";
+		if (ringTracker.get_hue() >= 120 && ringTracker.get_proximity()>= 130) { 
+			counter = 0;
+		}
+		counter++;
+		if (counter >= 1 && counter <= 4) {
+			hook.move(0);
+		}
 	}
 	else if (controller.get_digital(DIGITAL_L2)){
 		hook.move(-127);
@@ -101,6 +103,7 @@ void intakeControls() {
 void wallStakeTipPositionControl() {
 	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
 		wallStakePositionState = !wallStakePositionState;
+		wallStakeGoDown = true;
 	}
 
 	if(wallStakePositionState) {
@@ -108,11 +111,15 @@ void wallStakeTipPositionControl() {
 	} 
 	else {
 		if(scoreStake == false) {
-			if(wallStake.get_position() > 10) {
-				wallStake.move(-127);
-			} 
-			else {
-				wallStake.move(0);
+			if(wallStakeGoDown) {
+				if(wallStake.get_position() > 20) {
+					wallStake.move(-127);
+				} 
+				else {
+					wallStake.move(0);
+					wallStake.set_brake_mode(MOTOR_BRAKE_COAST);
+					wallStakeGoDown = false;
+				}
 			}
 		}
 	}
@@ -127,12 +134,12 @@ void homing() {
 			std::cout <<"prevT"<<prevT << "\n";
 			int currentD = wallStakeAligner.get();
 			std::cout <<"currentD" <<currentD <<"\n";
-			if (prevD != 0 && (prevD - currentD) >= 20 && prevD <= 150) {
+			if (prevD != 0 && (prevD - currentD) >= 10 && prevD <= 150) {
 				controller.rumble(". ");
 				std::cout <<"prevD" <<prevD <<"\n";
 			}
 			prevD = currentD;
-		}
+		} 
 	}
 }
  

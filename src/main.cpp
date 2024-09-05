@@ -69,6 +69,6 @@ void opcontrol()
 		pros::screen::print(TEXT_MEDIUM,0, "x: %f", pose.x);			// print the x position
 		pros::screen::print(TEXT_MEDIUM,1, "y: %f", pose.y);			// print the y position
 		pros::screen::print(TEXT_MEDIUM,2, "heading: %f", pose.theta); // print the heading
-		std::cout <<"distance" << wallStakeAligner.get(); "\n";
+		// std::cout <<"distance" << wallStakeAligner.get(); "\n";
     }
 } 
