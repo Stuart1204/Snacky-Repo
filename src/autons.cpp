@@ -10,58 +10,62 @@ void testing_auton() {
 }
 
 void nonMogoRushRed() {
-	chassis.setPose(-59, 17, -180);
-	chassis.moveToPoint(-59, 0, 3000);
+	chassis.setPose(-60, 17, -180);
+	chassis.moveToPoint(-60, 0, 3000);
 	intake.move(-127);
-	chassis.turnToHeading(90, 1000);
-	chassis.moveToPoint(-64, 0, 500, {.forwards = false});
+	chassis.waitUntilDone();
+	diggerMech.set_value(true);
+	chassis.moveToPoint(-60, 13, 500, {.forwards = false});
+	chassis.waitUntilDone();
+	diggerMech.set_value(false);
+	chassis.swingToPoint(-70, 0, lemlib::DriveSide::LEFT, 1000, {.forwards = false});
+	chassis.moveToPoint(-64.5, 1, 700, {.forwards = false});
 	chassis.waitUntilDone();
 	spinIntake(90);
-	pros::delay(200);
-	chassis.moveToPoint(-58, 0, 1000);
-	chassis.moveToPoint(-66, 0, 700, {.forwards = false, .minSpeed = 80});
-	chassis.moveToPoint(-48, 0, 2000);
-	chassis.swingToHeading(45, lemlib::DriveSide::LEFT, 1000);
+	pros::delay(400);
+	chassis.moveToPoint(-61, 1, 1000);
+	chassis.moveToPoint(-66, 1, 1000, {.forwards = false, .minSpeed = 100});
+	chassis.moveToPoint(-44, 24, 1000);
+	chassis.turnToPoint(-24, 24, 1000, {.forwards = false, .minSpeed = 20, .earlyExitRange = 20});
 	chassis.waitUntilDone();
-	chassis.moveToPoint(-36, 12, 1500);
-	chassis.turnToHeading(-135, 1000, {.minSpeed = 20, .earlyExitRange = 20});
-	while(ringTracker.get_hue() > 70) {
-		spinIntake(80);
-	}
 	stopIntake();
-	chassis.waitUntilDone();
-	chassis.moveToPoint(-22, 26, 2000, {.forwards = false, .maxSpeed = 60});
-	chassis.waitUntilDone();
+	chassis.moveToPoint(-18, 24, 2000, {.forwards = false, .maxSpeed = 60});
+	chassis.waitUntil(22);
 	mogoMech.set_value(true);
-	pros::delay(200);
 	chassis.turnToHeading(0, 1000, {.minSpeed = 20, .earlyExitRange = 20});
 	chassis.waitUntilDone();
 	spinIntake(127);
+	// starting to get the the two in the center
 	chassis.moveToPoint(-24, 52, 2000);
-	chassis.turnToPoint(-7, 54, 1000, {.minSpeed = 20, .earlyExitRange = 20});
-	chassis.moveToPoint(-7, 54, 2000);
-	chassis.moveToPoint(-16, 45, 2000, {.forwards = false});
-	chassis.moveToPoint(-6, 45, 2000);
-	chassis.turnToHeading(-135, 1000, {.minSpeed = 20, .earlyExitRange = 20});
-	chassis.moveToPoint(-16, 18, 2000);
+	chassis.turnToPoint(-9, 58, 1000, {.minSpeed = 20, .earlyExitRange = 20});
+	chassis.moveToPoint(-9, 58, 2000);
 	chassis.waitUntilDone();
+	pros::delay(300);
+	chassis.moveToPoint(-18, 48, 2000, {.forwards = false});
+	chassis.moveToPoint(-9, 50, 2000);
+	chassis.waitUntilDone();
+	pros::delay(300);
+	chassis.swingToHeading(-160, lemlib::DriveSide::LEFT, 1000, {.minSpeed = 20, .earlyExitRange = 40});
+	chassis.moveToPoint(-16, 23, 2000);
+	chassis.waitUntil(24);
 	wallStake.move(127);
 }
 
 void mogoRushRedClearCorner() {
 	chassis.setPose(-52, -36, 90);
-	chassis.moveToPose(-10, -57.25, 120, 1500, {.minSpeed = 127});
+	chassis.moveToPose(-8.5, -58.5, 120, 1500, {.minSpeed = 127});
 	intake.move(127);
 	chassis.waitUntilDone();
 	diggerMech.set_value(true);
+	pros::delay(100);
 	chassis.swingToHeading(45, lemlib::DriveSide::RIGHT, 1000);
 	chassis.waitUntilDone();
 	intake.move(0);
 	chassis.waitUntilDone();
 	diggerMech.set_value(false);
 	//chassis.turnToHeading(180, 1000, {.maxSpeed = 60, .minSpeed = 20, .earlyExitRange = 20});
-	chassis.swingToHeading(180, lemlib::DriveSide::RIGHT, 1000, {.maxSpeed = 60, .minSpeed = 20});
-	chassis.moveToPoint(-19, -43, 1500, {.forwards = false, .maxSpeed = 60});
+	chassis.turnToHeading(180, 1000,{.maxSpeed = 60, .earlyExitRange = 40});
+	chassis.moveToPoint(-12, -42, 1000, {.forwards = false});
 	chassis.waitUntilDone();
 	mogoMech.set_value(true); 
 	pros::delay(250);
@@ -73,24 +77,22 @@ void mogoRushRedClearCorner() {
 	chassis.moveToPose(-72, -56, -90, 1000);
 	chassis.waitUntilDone();
 	diggerMech.set_value(true);
+	stopIntake();
 	pros::delay(500); 
 	chassis.moveToPoint(-55, -56, 1000, {.forwards = false});
 	chassis.waitUntilDone();
 	diggerMech.set_value(false);
-	chassis.turnToHeading(45, 1000, {.direction = lemlib::AngularDirection::CCW_COUNTERCLOCKWISE});
+	chassis.turnToHeading(180, 1000, {.direction = lemlib::AngularDirection::CCW_COUNTERCLOCKWISE});
 	chassis.waitUntilDone();
 	mogoMech.set_value(false);
-	pros::delay(500);
-	stopIntake();
-	chassis.moveToPoint(-31, -33, 2000, {.forwards = false, .maxSpeed = 80});
+	chassis.turnToHeading(-135, 1500, {.direction = lemlib::AngularDirection::CCW_COUNTERCLOCKWISE});
+	chassis.moveToPoint(-24, -24, 2000, {.forwards = false, .maxSpeed = 80});
 	chassis.waitUntilDone();
 	mogoMech.set_value(true); 
 	pros::delay(500);
-	spinIntake(127);
-	chassis.moveToPose(-10, -31, 90, 1000);
+	chassis.moveToPoint(-10, -10, 1000);
 	chassis.waitUntilDone();
 	wallStake.move(127);
-
 }
 
 void mogoRushRedCarry() {
@@ -123,96 +125,89 @@ void mogoRushRedCarry() {
 }*/
 
 void nonMogoRushBlue() {
-	chassis.setPose(59, 16, 180);
-	chassis.moveToPoint(58, 0, 3000);
-	intake.move(-127);
-	chassis.turnToHeading(-90, 1000);
-	chassis.moveToPoint(62, 0, 500, {.forwards = false, .maxSpeed = 80});
+	chassis.setPose(56, 13.5, -90);
+	chassis.moveToPoint(48, 12, 1000);
 	chassis.waitUntilDone();
-	spinIntake(100);
+	diggerMech.set_value(true);
+	chassis.moveToPoint(57, 12, 500, {.forwards = false, .maxSpeed = 50});
+	chassis.waitUntilDone();
+	diggerMech.set_value(false);
+	pros::delay(500);
+	chassis.swingToPoint(55, 0, lemlib::DriveSide::RIGHT, 800);
+	intake.move(127);
+	chassis.moveToPoint(58, 0, 1000);
+	chassis.turnToPoint(64, 0, 800, {.forwards = false});
+	chassis.waitUntilDone();
+	intake.move(0);
+	chassis.moveToPoint(64, -1, 800, {.forwards = false});
+	chassis.waitUntilDone();
+	spinIntake(127);
 	pros::delay(600);
-	chassis.moveToPoint(60, 0, 1000);
-	chassis.waitUntilDone();
 	stopIntake();
-	chassis.moveToPoint(64, 0, 700, {.forwards = false, .minSpeed = 90});
-	spinIntake(127);
-	chassis.moveToPoint(48, 0, 2000);
-	chassis.swingToHeading(-45, lemlib::DriveSide::RIGHT, 1000);
-	chassis.waitUntilDone();
-	chassis.moveToPoint(36, 12, 1500);
-	chassis.turnToHeading(135, 1000, {.minSpeed = 20, .earlyExitRange = 20});
-	while(ringTracker.get_hue() < 70 ) {
-		hook.move(80);
-		intake.move(127);
-	}
-	stopIntake();
-	chassis.waitUntilDone();
-	chassis.moveToPoint(22, 26, 2000, {.forwards = false, .maxSpeed = 60});
-	chassis.waitUntilDone();
+	chassis.moveToPoint(48, 24, 1500);
+	chassis.turnToPoint(24, 24, 800, {.forwards = false, .earlyExitRange = 30});
+	chassis.moveToPoint(18, 24, 2000, {.forwards = false, .maxSpeed = 60});
+	chassis.waitUntil(26);
+	// pick up mogo
 	mogoMech.set_value(true);
-	pros::delay(200);
-	chassis.turnToHeading(180, 1000, {.minSpeed = 20, .earlyExitRange = 20});
+	chassis.turnToHeading(0, 1000, {.minSpeed = 20, .earlyExitRange = 20});
 	chassis.waitUntilDone();
 	spinIntake(127);
-	chassis.moveToPoint(24, 48, 2000);
-	chassis.turnToPoint(7, 53, 1000, {.minSpeed = 20, .earlyExitRange = 20});
-	chassis.moveToPoint(7, 53, 2000);
-	chassis.moveToPose(18, 43, -40, 2000, {.forwards = false, .minSpeed = 80,.earlyExitRange = 10});
-	chassis.moveToPoint(7, 40, 2000);
-	chassis.turnToHeading(-35, 1000, {.minSpeed = 20, .earlyExitRange = 20});
-	chassis.moveToPoint(16, 18, 2000, {.forwards = false});
+	// starting to get the the two in the center
+	chassis.moveToPoint(24, 52, 2000);
+	chassis.turnToPoint(9, 57, 1000, {.minSpeed = 20, .earlyExitRange = 20});
+	chassis.moveToPoint(9, 57, 2000);
 	chassis.waitUntilDone();
+	pros::delay(300);
+	chassis.moveToPoint(22, 48, 2000, {.forwards = false});
+	chassis.moveToPoint(9, 49, 2000);
+	chassis.waitUntilDone();
+	pros::delay(300);
+	chassis.swingToHeading(160, lemlib::DriveSide::RIGHT, 1000, {.minSpeed = 20, .earlyExitRange = 40});
+	chassis.moveToPoint(16, 18, 2000);
+	chassis.waitUntil(26);
 	wallStake.move(127);
 }
 
 void mogoRushBlue() {
 	chassis.setPose(52, -60, -90);
-	chassis.moveToPose(8, -38, -60, 1500, {.minSpeed = 127});
+	chassis.moveToPose(11, -38, -54, 1500, {.minSpeed = 127});
 	intake.move(127);
 	chassis.waitUntilDone();
 	diggerMech.set_value(true);
+	pros::delay(100);
 	chassis.swingToHeading(-135, lemlib::DriveSide::RIGHT, 1000, {.maxSpeed = 90});
 	chassis.waitUntilDone();
 	intake.move(0);
 	chassis.waitUntilDone();
 	diggerMech.set_value(false);
-	chassis.swingToHeading(85, lemlib::DriveSide::LEFT, 1500, {.direction = lemlib::AngularDirection::CW_CLOCKWISE, .minSpeed = 20, .earlyExitRange = 20});
+	chassis.turnToHeading(0, 1000, {.maxSpeed = 50, .earlyExitRange = 30});
 	chassis.waitUntilDone();
-	chassis.moveToPose(16, -57, 80, 1000, {.forwards = false});
+	chassis.moveToPoint(15, -63, 1000, {.forwards = false, .maxSpeed = 60});
 	chassis.waitUntilDone();
 	mogoMech.set_value(true);
 	pros::delay(200);
 	spinIntake(127);
-	pros::delay(600);
+	pros::delay(500);
 	stopIntake();
 	mogoMech.set_value(false);
-	pros::delay(200);
-	chassis.turnToPoint(24, -24, 1000, { .forwards = false, .direction = lemlib::AngularDirection::CCW_COUNTERCLOCKWISE, .earlyExitRange = 15});
-	chassis.moveToPoint(24, -20, 1500, {.forwards = false});
-	chassis.waitUntilDone();
+	chassis.turnToPoint(24, -24, 1500, {.forwards = false, .earlyExitRange = 30});
+	chassis.moveToPoint(25, -20, 1500, {.forwards = false, .maxSpeed = 60});
+	chassis.waitUntil(34);
 	mogoMech.set_value(true);
+	pros::delay(200);
 	spinIntake(127);
-	pros::delay(900);
-	stopIntake();
+	chassis.moveToPoint(57, -24, 1000, {.earlyExitRange = 15});
 	chassis.waitUntilDone();
-	intake.move(-127);
-	chassis.moveToPose(52, -71, 180, 3000);
+	stopIntake();
+	chassis.moveToPoint(55, -66, 1500);
 	chassis.waitUntilDone();
 	diggerMech.set_value(true);
-	hook.move(-127);
-	pros::delay(400);
-	hook.move(127);
-	chassis.waitUntilDone();
-	chassis.moveToPoint(54, -45, 1000, {.forwards = false});
-	chassis.waitUntilDone();
-	diggerMech.set_value(false); 
-	chassis.turnToHeading(0, 1000, {.direction = lemlib::AngularDirection::CCW_COUNTERCLOCKWISE});
-	chassis.moveToPoint(54, -58, 1000, {.forwards = false});
-	mogoMech.set_value(false);
-	chassis.moveToPoint(54, -51, 1000);
-	chassis.waitUntilDone(); 
-	chassis.turnToHeading(90, 1000, {.earlyExitRange = 20});
-
+	pros::delay(700);
+	chassis.moveToPoint(54, -24, 1000, {.forwards = false, .earlyExitRange = 10});
+	diggerMech.set_value(false);
+	chassis.turnToPoint(24, 0, 1000, {.earlyExitRange = 15});
+	chassis.moveToPoint(24, 0, 1500, {.maxSpeed = 70});
 }
 
 
@@ -232,28 +227,27 @@ void skillsAuton() {
    spinIntake(127);
    pros::delay(400);
    stopIntake();
-   chassis.swingToPoint(-52, -18, lemlib::DriveSide::LEFT, 1500, {.forwards = false, .earlyExitRange = 20});
-   chassis.moveToPoint(-52, -18, 1000, {.forwards = false, .maxSpeed = 60});
+   chassis.swingToPoint(-52, -18, lemlib::DriveSide::LEFT, 1500, {.forwards = false, .minSpeed = 80, .earlyExitRange = 40});
+   chassis.moveToPose(-47, -29, -30, 1600, {.forwards = false, .maxSpeed = 70, .earlyExitRange = 5});
    chassis.waitUntilDone();
    mogoMech.set_value(true);
-   pros::delay(700);
+   pros::delay(500);
    spinIntake(127);
    chassis.moveToPoint(-24, -24, 1500, {.earlyExitRange = 10});
    chassis.moveToPoint(-2, -58, 1500, {.earlyExitRange = 10});
    chassis.turnToPoint(-24, -48, 1000, {.maxSpeed = 60, .earlyExitRange = 20});
    chassis.moveToPoint(-24, -48, 3000, {.maxSpeed = 70, .earlyExitRange = 10});
-   chassis.moveToPoint(-57, -48, 3000, {.maxSpeed = 70, .earlyExitRange = 10});
+   chassis.moveToPoint(-60, -48, 3000, {.maxSpeed = 70, .earlyExitRange = 10});
    chassis.swingToPoint(-48, -60, lemlib::DriveSide::RIGHT, 1000, {.maxSpeed = 60, .earlyExitRange = 20});
    chassis.moveToPoint(-48, -60, 3000, {.maxSpeed = 70,.earlyExitRange = 10});
-   chassis.swingToHeading(45, lemlib::DriveSide::RIGHT, 1000, {.direction = lemlib::AngularDirection::CCW_COUNTERCLOCKWISE, .maxSpeed = 70, .earlyExitRange = 20});
+   chassis.turnToHeading(45, 1000);
    chassis.waitUntilDone();
-   pros::delay(250);
    mogoMech.set_value(false);
-   stopIntake();
    chassis.moveToPoint(-60, -60, 1500, {.forwards = false});
+   stopIntake();
    chassis.moveToPoint(-48, 0, 1500);
    chassis.turnToPoint(-48, 24, 1500, {.forwards = false, .earlyExitRange = 20});
-   chassis.moveToPoint(-48, 21, 1500, {.forwards = false});
+   chassis.moveToPoint(-48, 21, 1500, {.forwards = false, .maxSpeed = 60});
    chassis.waitUntilDone();
    mogoMech.set_value(true);
    pros::delay(700);
@@ -261,15 +255,15 @@ void skillsAuton() {
    chassis.turnToPoint(-24, 24, 1500, {.maxSpeed = 60, .earlyExitRange = 20});
    chassis.moveToPoint(-24, 24, 1500, {.earlyExitRange = 10});
    chassis.moveToPoint(-2, 58, 1500);
-   chassis.turnToPoint(-24, 48, 1000, {.maxSpeed = 60, .earlyExitRange = 20});
-   chassis.moveToPoint(-24, 48, 1500, {.maxSpeed = 30,.earlyExitRange = 10});
-   chassis.moveToPoint(-57, 48, 1500, {.maxSpeed = 30,.earlyExitRange = 10});
+   chassis.turnToPoint(-24, 48, 1500, {.maxSpeed = 60, .earlyExitRange = 20});
+   chassis.moveToPoint(-24, 48, 1500, {.maxSpeed = 60,.earlyExitRange = 10});
+   chassis.moveToPoint(-57, 48, 1500, {.maxSpeed = 60,.earlyExitRange = 10});
    chassis.swingToPoint(-48, 60, lemlib::DriveSide::LEFT, 1000, {.maxSpeed = 60, .earlyExitRange = 20});
    chassis.moveToPoint(-48, 60, 1500, {.earlyExitRange = 10});
-   chassis.swingToHeading(135, lemlib::DriveSide::LEFT, 1000, {.direction = lemlib::AngularDirection::CCW_COUNTERCLOCKWISE,.maxSpeed = 60,.earlyExitRange = 20});
+   chassis.turnToHeading(135, 1000, {.maxSpeed = 60,.earlyExitRange = 20});
    chassis.waitUntilDone();
-   pros::delay(250);
    mogoMech.set_value(false);
+   chassis.moveToPoint(-60, 60, 1500, {.forwards = false});
    stopIntake();
    intake.move(127);
    chassis.moveToPoint(24, 48, 2000);

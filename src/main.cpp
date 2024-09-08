@@ -45,7 +45,7 @@ void competition_initialize() {}
 void autonomous() {
 	// set position to x:0, y:0, heading:0
 
-	mogoRushBlue();
+	skillsAuton();
 
 	lemlib::Pose pose = chassis.getPose();
 	pros::screen::print(pros::E_TEXT_SMALL, 3, "X: %f, Y: %f, Theta: %f\n ", pose.x, pose.y, pose.theta);

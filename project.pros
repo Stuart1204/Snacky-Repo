@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "Early-Season High Stakes Code",
+    "project_name": "Auton Skills",
     "target": "v5",
     "templates": {
       "LemLib": {
@@ -121,7 +121,8 @@
       }
     },
     "upload_options": {
-      "icon": "pros"
+      "icon": "pizza",
+      "slot": 5
     },
     "use_early_access": false
   }

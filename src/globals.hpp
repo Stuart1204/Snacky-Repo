@@ -79,11 +79,11 @@ inline pros::Distance wallStakeAligner(wallStakeAlignerPort);
 
 // rotation sensorxs
 inline pros::Rotation verticalEncoder(-verticalEncoderPort);
-inline pros::Rotation horizontalEncoder(horizontalEncoderPort);
+inline pros::Rotation horizontalEncoder(-horizontalEncoderPort);
 
 // back tracking wheel
-inline lemlib::TrackingWheel vertical_tracking_wheel(&verticalEncoder, 2.125, 0.65); // 2.75" wheel diameter, - offset from tracking center
-inline lemlib::TrackingWheel horizontal_tracking_wheel(&horizontalEncoder, 2.125, -3.75);
+inline lemlib::TrackingWheel vertical_tracking_wheel(&verticalEncoder, 2.125, 0.8); // 2.75" wheel diameter, - offset from tracking center
+inline lemlib::TrackingWheel horizontal_tracking_wheel(&horizontalEncoder, 2.125, -3);
 // drivetrain settings
 inline lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
                               &rightMotors, // right motor group
@@ -97,7 +97,7 @@ inline lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
 inline lemlib::OdomSensors sensors{
 	&vertical_tracking_wheel, 
 	nullptr,			  
-	nullptr,
+	&horizontal_tracking_wheel,
 	nullptr,			  
 	&inertial_sensor	  // inertial sensor
 };

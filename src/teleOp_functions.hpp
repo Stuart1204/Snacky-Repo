@@ -18,7 +18,7 @@ inline void wallStakeTipPositionControl();
 
 inline void homing();
 
-inline bool mogoState = false;
+inline bool mogoState = true;
 inline bool diggerState = false;
 inline bool wallStakePositionState = false;
 inline bool Xstate = false;

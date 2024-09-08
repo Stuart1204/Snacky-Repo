@@ -78,14 +78,6 @@ void intakeControls() {
     if (controller.get_digital(DIGITAL_L1)) {   
 		hook.move(127);
 		intake.move(127);
-		std::cout <<"currentT" <<pros::c::millis() <<" colour" <<ringTracker.get_hue() << " distance" <<ringTracker.get_proximity() <<" speed" <<hook.get_voltage() <<" counter" << counter<<"\n";
-		if (ringTracker.get_hue() >= 120 && ringTracker.get_proximity()>= 130) { 
-			counter = 0;
-		}
-		counter++;
-		if (counter >= 1 && counter <= 4) {
-			hook.move(0);
-		}
 	}
 	else if (controller.get_digital(DIGITAL_L2)){
 		hook.move(-127);
