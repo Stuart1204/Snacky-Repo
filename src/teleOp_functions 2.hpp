@@ -1,0 +1,13 @@
+#include "main.h"
+#include "globals.hpp"
+#include "motor_functions.hpp"
+
+inline bool mogoState = false;
+
+inline void mogoMechControls();
+
+inline void drivetrainControls();
+
+inline void intakeControls();
+
+inline void wallStakeControls();
