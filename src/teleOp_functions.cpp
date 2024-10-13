@@ -21,20 +21,29 @@ void drivetrainControls() {
 
 void intakeControls() {
     if (controller.get_digital(DIGITAL_L1)) {
-			intake.move(127);
-		} else if (controller.get_digital(DIGITAL_L2)) {
-			intake.move(-127);
-		} else {
-			intake.move(0);
-		}
+		intake.move(127);
+	} 
+	else if (controller.get_digital(DIGITAL_L2)) {
+		intake.move(-127);
+	} 
+	else {
+		intake.move(0);
+	}
 }
 
 void wallStakeControls() {
-	if (controller.get_digital(DIGITAL_X)) {
-			wallStake.move(127);
-		} else if (controller.get_digital(DIGITAL_B)) {
-			wallStake.move(-127);
-		} else {
-			wallStake.move(0);
-		}
+	if (controller.get_digital_new_press(DIGITAL_X)) {
+		wallStakeLoad = !wallStakeLoad;
+	} 
+	if(wallStakeLoad) {
+		wallStakeLoad = wallStakeLoading();
+	}
+
+	if (controller.get_digital_new_press(DIGITAL_R1)) {
+		wallStakeScore = true;
+		wallStakeDirection = true;
+	}
+	if(wallStakeScore) {
+		wallStakeScore = wallStakeScoring();
+	}
 }

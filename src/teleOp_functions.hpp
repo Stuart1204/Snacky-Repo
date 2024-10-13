@@ -1,6 +1,6 @@
 #include "main.h"
 #include "globals.hpp"
-#include "motor_functions.hpp"
+#include "motor_functions.cpp"
 
 inline bool mogoState = false;
 
@@ -11,3 +11,4 @@ inline void drivetrainControls();
 inline void intakeControls();
 
 inline void wallStakeControls();
+

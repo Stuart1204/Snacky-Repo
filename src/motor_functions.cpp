@@ -1,6 +1,48 @@
 #include "motor_functions.hpp"
 #include "pros/motors.h"
 
-void testing() {
-    
+
+bool wallStakeLoading() {
+    if(intake.get_actual_velocity() < 3 && counter > 30) {
+        inWallStake = true;
+    } else {
+        counter++;
+    }
+
+    if(inWallStake) { 
+        intake.move(0);
+        inWallStake = false;
+        counter = 0;
+        return false;
+    }
+
+    if(!inWallStake) { 
+        intake.move(127);
+        if(wallStake.get_position() < 205) {
+            wallStake.move(30);
+        } else {
+            wallStake.move(8);
+        }
+        return true;
+    }
+}
+
+bool wallStakeScoring() {
+    if(wallStakeDirection) {
+        if(wallStake.get_position() < 1500) {
+            wallStake.move(127);
+        } else {
+            wallStakeDirection = false;
+        }
+        return true;
+    } else {
+        if(wallStake.get_position() > 20) {
+            wallStake.move(-127);
+            return true;
+        } else {
+            wallStake.move(0);
+            return false;
+        }
+    }
+
 }

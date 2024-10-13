@@ -41,6 +41,8 @@ void initialize()
 	chassis.setPose(0, 0, 0);
 	leftMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	rightMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	wallStake.tare_position();
+	wallStake.set_brake_mode(MOTOR_BRAKE_HOLD);
 }
 
 void disabled() {}
