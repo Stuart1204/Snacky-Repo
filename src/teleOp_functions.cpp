@@ -41,6 +41,7 @@ void wallStakeControls() {
 	if (controller.get_digital_new_press(DIGITAL_R1)) {
 		wallStakeScore = true;
 		wallStakeDirection = true;
+		climbState = false;
 	}
 	if(wallStakeScore) {
 		wallStakeScore = wallStakeScoring();
@@ -62,8 +63,6 @@ void climbControls() {
 		else {
 			if(wallStakeScore || wallStakeLoad) {
 
-			} else if (wallStake.get_position() > 20) {
-            	wallStake.move(-127);
 			} else {
 				wallStake.move(0);
 			}
