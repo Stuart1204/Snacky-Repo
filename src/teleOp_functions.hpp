@@ -3,6 +3,7 @@
 #include "motor_functions.cpp"
 
 inline bool mogoState = false;
+inline bool climbState = false;
 
 inline void mogoMechControls();
 
@@ -12,3 +13,4 @@ inline void intakeControls();
 
 inline void wallStakeControls();
 
+inline void climbControls();

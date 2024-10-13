@@ -3,7 +3,6 @@
 void mogoMechControls() {
     if(controller.get_digital_new_press(DIGITAL_R2)) {
 			mogoState = !mogoState;
-
 			if(mogoState) {
 				mogoMech.set_value(true);
 			} else {
@@ -47,3 +46,26 @@ void wallStakeControls() {
 		wallStakeScore = wallStakeScoring();
 	}
 }
+
+void climbControls() {
+    if (controller.get_digital_new_press(DIGITAL_B)) {
+		climbState = !climbState;
+	}
+	if (climbState) {
+			if (wallStake.get_position() < 1500) {
+				wallStake.move(80);
+			} 
+			else {
+				wallStake.move(0);
+			}
+		} 
+		else {
+			if(wallStakeScore || wallStakeLoad) {
+
+			} else if (wallStake.get_position() > 20) {
+            	wallStake.move(-127);
+			} else {
+				wallStake.move(0);
+			}
+		}
+	}

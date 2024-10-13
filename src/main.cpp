@@ -64,5 +64,6 @@ void opcontrol()
 		drivetrainControls();
 		intakeControls();
 		wallStakeControls();
+		climbControls();
     }
 }

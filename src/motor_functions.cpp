@@ -29,7 +29,7 @@ bool wallStakeLoading() {
 
 bool wallStakeScoring() {
     if(wallStakeDirection) {
-        if(wallStake.get_position() < 1500) {
+        if(wallStake.get_position() < 1450) {
             wallStake.move(127);
         } else {
             wallStakeDirection = false;
