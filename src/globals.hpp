@@ -1,8 +1,11 @@
 #include "main.h"
 #include "lemlib/api.hpp"
+#include "pros/abstract_motor.hpp"
 #include "pros/adi.h"
 #include "pros/motors.h"
 #include "pros/motors.hpp"
+#include "pros/optical.hpp"
+#include "pros/rotation.hpp"
 #include "pros/screen.h"
 #include "pros/screen.hpp"
 
@@ -24,10 +27,13 @@
 
 //sensor ports
 #define imuPort 5
+#define colourSortingSensorPort 19
 
+//solenoids
 #define mogoMechPort 'A'
-#define horizontalEncoderPort1 'C'
-#define horizontalEncoderPort2 'D'
+#define doinkerPort 'B'
+#define horizontalEncoderPort 17
+#define verticalEncoderPort 18
 
 //drivetrain specs
 #define driveTrackWidth 11.775
@@ -35,6 +41,7 @@
 #define driveRPM 450
 
 //global variables
+inline int colourSortingSelector;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -44,6 +51,7 @@ inline pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 // motors
 inline pros::Motor wallStake(6, pros::v5::MotorGears::rpm_200);
+inline pros::Motor bIntake(bIntakePort, pros::v5::MotorGears::rpm_600);
 
 // drive motor groups
 inline pros::MotorGroup leftMotors({lBPort, lMPort, lFPort}, pros::v5::MotorGears::rpm_600);	// left motor group
@@ -52,28 +60,33 @@ inline pros::MotorGroup intake({sIntakePort, bIntakePort});
 
 //solenoids
 inline pros::adi::DigitalOut mogoMech(mogoMechPort, LOW);
+inline pros::adi::DigitalOut doinker(doinkerPort, LOW);
 
 // Inertial Sensor on port
 inline pros::Imu inertial_sensor(imuPort);
+inline pros::Optical colourSortingSensor(colourSortingSensorPort);
 
 // back tracking wheel encoder
-inline pros::adi::Encoder horizontal_encoder(horizontalEncoderPort1, horizontalEncoderPort2, false); // ports C and D, not reversed
+inline pros::Rotation horizontal_rotation(horizontalEncoderPort); 
+inline pros::Rotation vertical_rotation(-verticalEncoderPort); 
 
 // back tracking wheel
-inline lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, 2.75, -3.1); // 2.75" wheel diameter, - offset from tracking center
+inline lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_rotation, 2.125, 1.775); // 2.75" wheel diameter, - offset from tracking center
+inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_rotation, 2.75, 1.5); // 2.75" wheel diameter, - offset from tracking center
+
 
 // drivetrain settings
 inline lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
                               &rightMotors, // right motor group
-                              driveTrackWidth, // 10 inch track width
-                              driveWheelType, // using new 3.25" omnis
-                              driveRPM, // drivetrain rpm is 360
+                              driveTrackWidth, 
+                              driveWheelType, 
+                              driveRPM, 
                               8 // chase power is 2. If we had traction wheels, it would have been 8
 );
 
 // Odometry sensors struct
 inline lemlib::OdomSensors sensors{
-	nullptr, 
+	&vertical_tracking_wheel, 
 	nullptr,			  
 	&horizontal_tracking_wheel, 
 	nullptr,			  

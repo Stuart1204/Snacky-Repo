@@ -3,9 +3,14 @@
 #include "motor_functions.cpp"
 
 inline bool mogoState = false;
+inline bool doinkerState = false;
 inline bool climbState = false;
 
+inline bool colourSortingEjectionState = false;
+
 inline void mogoMechControls();
+
+inline void doinkerControls();
 
 inline void drivetrainControls();
 
