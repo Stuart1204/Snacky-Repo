@@ -3,7 +3,7 @@
 
 
 bool wallStakeLoading() {
-    if(intake.get_actual_velocity() < 3 && counter > 30) {
+    if(intake.get_actual_velocity() < 3 && counter > 20) {
         inWallStake = true;
     } else {
         counter++;
@@ -31,6 +31,11 @@ bool wallStakeScoring() {
     if(wallStakeDirection) {
         if(wallStake.get_position() < 1450) {
             wallStake.move(127);
+            if(wallStake.get_position() < 200) {
+                intake.move(-15);
+            } else {
+                intake.move(0);
+            }
         } else {
             wallStakeDirection = false;
         }

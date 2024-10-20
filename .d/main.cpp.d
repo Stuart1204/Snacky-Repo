@@ -141,8 +141,8 @@ bin/main.cpp.o: src/main.cpp include/main.h include/api.h \
  include/fmt/args.h include/lemlib/logger/message.hpp \
  include/lemlib/logger/infoSink.hpp \
  include/lemlib/logger/telemetrySink.hpp include/pros/screen.hpp \
- src/globals.hpp src/teleOp_functions.cpp src/teleOp_functions.hpp \
- src/motor_functions.cpp src/motor_functions.hpp
+ src/globals.hpp include/pros/optical.hpp src/teleOp_functions.cpp \
+ src/teleOp_functions.hpp src/motor_functions.cpp src/motor_functions.hpp
 include/main.h:
 include/api.h:
 include/pros/adi.h:
@@ -382,6 +382,7 @@ include/lemlib/logger/infoSink.hpp:
 include/lemlib/logger/telemetrySink.hpp:
 include/pros/screen.hpp:
 src/globals.hpp:
+include/pros/optical.hpp:
 src/teleOp_functions.cpp:
 src/teleOp_functions.hpp:
 src/motor_functions.cpp:

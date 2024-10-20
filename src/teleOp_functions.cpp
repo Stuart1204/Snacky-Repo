@@ -1,4 +1,5 @@
 #include "teleOp_functions.hpp"
+#include "pros/misc.h"
 
 void mogoMechControls() {
     if(controller.get_digital_new_press(DIGITAL_R2)) {
@@ -7,6 +8,17 @@ void mogoMechControls() {
 				mogoMech.set_value(true);
 			} else {
 				mogoMech.set_value(false);
+			}
+		}
+}
+
+void doinkerControls() {
+    if(controller.get_digital_new_press(DIGITAL_A)) {
+			doinkerState = !doinkerState;
+			if(doinkerState) {
+				doinker.set_value(true);
+			} else {
+				doinker.set_value(false);
 			}
 		}
 }
@@ -20,7 +32,32 @@ void drivetrainControls() {
 
 void intakeControls() {
     if (controller.get_digital(DIGITAL_L1)) {
-		intake.move(127);
+		if(colourSortingSelector == 0) {
+			intake.move(127);
+		} else if (colourSortingSelector == 1) {
+			if((colourSortingSensor.get_hue() < 60 || colourSortingSensor.get_hue() > 320) && colourSortingSensor.get_proximity() > 250) {
+				colourSortingEjectionState = true;
+			} else {
+				intake.move(127);
+			}
+		} else if (colourSortingSelector == 2) {
+			if(colourSortingSensor.get_hue() > 80 && colourSortingSensor.get_hue() < 300 && colourSortingSensor.get_proximity() > 250) {
+				colourSortingEjectionState = true;
+			} else {
+				intake.move(127);
+			}
+		}
+		
+		if(colourSortingEjectionState) {
+			if(remainder(bIntake.get_position(), 360.0) > 180) {
+				counter = 0;
+				intake.move(0);
+				controller.rumble("-");
+			}
+			if(counter > 8) {
+				colourSortingEjectionState = false;
+			}
+		}
 	} 
 	else if (controller.get_digital(DIGITAL_L2)) {
 		intake.move(-127);
@@ -28,6 +65,7 @@ void intakeControls() {
 	else {
 		intake.move(0);
 	}
+	counter++;
 }
 
 void wallStakeControls() {
@@ -61,7 +99,7 @@ void climbControls() {
 			}
 		} 
 		else {
-			if(wallStakeScore || wallStakeLoad) {
+			if(wallStakeScore || wallStakeLoad || colourSortingEjectionState) {
 
 			} else {
 				wallStake.move(0);

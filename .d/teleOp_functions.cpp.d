@@ -140,8 +140,8 @@ bin/teleOp_functions.cpp.o: src/teleOp_functions.cpp \
  include/fmt/format-inl.h include/lemlib/logger/baseSink.hpp \
  include/fmt/args.h include/lemlib/logger/message.hpp \
  include/lemlib/logger/infoSink.hpp \
- include/lemlib/logger/telemetrySink.hpp include/pros/screen.hpp \
- src/motor_functions.cpp src/motor_functions.hpp
+ include/lemlib/logger/telemetrySink.hpp include/pros/optical.hpp \
+ include/pros/screen.hpp src/motor_functions.cpp src/motor_functions.hpp
 src/teleOp_functions.hpp:
 include/main.h:
 include/api.h:
@@ -381,6 +381,7 @@ include/fmt/args.h:
 include/lemlib/logger/message.hpp:
 include/lemlib/logger/infoSink.hpp:
 include/lemlib/logger/telemetrySink.hpp:
+include/pros/optical.hpp:
 include/pros/screen.hpp:
 src/motor_functions.cpp:
 src/motor_functions.hpp:
