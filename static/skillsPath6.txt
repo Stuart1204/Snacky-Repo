@@ -1,0 +1,39 @@
+-0.052, 54.298, 115.704
+-1.642, 53.086, 117.604
+-3.337, 52.026, 119.163
+-5.111, 51.104, 120.977
+-6.94, 50.295, 121.91
+-8.809, 49.583, 122.672
+-10.709, 48.96, 123
+-12.633, 48.413, 122.282
+-14.573, 47.929, 120.536
+-16.529, 47.512, 118.764
+-18.495, 47.144, 116.965
+-20.47, 46.83, 115.138
+-22.452, 46.561, 113.282
+-24.438, 46.331, 111.395
+-26.429, 46.141, 109.476
+-28.424, 45.989, 107.522
+-30.42, 45.87, 105.532
+-32.418, 45.782, 103.503
+-34.417, 45.723, 101.434
+-36.417, 45.691, 99.322
+-38.417, 45.686, 97.165
+-40.417, 45.705, 94.958
+-42.416, 45.747, 92.698
+-44.415, 45.812, 90.382
+-46.413, 45.897, 88.006
+-48.41, 46.002, 85.563
+-50.406, 46.126, 83.048
+-52.401, 46.27, 80.455
+-54.395, 46.432, 77.775
+-56.387, 46.61, 75
+-58.431, 46.806, 0
+-58.431, 46.806, 0
+-78.339, 48.717, 0
+endData
+106
+127
+200
+-0.052, 54.298, -7.284, 48.098, -25.366, 43.448, -58.431, 46.806
+#PATH.JERRYIO-DATA {"appVersion":"0.8.3","format":"LemLib v0.5","gc":{"robotWidth":14,"robotHeight":15,"robotIsHolonomic":false,"showRobot":true,"uol":2.54,"pointDensity":2,"controlMagnetDistance":1.968503937007874,"fieldImage":{"displayName":"V5RC 2025 - High Stakes (Skills)","signature":"V5RC 2025 - High Stakes (Skills)","origin":{"__type":"built-in"}},"coordinateSystem":"VEX Gaming Positioning System"},"paths":[{"segments":[{"controls":[{"uid":"R9PFgFtHkF","x":-0.05166272779202448,"y":54.29752690942082,"lock":false,"visible":true,"heading":0,"__type":"end-point"},{"uid":"qm6ZJ6GHhT","x":-7.284444618675865,"y":48.09799957437753,"lock":false,"visible":true,"__type":"control"},{"uid":"ndu4vQu6JS","x":-25.36639934588546,"y":43.448354073095054,"lock":false,"visible":true,"__type":"control"},{"uid":"s8qUbidu9Y","x":-58.43054513278301,"y":46.806431379576836,"lock":false,"visible":true,"heading":0,"__type":"end-point"}],"speedProfiles":[],"lookaheadKeyframes":[],"uid":"I24nDVGaxU"}],"pc":{"speedLimit":{"minLimit":{"value":0,"label":"0"},"maxLimit":{"value":127,"label":"127"},"step":1,"from":75,"to":127},"bentRateApplicableRange":{"minLimit":{"value":0,"label":"0"},"maxLimit":{"value":1,"label":"1"},"step":0.001,"from":0,"to":0.1},"maxDecelerationRate":106},"name":"Path","uid":"VS4EptKb4e","lock":false,"visible":true}]}

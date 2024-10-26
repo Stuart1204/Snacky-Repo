@@ -6,8 +6,7 @@
 #include "pros/screen.hpp"
 #include "globals.hpp"
 #include "teleOp_functions.cpp"
-
-ASSET(testingPath_txt);
+#include "autons.cpp"
 
 // pros screen formatting
 
@@ -42,8 +41,6 @@ void initialize()
 
 	chassis.calibrate();
 	chassis.setPose(0, 0, 0);
-	leftMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
-	rightMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	wallStake.tare_position();
 	wallStake.set_brake_mode(MOTOR_BRAKE_HOLD);
 	colourSortingSensor.disable_gesture();
@@ -53,7 +50,7 @@ void initialize()
 	// intializing the colour sorting. if colourSortingSelector = 0, No colour sorting
 	// If 1, colour sorting Red (ejecting red)
 	// If 2, colour sorting Blue (ejecting blue)
-	colourSortingSelector = 2;
+	colourSortingSelector = 0;
 }
 
 void disabled() {}
@@ -61,18 +58,17 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
-	 // set position to x:0, y:0, heading:0
-    chassis.setPose(0, 0, 0);
 	lemlib::Pose pose = chassis.getPose();
 	printf("X: %f, Y: %f, Theta: %f\n ", pose.x, pose.y, pose.theta);
-	mogoMech.set_value(true);
-	pros::delay(300);
-	chassis.follow(testingPath_txt, 12, 10000);
-	intake.move(127);
+	
+	nonMogoRushBlue();
 }
 
 void opcontrol()
 {
+	leftMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	rightMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	wallStake.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
     while (true) {
 		pros::delay(20);
 		mogoMechControls();
@@ -86,5 +82,6 @@ void opcontrol()
 		pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
 		pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
 		pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
+		pros::screen::print(TEXT_LARGE_CENTER, 10, "line sensor: %d", lineTracker.get_value());
     }
 }

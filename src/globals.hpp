@@ -2,6 +2,7 @@
 #include "lemlib/api.hpp"
 #include "pros/abstract_motor.hpp"
 #include "pros/adi.h"
+#include "pros/adi.hpp"
 #include "pros/motors.h"
 #include "pros/motors.hpp"
 #include "pros/optical.hpp"
@@ -28,6 +29,7 @@
 //sensor ports
 #define imuPort 5
 #define colourSortingSensorPort 19
+#define lineSensorPort 'C'
 
 //solenoids
 #define mogoMechPort 'A'
@@ -60,11 +62,12 @@ inline pros::MotorGroup intake({sIntakePort, bIntakePort});
 
 //solenoids
 inline pros::adi::DigitalOut mogoMech(mogoMechPort, LOW);
-inline pros::adi::DigitalOut doinker(doinkerPort, LOW);
+inline pros::adi::DigitalOut doinker(doinkerPort, HIGH);
 
 // Inertial Sensor on port
 inline pros::Imu inertial_sensor(imuPort);
 inline pros::Optical colourSortingSensor(colourSortingSensorPort);
+inline pros::adi::AnalogIn lineTracker(lineSensorPort);
 
 // back tracking wheel encoder
 inline pros::Rotation horizontal_rotation(horizontalEncoderPort); 
@@ -96,24 +99,24 @@ inline lemlib::OdomSensors sensors{
 // lateral motion controller
 inline lemlib::ControllerSettings linearController(11, // proportional gain (kP)
                                             0, // integral gain (kI)
-                                            7, // derivative gain (kD)
+                                            35, // derivative gain (kD)
                                             3, // anti windup
                                             1, // small error range, in inches
                                             100, // small error range timeout, in milliseconds
                                             3, // large error range, in inches
-                                            500, // large error range timeout, in milliseconds
-                                            5 // maximum acceleration (slew)
+                                            200, // large error range timeout, in milliseconds
+                                            20 // maximum acceleration (slew)
 );
 
 // angular motion controller
 inline lemlib::ControllerSettings angularController(3.5, // proportional gain (kP)
                                              0, // integral gain (kI)
-                                             30, // derivative gain (kD)
+                                             31, // derivative gain (kD)
                                              3, // anti windup
                                              1, // small error range, in degrees
                                              100, // small error range timeout, in milliseconds
-                                             3, // large error range, in degrees
-                                             500, // large error range timeout, in milliseconds
+                                             5, // large error range, in degrees
+                                             200, // large error range timeout, in milliseconds
                                              0 // maximum acceleration (slew)
 );
 
