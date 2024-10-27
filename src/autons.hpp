@@ -11,3 +11,5 @@ inline void mogoRushBlue();
 inline void nonMogoRushRed();
 
 inline void nonMogoRushBlue();
+
+inline void mogoRushRed();

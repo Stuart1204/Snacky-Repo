@@ -9,6 +9,8 @@
 #include "autons.cpp"
 
 // pros screen formatting
+pros::screen_touch_status_s_t status;
+int autonSelection = 0;
 
 void screen()
 { 
@@ -38,7 +40,6 @@ void on_center_button()
 // initializing all robot functions
 void initialize()
 {
-
 	chassis.calibrate();
 	chassis.setPose(0, 0, 0);
 	wallStake.tare_position();
@@ -51,6 +52,51 @@ void initialize()
 	// If 1, colour sorting Red (ejecting red)
 	// If 2, colour sorting Blue (ejecting blue)
 	colourSortingSelector = 0;
+	pros::screen::set_eraser(0x00000000);
+	while (true){
+		break;
+		pros::delay(20);
+		pros::screen::set_pen(0x00FF0000);
+		pros::screen::fill_rect(0,0,150,100);
+		pros::screen::fill_rect(0,150, 150, 240);
+		pros::screen::set_pen(0x000000FF);
+		pros::screen::fill_rect(200,0,350,100);
+		pros::screen::fill_rect(200,150, 350, 240);
+		pros::screen::set_pen(0x00008000);
+		pros::screen::fill_rect(400,0,475,240);
+		pros::screen::set_pen(0x00FFFFFF);
+		pros::screen::print(pros::E_TEXT_MEDIUM, 20,35, "Red Positive"); 
+		pros::screen::print(pros::E_TEXT_MEDIUM, 20,185, "Red Negative"); 
+		pros::screen::print(pros::E_TEXT_MEDIUM, 215,35, "Blue Positive"); 
+		pros::screen::print(pros::E_TEXT_MEDIUM, 215,185, "Blue Negative"); 
+		pros::screen::print(pros::E_TEXT_MEDIUM, 405,115, "Skills");
+		status = pros::screen::touch_status();
+		if (status.x > 0 && status.x < 150 && status.y > 0 && status.y < 100) {
+			pros::screen::print(pros::E_TEXT_MEDIUM, 20,35, "Selected     "); 
+			autonSelection = 1;
+			break;
+		}
+		if (status.x > 0 && status.x < 150 && status.y > 150 && status.y < 240) {
+			pros::screen::print(pros::E_TEXT_MEDIUM, 20,185, "Selected     "); 
+			autonSelection = 2;
+			break;
+		}
+		if (status.x > 200 && status.x < 350 && status.y > 0 && status.y < 100) {
+			pros::screen::print(pros::E_TEXT_MEDIUM, 215,35, "Selected     "); 
+			autonSelection = 3;
+			break;
+		}
+		if (status.x > 200 && status.x < 350 && status.y > 150 && status.y < 240) {
+			pros::screen::print(pros::E_TEXT_MEDIUM, 215,185, "Selected     "); 
+			autonSelection = 4;
+			break;
+		}
+		if (status.x > 400 && status.x < 480 && status.y > 0  && status.y < 240) {
+			pros::screen::print(pros::E_TEXT_MEDIUM, 405,115, "Selected     "); 
+			autonSelection = 5;
+			break;
+		}
+	}
 }
 
 void disabled() {}
@@ -60,8 +106,22 @@ void competition_initialize() {}
 void autonomous() {
 	lemlib::Pose pose = chassis.getPose();
 	printf("X: %f, Y: %f, Theta: %f\n ", pose.x, pose.y, pose.theta);
-	
-	nonMogoRushBlue();
+	skillsAuton();
+	if (autonSelection == 1) {
+		mogoRushRed();
+	}
+	else if (autonSelection == 2) {
+		nonMogoRushRed();
+	}
+	else if (autonSelection == 3) {
+		mogoRushBlue();
+	}
+	else if (autonSelection == 4) {
+		nonMogoRushBlue();
+	}
+	else if (autonSelection == 5) {
+		skillsAuton();
+	}
 }
 
 void opcontrol()
@@ -69,6 +129,7 @@ void opcontrol()
 	leftMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	rightMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	wallStake.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+	pros::screen::erase();
     while (true) {
 		pros::delay(20);
 		mogoMechControls();
