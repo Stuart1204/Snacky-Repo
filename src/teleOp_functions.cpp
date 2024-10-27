@@ -62,7 +62,8 @@ void intakeControls() {
 	else if (controller.get_digital(DIGITAL_L2)) {
 		intake.move(-127);
 	} 
-	else {
+	else if (wallStakeLoad){
+	} else {
 		intake.move(0);
 	}
 	counter++;
