@@ -28,9 +28,9 @@
 
 //sensor ports
 #define imuPort 5
-#define colourSortingSensorPort 19
+#define colourSortingSensorPort 13
 #define lineSensorPort 'C'
-
+#define distanceSortPort 20
 //solenoids
 #define mogoMechPort 'A'
 #define doinkerPort 'B'
@@ -44,6 +44,7 @@
 
 //global variables
 inline int colourSortingSelector;
+inline bool ringColour;
 inline bool mogoState = false;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,6 +70,7 @@ inline pros::adi::DigitalOut doinker(doinkerPort, HIGH);
 inline pros::Imu inertial_sensor(imuPort);
 inline pros::Optical colourSortingSensor(colourSortingSensorPort);
 inline pros::adi::AnalogIn lineTracker(lineSensorPort);
+inline pros::Distance distanceSort(distanceSortPort);
 
 // back tracking wheel encoder
 inline pros::Rotation horizontal_rotation(horizontalEncoderPort); 

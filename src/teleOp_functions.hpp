@@ -4,7 +4,7 @@
 
 inline bool doinkerState = false;
 inline bool climbState = false;
-
+inline int counterEject = 0;
 inline bool colourSortingEjectionState = false;
 
 inline void mogoMechControls();
@@ -18,3 +18,5 @@ inline void intakeControls();
 inline void wallStakeControls();
 
 inline void climbControls();
+
+inline void checkColour();

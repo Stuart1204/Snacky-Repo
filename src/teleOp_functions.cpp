@@ -36,14 +36,16 @@ void intakeControls() {
 	} else if (controller.get_digital(DIGITAL_L1)) {
 		if(colourSortingSelector == 0) {
 			intake.move(127);
-		} else if (colourSortingSelector == 1) {
-			if((colourSortingSensor.get_hue() < 60 || colourSortingSensor.get_hue() > 320) && colourSortingSensor.get_proximity() > 250) {
+		} 
+		else if (colourSortingSelector == 1) { //red
+			if(ringColour == false && distanceSort.get() < 20) {
 				colourSortingEjectionState = true;
 			} else {
 				intake.move(127);
 			}
-		} else if (colourSortingSelector == 2) {
-			if(colourSortingSensor.get_hue() > 80 && colourSortingSensor.get_hue() < 300 && colourSortingSensor.get_proximity() > 250) {
+		} 
+		else if (colourSortingSelector == 2) { //blue
+			if(ringColour == true && distanceSort.get() < 20) {
 				colourSortingEjectionState = true;
 			} else {
 				intake.move(127);
@@ -51,13 +53,19 @@ void intakeControls() {
 		}
 		
 		if(colourSortingEjectionState) {
-			if(remainder(bIntake.get_position(), 360.0) > 180) {
-				counter = 0;
-				intake.move(0);
-				controller.rumble("-");
-			}
-			if(counter > 8) {
+			// if(remainder(bIntake.get_position(), 360.0) > 180) {
+			// 	counter = 0;
+			// 	intake.move(0);
+			// 	controller.rumble("-");
+			// }
+			// if(counter > 8) {
+			// 	colourSortingEjectionState = false;
+			// }
+			intake.move(0);
+			counterEject++;
+			if (counterEject > 8) {
 				colourSortingEjectionState = false;
+				counterEject = 0;
 			}
 		}
 	} 
@@ -68,7 +76,6 @@ void intakeControls() {
 	} else {
 		intake.move(0);
 	}
-	counter++;
 }
 
 void wallStakeControls() {
@@ -110,3 +117,12 @@ void climbControls() {
 			}
 		}
 	}
+
+void checkColour() {
+	if (colourSortingSensor.get_hue() > 80 && colourSortingSensor.get_hue() < 300) {
+		ringColour = true; //blue
+	}
+	else if (colourSortingSensor.get_hue() < 20 || colourSortingSensor.get_hue() > 320){
+		ringColour = false; //red
+	}
+}

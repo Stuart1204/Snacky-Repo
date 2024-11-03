@@ -51,7 +51,7 @@ void initialize()
 	// intializing the colour sorting. if colourSortingSelector = 0, No colour sorting
 	// If 1, colour sorting Red (ejecting red)
 	// If 2, colour sorting Blue (ejecting blue)
-	colourSortingSelector = 0;
+	colourSortingSelector = 1;
 	pros::screen::set_eraser(0x00000000);
 	while (true){
 		pros::delay(20);
@@ -130,13 +130,13 @@ void opcontrol()
 	pros::screen::erase();
     while (true) {
 		pros::delay(20);
+		checkColour();
 		mogoMechControls();
 		doinkerControls();
 		drivetrainControls();
 		intakeControls();
 		wallStakeControls();
 		climbControls();
-
 		lemlib::Pose pose = chassis.getPose();
 		pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
 		pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
