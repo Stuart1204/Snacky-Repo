@@ -61,7 +61,7 @@ void skillsAuton() {
     chassis.moveToPoint(15, -57, 2000, {.minSpeed = 60, .earlyExitRange = 3});
     chassis.waitUntilDone();
     chassis.turnToHeading(-90, 1000, {.minSpeed = 60, .earlyExitRange = 10});
-    while(wallStake.get_position() < 240) {
+    while(wallStake.get_position() < 215) {
         wallStake.move(35);
         pros::delay(20);
     } 
@@ -124,11 +124,11 @@ void skillsAuton() {
     chassis.moveToPoint(24, 48, 2000, {.earlyExitRange = 5});
     //chassis.follow(skillsPath5_txt, 16, 2000);
     chassis.waitUntilDone();
-    chassis.moveToPoint(15, 58, 2000, {.minSpeed = 60, .earlyExitRange = 3});
+    chassis.moveToPoint(15, 56, 2000, {.minSpeed = 60, .earlyExitRange = 3});
     chassis.waitUntilDone();
     chassis.turnToHeading(-90, 1000, {.minSpeed = 60, .earlyExitRange = 10});
     wallStake.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-    while(wallStake.get_position() < 240) {
+    while(wallStake.get_position() < 215) {
         wallStake.move(35);
         pros::delay(20);
     }
@@ -230,10 +230,10 @@ void skillsAutonSecondHalf() {
 
 
 void mogoRushBlue() {
-    chassis.setPose(52, -62.5, 90);
+    chassis.setPose(52, -60, 90);
     chassis.follow(mogoRushBlue1_txt, 15, 3000, false);
     chassis.turnToHeading(90, 300, {.earlyExitRange = 10});
-    chassis.moveToPoint(10.5, -46, 2000, {.forwards = false, .maxSpeed = 80});
+    chassis.moveToPoint(10.5, -49, 2000, {.forwards = false, .maxSpeed = 80});
     chassis.waitUntilDone();
     mogoMech.set_value(true);
     pros::delay(300);
@@ -249,22 +249,14 @@ void mogoRushBlue() {
     chassis.turnToHeading(-90, 1500, {.earlyExitRange = 15});
     chassis.waitUntilDone();
     mogoMech.set_value(false);
-    chassis.moveToPoint(40, -53, 1500, {.earlyExitRange = 10});
-    chassis.moveToPoint(17, -39, 1500);
-    chassis.waitUntilDone();
-    intake.move(0);
-    chassis.turnToPoint(24, -24, 500, {.forwards = false, .earlyExitRange = 15});
-    chassis.moveToPoint(23, -25, 1500, {.forwards = false, .maxSpeed = 80});
+    chassis.moveToPoint(48, -25, 1500, {.forwards = false,.earlyExitRange = 5});
+    chassis.moveToPoint(24, -24, 1500, {.forwards = false, .earlyExitRange = 10});
     chassis.waitUntilDone();
     mogoMech.set_value(true);
-    pros::delay(350);
-    intake.move(127);
-    pros::delay(500);
-    chassis.moveToPoint(17, -17, 1500, {.forwards = false});
-    while(intake.get_actual_velocity() > 20) {
-        pros::delay(20);
-    }
-    intake.move(10);
+    chassis.turnToPoint(18, -50, 500, {.earlyExitRange = 15});
+    chassis.moveToPoint(18, -40, 1500, {.maxSpeed = 80});
+    chassis.moveToPoint(25, -4, 1500, {.maxSpeed = 80});
+    mogoState = true;
 }
 
 void nonMogoRushRed() {
@@ -318,9 +310,9 @@ void nonMogoRushBlue() {
     chassis.turnToHeading(-20, 1500, {.minSpeed = 50, .earlyExitRange = 10});
     chassis.waitUntilDone();
     intake.move(127);
-    chassis.moveToPose(12, 42, 60, 1500);
+    chassis.moveToPose(14, 42, 50, 1500);
     chassis.turnToHeading(0, 1500);
-    chassis.moveToPoint(12, 47, 1500);
+    chassis.moveToPoint(14, 47, 1500);
     chassis.moveToPoint(13, 36, 2000, {.forwards = false, .minSpeed = 60, .earlyExitRange = 8});
     chassis.moveToPoint(24, 26, 2000, {.forwards = false});
     chassis.moveToPoint(26, 48, 1500);
@@ -331,9 +323,9 @@ void nonMogoRushBlue() {
     chassis.turnToHeading(-80, 1500, {.direction = lemlib::AngularDirection::CCW_COUNTERCLOCKWISE});
     chassis.moveToPoint(56, 24, 2000, {.forwards = false, .minSpeed = 50, .earlyExitRange = 20});
     chassis.moveToPoint(60, -3, 2000, {.forwards = false, .minSpeed = 30, .earlyExitRange = 5});
-    chassis.moveToPoint(60, 0, 2000, {.earlyExitRange = 3});
-    chassis.turnToPoint(70, 0, 2000, {.forwards = false});
-    chassis.moveToPoint(65, 0, 1000, {.forwards = false, .minSpeed = 30});
+    chassis.moveToPoint(60, 3, 2000, {.earlyExitRange = 3});
+    chassis.turnToPoint(70, 3, 2000, {.forwards = false});
+    chassis.moveToPoint(65, 3, 1000, {.forwards = false, .minSpeed = 30});
     chassis.waitUntilDone();
     intake.move(127);
     pros::delay(700);

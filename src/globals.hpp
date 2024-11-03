@@ -22,8 +22,8 @@
 #define rMPort 3
 #define rFPort 4
 
-#define sIntakePort 1
-#define bIntakePort 9
+#define intakePort1 1
+#define intakePort2 9
 #define wallStakePort 6
 
 //sensor ports
@@ -54,12 +54,12 @@ inline pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 // motors
 inline pros::Motor wallStake(6, pros::v5::MotorGears::rpm_200);
-inline pros::Motor bIntake(bIntakePort, pros::v5::MotorGears::rpm_600);
+inline pros::Motor bIntake(intakePort2, pros::v5::MotorGears::rpm_600);
 
 // drive motor groups
 inline pros::MotorGroup leftMotors({lBPort, lMPort, lFPort}, pros::v5::MotorGears::rpm_600);	// left motor group
 inline pros::MotorGroup rightMotors({rBPort, rMPort, rFPort}, pros::v5::MotorGears::rpm_600); // right motor group
-inline pros::MotorGroup intake({sIntakePort, bIntakePort});
+inline pros::MotorGroup intake({-intakePort1, intakePort2});
 
 //solenoids
 inline pros::adi::DigitalOut mogoMech(mogoMechPort, LOW);

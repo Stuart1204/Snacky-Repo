@@ -64,7 +64,7 @@ void intakeControls() {
 	else if (controller.get_digital(DIGITAL_L2)) {
 		intake.move(-127);
 	} 
-	else if (wallStakeLoad){
+	else if (wallStakeLoad || climbState){
 	} else {
 		intake.move(0);
 	}
@@ -98,6 +98,7 @@ void climbControls() {
 				wallStake.move(80);
 			} 
 			else {
+				intake.move(-80);
 				wallStake.move(0);
 			}
 		} 
