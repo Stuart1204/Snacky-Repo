@@ -18,7 +18,7 @@ bool wallStakeLoading() {
 
     if(!inWallStake) { 
         intake.move(127);
-        if(wallStake.get_position() < 245) {
+        if(wallStake.get_position() < 240) {
             wallStake.move(30);
         } else {
             wallStake.move(2);
@@ -31,8 +31,8 @@ bool wallStakeScoring() {
     if(wallStakeDirection) {
         if(wallStake.get_position() < 1450) {
             wallStake.move(127);
-            if(wallStake.get_position() < 600) {
-                intake.move(-15);
+            if(wallStake.get_position() < 700) {
+                intake.move(-25);
             } else {
                 intake.move(0);
             }

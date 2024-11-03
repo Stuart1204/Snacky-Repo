@@ -31,7 +31,9 @@ void drivetrainControls() {
 }
 
 void intakeControls() {
-    if (controller.get_digital(DIGITAL_L1)) {
+	if(controller.get_digital(DIGITAL_L1) && controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+		intake.move(60);
+	} else if (controller.get_digital(DIGITAL_L1)) {
 		if(colourSortingSelector == 0) {
 			intake.move(127);
 		} else if (colourSortingSelector == 1) {
@@ -62,7 +64,7 @@ void intakeControls() {
 	else if (controller.get_digital(DIGITAL_L2)) {
 		intake.move(-127);
 	} 
-	else if (wallStakeLoad){
+	else if (wallStakeLoad || climbState){
 	} else {
 		intake.move(0);
 	}
@@ -96,6 +98,7 @@ void climbControls() {
 				wallStake.move(80);
 			} 
 			else {
+				intake.move(-80);
 				wallStake.move(0);
 			}
 		} 

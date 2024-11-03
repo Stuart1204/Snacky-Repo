@@ -2,7 +2,6 @@
 #include "globals.hpp"
 #include "motor_functions.cpp"
 
-inline bool mogoState = false;
 inline bool doinkerState = false;
 inline bool climbState = false;
 

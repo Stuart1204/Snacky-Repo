@@ -5,6 +5,7 @@ inline lemlib::Pose currentPose = chassis.getPose();
 inline bool exitLoop = false;
 inline void lineUpWallStake(bool direction);
 inline void skillsAuton();
+inline void skillsAutonSecondHalf();
 
 inline void mogoRushBlue();
 
