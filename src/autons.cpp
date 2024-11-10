@@ -36,11 +36,11 @@ void multitaskIntakeControl_f(void* param) {
         if(colourSortingSelector == 0) {
 
 		} else if (colourSortingSelector == 1) { //red
-			if(ringColour == false && distanceSort.get() < 20) {
+			if(ringColour == false && distanceSort.get() < 200) {
 				autonColourSortingEjectionState = true;
 			}
 		} else if (colourSortingSelector == 2) { //blue
-			if(ringColour == true && distanceSort.get() < 20) {
+			if(ringColour == true && distanceSort.get() < 200) {
 				autonColourSortingEjectionState = true;
 			}
         }
@@ -307,27 +307,27 @@ void mogoRushBlue() {
     multitaskIntakeControls = true;
     chassis.moveToPoint(34, -49, 1500);
     chassis.waitUntilDone();
-    pros::delay(600);
+    pros::delay(500);
     mogoMech.set_value(false);
     multitaskIntakeControls = false;
     intake.move(0);
-    chassis.turnToPoint(24, -24, 500, {.forwards = false});
+    chassis.turnToPoint(28, -24, 500, {.forwards = false});
     chassis.moveToPoint(24, -24, 1500, {.forwards = false, .maxSpeed=80});
     chassis.waitUntilDone();
     mogoMech.set_value(true);
     pros::delay(300);
-    chassis.moveToPoint(57, -39, 1500);
-    chassis.turnToHeading(0, 1500);
+    chassis.moveToPoint(57, -39, 1500, {.minSpeed = 30, .earlyExitRange = 5});
+    chassis.turnToHeading(0, 1500, {.minSpeed = 30, .earlyExitRange = 5});
     chassis.waitUntilDone();
     multitaskIntakeControls=true;
     chassis.moveToPoint(52,-28, 800, {.minSpeed=127});
     chassis.moveToPoint(57, -34, 1500, {.forwards=false});
-    chassis.turnToPoint(48, -48, 1500);
+    chassis.turnToPoint(48, -48, 1500, {.minSpeed = 30, .earlyExitRange = 5});
     chassis.waitUntilDone();
     multitaskIntakeControls=false;
     intake.move(-127);
-    chassis.moveToPoint(46, -56, 1500);
-    chassis.swingToPoint(62,-62, lemlib::DriveSide::RIGHT, 1500);
+    chassis.moveToPoint(46, -56, 1500, {.minSpeed = 30, .earlyExitRange = 5});
+    chassis.swingToPoint(62,-62, lemlib::DriveSide::RIGHT, 1500, {.minSpeed = 30, .earlyExitRange = 5});
     wallStake.move(0);
     chassis.waitUntilDone();
     colourSortingSelector = 1;
@@ -335,7 +335,7 @@ void mogoRushBlue() {
     chassis.moveToPoint(64,-64, 1500, {.minSpeed =70});
     chassis.waitUntilDone();
     pros::delay(1000);
-    chassis.moveToPoint(18, -18, 1500, {.forwards = false});
+    chassis.moveToPoint(15, -15, 1500, {.forwards = false});
     pros::delay(700);
     multitaskIntakeControls = false;
     intake.move(-127);

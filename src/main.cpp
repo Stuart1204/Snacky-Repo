@@ -54,6 +54,7 @@ void initialize()
 	colourSortingSelector = 1;
 	pros::screen::set_eraser(0x00000000);
 	while (true){
+		break;
 		pros::delay(20);
 		pros::screen::set_pen(0x00FF0000);
 		pros::screen::fill_rect(0,0,150,100);
@@ -104,8 +105,8 @@ void competition_initialize() {}
 
 void autonomous() {
 	lemlib::Pose pose = chassis.getPose();
-	mogoRushRed();
 	printf("X: %f, Y: %f, Theta: %f\n ", pose.x, pose.y, pose.theta);
+	mogoRushBlue();
 	if (autonSelection == 1) {
 		mogoRushRed();
 	}
