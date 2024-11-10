@@ -1,6 +1,7 @@
 #include "main.h"
 #include "lemlib/api.hpp"
 #include "pros/motors.h"
+#include "pros/rtos.h"
 #include "pros/rtos.hpp"
 #include "pros/screen.h"
 #include "pros/screen.hpp"
@@ -10,7 +11,6 @@
 
 // pros screen formatting
 pros::screen_touch_status_s_t status;
-int autonSelection = 0;
 
 void screen()
 { 
@@ -43,7 +43,7 @@ void initialize()
 	chassis.calibrate();
 	chassis.setPose(0, 0, 0);
 	wallStake.tare_position();
-	wallStake.set_brake_mode(MOTOR_BRAKE_HOLD);
+	//wallStake.set_brake_mode(MOTOR_BRAKE_HOLD);
 	colourSortingSensor.disable_gesture();
 	colourSortingSensor.set_led_pwm(80);
 	bIntake.tare_position();
@@ -104,6 +104,7 @@ void competition_initialize() {}
 
 void autonomous() {
 	lemlib::Pose pose = chassis.getPose();
+	mogoRushRed();
 	printf("X: %f, Y: %f, Theta: %f\n ", pose.x, pose.y, pose.theta);
 	if (autonSelection == 1) {
 		mogoRushRed();
@@ -124,6 +125,22 @@ void autonomous() {
 
 void opcontrol()
 {
+	if (autonSelection == 1) {
+		colourSortingSelector = 2;
+	}
+	else if (autonSelection == 2) {
+		colourSortingSelector = 2;
+	}
+	else if (autonSelection == 3) {
+		colourSortingSelector = 1;
+	}
+	else if (autonSelection == 4) {
+		colourSortingSelector = 1;
+	}
+	else if (autonSelection == 5) {
+		colourSortingSelector = 0;
+	}
+	multitaskIntakeControl.suspend();
 	leftMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	rightMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	wallStake.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
@@ -137,10 +154,11 @@ void opcontrol()
 		intakeControls();
 		wallStakeControls();
 		climbControls();
+		colourSortButton();
 		lemlib::Pose pose = chassis.getPose();
-		pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
-		pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
-		pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
-		pros::screen::print(TEXT_LARGE_CENTER, 10, "line sensor: %d", lineTracker.get_value());
+		pros::screen::print(TEXT_LARGE_CENTER, 10, "dist sensor: %d", distanceSort.get());
+		// pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
+		// pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
+		// pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
     }
 }

@@ -12,3 +12,4 @@ inline bool wallStakeScore = false;
 
 inline bool wallStakeLoading();
 inline bool wallStakeScoring();
+inline void checkColour();

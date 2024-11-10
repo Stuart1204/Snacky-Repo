@@ -38,14 +38,14 @@ void intakeControls() {
 			intake.move(127);
 		} 
 		else if (colourSortingSelector == 1) { //red
-			if(ringColour == false && distanceSort.get() < 20) {
+			if(ringColour == false && distanceSort.get() < 200) {
 				colourSortingEjectionState = true;
 			} else {
 				intake.move(127);
 			}
 		} 
 		else if (colourSortingSelector == 2) { //blue
-			if(ringColour == true && distanceSort.get() < 20) {
+			if(ringColour == true && distanceSort.get() < 200) {
 				colourSortingEjectionState = true;
 			} else {
 				intake.move(127);
@@ -61,7 +61,7 @@ void intakeControls() {
 			// if(counter > 8) {
 			// 	colourSortingEjectionState = false;
 			// }
-			intake.move(0);
+			intake.move(-30);
 			counterEject++;
 			if (counterEject > 8) {
 				colourSortingEjectionState = false;
@@ -81,6 +81,7 @@ void intakeControls() {
 void wallStakeControls() {
 	if (controller.get_digital_new_press(DIGITAL_X)) {
 		wallStakeLoad = !wallStakeLoad;
+		exitLoadWallStake=false; 
 	} 
 	if(wallStakeLoad) {
 		wallStakeLoad = wallStakeLoading();
@@ -118,11 +119,22 @@ void climbControls() {
 		}
 	}
 
-void checkColour() {
-	if (colourSortingSensor.get_hue() > 80 && colourSortingSensor.get_hue() < 300) {
-		ringColour = true; //blue
+void colourSortButton() {
+	if (controller.get_digital_new_press(DIGITAL_Y)) {
+		colourSortButtonState = !colourSortButtonState;
+		controller.rumble("-");
 	}
-	else if (colourSortingSensor.get_hue() < 20 || colourSortingSensor.get_hue() > 320){
-		ringColour = false; //red
+	if (colourSortButtonState) {
+		if(autonSelection == 1 || autonSelection == 2 || autonSelection == 5) {
+			colourSortingSelector = 2;
+		}
+		else if (autonSelection == 3 || autonSelection == 4){
+			colourSortingSelector = 1;
+		}
+		controller.print(0, 0, "ENABLED");
+	}
+	else {
+		colourSortingSelector = 0;
+		controller.print(0, 0, "DISABLED");
 	}
 }

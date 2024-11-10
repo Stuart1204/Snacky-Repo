@@ -47,6 +47,9 @@ inline int colourSortingSelector;
 inline bool ringColour;
 inline bool mogoState = false;
 
+inline bool exitLoadWallStake = false;
+inline int autonSelection;
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -60,7 +63,7 @@ inline pros::Motor bIntake(intakePort2, pros::v5::MotorGears::rpm_600);
 // drive motor groups
 inline pros::MotorGroup leftMotors({lBPort, lMPort, lFPort}, pros::v5::MotorGears::rpm_600);	// left motor group
 inline pros::MotorGroup rightMotors({rBPort, rMPort, rFPort}, pros::v5::MotorGears::rpm_600); // right motor group
-inline pros::MotorGroup intake({-intakePort1, intakePort2});
+inline pros::MotorGroup intake({intakePort1, intakePort2});
 
 //solenoids
 inline pros::adi::DigitalOut mogoMech(mogoMechPort, LOW);
@@ -77,7 +80,7 @@ inline pros::Rotation horizontal_rotation(horizontalEncoderPort);
 inline pros::Rotation vertical_rotation(-verticalEncoderPort); 
 
 // back tracking wheel
-inline lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_rotation, 2.125, 1.775); // 2.75" wheel diameter, - offset from tracking center
+inline lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_rotation, 2.125, 2.3); // 2.75" wheel diameter, - offset from tracking center
 inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_rotation, 2.75, 1.5); // 2.75" wheel diameter, - offset from tracking center
 
 

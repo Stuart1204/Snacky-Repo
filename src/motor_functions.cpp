@@ -1,4 +1,5 @@
 #include "motor_functions.hpp"
+#include "pros/misc.h"
 #include "pros/motors.h"
 
 
@@ -18,10 +19,17 @@ bool wallStakeLoading() {
 
     if(!inWallStake) { 
         intake.move(127);
-        if(wallStake.get_position() < 240) {
+        if(wallStake.get_position() < 290 && !exitLoadWallStake) {
             wallStake.move(30);
         } else {
             wallStake.move(2);
+        }
+        if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+            wallStake.move(12);
+        }
+        if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+            wallStake.move(-2);
+            exitLoadWallStake = true;
         }
         return true;
     }
@@ -50,4 +58,13 @@ bool wallStakeScoring() {
         }
     }
 
+}
+
+void checkColour() {
+	if (colourSortingSensor.get_hue() > 80 && colourSortingSensor.get_hue() < 300 && colourSortingSensor.get_proximity() > 160) {
+		ringColour = true; //blue
+	}
+	else if (colourSortingSensor.get_hue() < 20 || colourSortingSensor.get_hue() > 320 && colourSortingSensor.get_proximity() > 160){
+		ringColour = false; //red
+	}
 }
