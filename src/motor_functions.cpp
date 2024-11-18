@@ -49,7 +49,7 @@ bool wallStakeScoring() {
         }
         return true;
     } else {
-        if(wallStake.get_position() > 20) {
+        if(wallStake.get_position() > 40) {
             wallStake.move(-127);
             return true;
         } else {

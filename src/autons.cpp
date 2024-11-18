@@ -121,7 +121,7 @@ void skillsAuton() {
     chassis.moveToPoint(15, -57, 2000, {.minSpeed = 60, .earlyExitRange = 3});
     chassis.waitUntilDone();
     chassis.turnToHeading(-90, 1000, {.minSpeed = 60, .earlyExitRange = 10});
-    while(wallStake.get_position() < 215) {
+    while(wallStake.get_position() < 230) {
         wallStake.move(35);
         pros::delay(20);
     } 
@@ -188,7 +188,7 @@ void skillsAuton() {
     chassis.waitUntilDone();
     chassis.turnToHeading(-90, 1000, {.minSpeed = 60, .earlyExitRange = 10});
     wallStake.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-    while(wallStake.get_position() < 215) {
+    while(wallStake.get_position() < 230) {
         wallStake.move(35);
         pros::delay(20);
     }
@@ -230,8 +230,9 @@ void skillsAuton() {
     chassis.moveToPoint(-26, 47, 2000, {.minSpeed = 50});
     chassis.moveToPoint(-53, 48, 2000, {.maxSpeed = 80});
     chassis.moveToPoint(-48, 61, 3000, {.earlyExitRange=10});
-    chassis.moveToPoint(-56, 63, 3000, {.forwards=false, .minSpeed=30});
-    chassis.moveToPoint(-56, 63, 3000, {.forwards=false, .minSpeed=30});
+    chassis.turnToHeading(95, 1000, {.minSpeed = 30});
+    chassis.moveToPoint(-56, 63 , 3000, {.forwards=false, .minSpeed=30});
+    chassis.moveToPoint(-56, 65, 3000, {.forwards=false, .minSpeed=30});
     chassis.waitUntilDone();
     pros::delay(600);
     mogoMech.set_value(false);
@@ -250,7 +251,7 @@ void skillsAutonSecondHalf() {
     chassis.moveToPoint(58, 24, 2500, {.minSpeed = 50, .earlyExitRange = 5});
     chassis.waitUntilDone();
     intake.move(0);
-    chassis.moveToPoint(63, 57, 2500, {.minSpeed = 50, .earlyExitRange = 5});
+    chassis.moveToPoint(63, 58, 2500, {.minSpeed = 50, .earlyExitRange = 5});
     chassis.moveToPoint(55, 25, 2000, {.forwards = false, .minSpeed=50});
     chassis.moveToPoint(48, 3, 2000, {.forwards = false, .maxSpeed = 60});
     chassis.waitUntilDone();
