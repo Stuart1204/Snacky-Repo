@@ -51,10 +51,9 @@ void initialize()
 	// intializing the colour sorting. if colourSortingSelector = 0, No colour sorting
 	// If 1, colour sorting Red (ejecting red)
 	// If 2, colour sorting Blue (ejecting blue)
-	colourSortingSelector = 2;
-	pros::screen::set_eraser(0x00000000);
+	colourSortingSelector = 0;
+	pros::screen::set_eraser(0x00000000); 
 	while (true){
-		break;
 		pros::delay(20);
 		pros::screen::set_pen(0x00FF0000);
 		pros::screen::fill_rect(0,0,150,100);
@@ -104,9 +103,6 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
-	lemlib::Pose pose = chassis.getPose();
-	printf("X: %f, Y: %f, Theta: %f\n ", pose.x, pose.y, pose.theta);
-	skillsAuton();
 	if (autonSelection == 1) {
 		mogoRushRed();
 	}
@@ -144,7 +140,7 @@ void opcontrol()
 	multitaskIntakeControl.suspend();
 	leftMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	rightMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
-	wallStake.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+	wallStake.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	pros::screen::erase();
     while (true) {
 		pros::delay(20);
