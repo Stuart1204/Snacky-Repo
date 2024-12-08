@@ -127,10 +127,10 @@ void skillsAuton() {
     pros::delay(300);
     chassis.follow(skillsPath2_txt, 15, 3500);
     chassis.waitUntilDone();
-    chassis.moveToPoint(18, -57, 2000, {.minSpeed = 20, .earlyExitRange = 3});
+    chassis.moveToPoint(18, -56.5, 2000, {.minSpeed = 20, .earlyExitRange = 3});
     chassis.waitUntilDone();
     chassis.turnToHeading(-90, 1000, {.minSpeed = 20});
-    while(wallStake.get_position() < 245) {
+    while(wallStake.get_position() < 240) {
         wallStake.move(35);
         pros::delay(20);
     } 
@@ -190,11 +190,11 @@ void skillsAuton() {
     chassis.moveToPoint(24, 48, 2000, {.earlyExitRange = 5});
     //chassis.follow(skillsPath5_txt, 16, 2000);
     chassis.waitUntilDone();
-    chassis.moveToPoint(18, 54, 2000, {.minSpeed = 60, .earlyExitRange = 3});
+    chassis.moveToPoint(18, 52.5, 2000, {.minSpeed = 60, .earlyExitRange = 3});
     chassis.waitUntilDone();
     chassis.turnToHeading(-90, 1000, {.minSpeed = 20, .earlyExitRange = 2});
     wallStake.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-    while(wallStake.get_position() < 245) {
+    while(wallStake.get_position() < 235) {
         wallStake.move(35);
         pros::delay(20);
     }
@@ -388,7 +388,8 @@ void nonMogoRushRed() {
     currentPose = chassis.getPose();
     chassis.setPose(-64, 0, currentPose.theta);
     pros::delay(800);
-    chassis.moveToPose(-5, 22, 110, 1500);
+    chassis.moveToPose(-20, 22, 110, 1500);
+    chassis.turnToPoint(-24, 48, 1500, {.forwards = false});
 }
 
 void nonMogoRushBlue() {
@@ -427,7 +428,8 @@ void nonMogoRushBlue() {
     currentPose = chassis.getPose();
     chassis.setPose(64, 0, currentPose.theta);
     pros::delay(800);
-    chassis.moveToPose(0.5, 18, -110, 1500);
+    chassis.moveToPose(15, 18, -110, 1500);
+    chassis.turnToPoint(24, 48, 1500, {.forwards = false});
 }
 
 void mogoRushRed() {
@@ -478,7 +480,7 @@ void mogoRushRed() {
     chassis.moveToPoint(-64,-69, 1000, {.minSpeed =70});
     chassis.waitUntilDone();
     pros::delay(1000);
-    chassis.moveToPoint(-48, -48, 1500, {.forwards = false, .minSpeed =50, .earlyExitRange = 3});
+    chassis.moveToPoint(-48, -53, 1500, {.forwards = false, .minSpeed =50, .earlyExitRange = 3});
     chassis.moveToPoint(-27, -8, 1500);
     pros::delay(700);
     multitaskIntakeControls = false;

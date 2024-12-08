@@ -147,6 +147,7 @@ void opcontrol()
 		checkColour();
 		mogoMechControls();
 		doinkerControls();
+		descoreControls();
 		drivetrainControls();
 		intakeControls();
 		wallStakeControls();

@@ -34,6 +34,8 @@
 //solenoids
 #define mogoMechPort 'A'
 #define doinkerPort 'B'
+#define ringDescorePuncherPort 'D'
+#define descoreLifterPort 'E'
 #define horizontalEncoderPort 17
 #define verticalEncoderPort 18
 
@@ -49,6 +51,9 @@ inline bool mogoState = false;
 
 inline bool exitLoadWallStake = false;
 inline int autonSelection = 0;
+
+inline bool descoreState = false;
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -68,6 +73,8 @@ inline pros::MotorGroup intake({intakePort1, intakePort2});
 //solenoids
 inline pros::adi::DigitalOut mogoMech(mogoMechPort, LOW);
 inline pros::adi::DigitalOut doinker(doinkerPort, HIGH);
+inline pros::adi::DigitalOut descorePuncher(ringDescorePuncherPort, LOW);
+inline pros::adi::DigitalOut descoreLifter(descoreLifterPort, LOW);
 
 // Inertial Sensor on port
 inline pros::Imu inertial_sensor(imuPort);

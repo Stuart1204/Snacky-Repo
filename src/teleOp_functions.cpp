@@ -20,7 +20,32 @@ void doinkerControls() {
 			} else {
 				doinker.set_value(false);
 			}
+	}
+}
+
+void descoreControls() {
+	if(controller.get_digital_new_press(DIGITAL_UP)) {
+			descoreState = !descoreState;
+			descoreCounter = 0;
+	}
+	if(descoreState) {
+		descoreCounter++;
+		if(wallStake.get_position() < 1000) {
+			wallStake.move(127);
+		} else {
+			wallStake.move(0);
 		}
+
+		if(descoreCounter > 5) {
+			descoreLifter.set_value(HIGH);
+		}
+		if(descoreCounter > 32) {
+			descorePuncher.set_value(HIGH);
+		}
+	} else {
+		descoreLifter.set_value(false);
+		descorePuncher.set_value(false);
+	}
 }
 
 void drivetrainControls() {
@@ -111,10 +136,14 @@ void climbControls() {
 			}
 		} 
 		else {
-			if(wallStakeScore || wallStakeLoad || colourSortingEjectionState) {
+			if(wallStakeScore || wallStakeLoad || colourSortingEjectionState || descoreState) {
 
 			} else {
-				wallStake.move(0);
+				if(wallStake.get_position() > 300) {
+					wallStake.move(-127);
+				} else {
+					wallStake.move(0);
+				}
 			}
 		}
 	}
