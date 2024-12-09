@@ -54,6 +54,8 @@ void initialize()
 	colourSortingSelector = 0;
 	pros::screen::set_eraser(0x00000000); 
 	while (true){
+		autonSelection = 3;
+		break;
 		pros::delay(20);
 		pros::screen::set_pen(0x00FF0000);
 		pros::screen::fill_rect(0,0,150,100);

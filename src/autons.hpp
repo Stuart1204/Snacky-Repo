@@ -22,3 +22,5 @@ inline void nonMogoRushRed();
 inline void nonMogoRushBlue();
 
 inline void mogoRushRed();
+
+inline void sigAWPBlue();

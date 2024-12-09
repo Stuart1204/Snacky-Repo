@@ -32,19 +32,25 @@ void descoreControls() {
 		descoreCounter++;
 		if(wallStake.get_position() < 1000) {
 			wallStake.move(127);
-		} else {
+		} 
+		else {
 			wallStake.move(0);
 		}
 
 		if(descoreCounter > 5) {
 			descoreLifter.set_value(HIGH);
 		}
-		if(descoreCounter > 32) {
+		if(descoreCounter > 28) {
 			descorePuncher.set_value(HIGH);
 		}
-	} else {
+	} 
+	else {
 		descoreLifter.set_value(false);
 		descorePuncher.set_value(false);
+		descoreCounter ++;
+		if (descoreCounter < 30) {
+			wallStake.move(0);
+		} 
 	}
 }
 
@@ -127,18 +133,20 @@ void climbControls() {
 		climbState = !climbState;
 	}
 	if (climbState) {
-			if (wallStake.get_position() < 1500) {
-				wallStake.move(80);
-			} 
-			else {
-				intake.move(-80);
-				wallStake.move(0);
-			}
+		if (wallStake.get_position() < 1500) {
+			wallStake.move(80);
 		} 
 		else {
-			if(wallStakeScore || wallStakeLoad || colourSortingEjectionState || descoreState) {
-
-			} else {
+			intake.move(-80);
+			wallStake.move(0);
+		}
+	} 
+	else {
+		if(wallStakeScore || wallStakeLoad || colourSortingEjectionState || descoreState) {
+		
+		} 
+		else {
+			if(descoreCounter > 30) { 
 				if(wallStake.get_position() > 300) {
 					wallStake.move(-127);
 				} else {
@@ -147,7 +155,7 @@ void climbControls() {
 			}
 		}
 	}
-
+}
 void colourSortButton() {
 	if (controller.get_digital_new_press(DIGITAL_Y)) {
 		colourSortButtonState = !colourSortButtonState;

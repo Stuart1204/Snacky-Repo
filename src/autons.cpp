@@ -486,3 +486,6 @@ void mogoRushRed() {
     multitaskIntakeControls = false;
     mogoState = true;
 }
+
+void sigAWPBlue() {
+}
