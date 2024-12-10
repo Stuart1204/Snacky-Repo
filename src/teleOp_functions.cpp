@@ -24,9 +24,15 @@ void doinkerControls() {
 }
 
 void descoreControls() {
-	if(controller.get_digital_new_press(DIGITAL_UP)) {
+	if(controller.get_digital_new_press(DIGITAL_Y)) {
 			descoreState = !descoreState;
 			descoreCounter = 0;
+	}
+	if(descoreState == true) {
+		if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)) {
+			descoreState = false;
+			descoreCounter = 0;
+		}
 	}
 	if(descoreState) {
 		descoreCounter++;
@@ -119,9 +125,11 @@ void wallStakeControls() {
 	}
 
 	if (controller.get_digital_new_press(DIGITAL_R1)) {
-		wallStakeScore = true;
-		wallStakeDirection = true;
-		climbState = false;
+		if(!descoreState) {
+			wallStakeScore = true;
+			wallStakeDirection = true;
+			climbState = false;
+		}
 	}
 	if(wallStakeScore) {
 		wallStakeScore = wallStakeScoring();
@@ -157,7 +165,7 @@ void climbControls() {
 	}
 }
 void colourSortButton() {
-	if (controller.get_digital_new_press(DIGITAL_Y)) {
+	if (controller.get_digital_new_press(DIGITAL_UP)) {
 		colourSortButtonState = !colourSortButtonState;
 		controller.rumble("-");
 	}
