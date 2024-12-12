@@ -147,7 +147,7 @@ void skillsAuton() {
     intake.move(-20);
     wallStake.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
     exitLoop = false;
-    while(wallStake.get_position() < 1450 && !exitLoop) {
+    while(wallStake.get_position() < 1500 && !exitLoop) {
         wallStake.move(127);
         pros::delay(20);
         if(wallStake.get_position() > 500) {
@@ -155,9 +155,12 @@ void skillsAuton() {
                 exitLoop = true;
             }
         }
+        if(wallStake.get_position() > 1300) {
+            leftMotors.move(-7);
+            rightMotors.move(-7);
+        }
     }
     intake.move(-127);
-
     //SCORED THE FIRST WALLSTAKE!! and scored the first two rings on mogooo
 
     currentPose = chassis.getPose();
@@ -190,7 +193,7 @@ void skillsAuton() {
     chassis.moveToPoint(24, 48, 2000, {.earlyExitRange = 5});
     //chassis.follow(skillsPath5_txt, 16, 2000);
     chassis.waitUntilDone();
-    chassis.moveToPoint(18, 52.5, 2000, {.minSpeed = 60, .earlyExitRange = 3});
+    chassis.moveToPoint(18, 51.5, 2000, {.minSpeed = 60, .earlyExitRange = 3});
     chassis.waitUntilDone();
     chassis.turnToHeading(-90, 1000, {.minSpeed = 20, .earlyExitRange = 2});
     wallStake.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
@@ -213,13 +216,17 @@ void skillsAuton() {
     intake.move(-10);
     wallStake.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
     chassis.turnToHeading(0, 2000);
-    while(wallStake.get_position() < 1450) {
+    while(wallStake.get_position() < 1500) {
         wallStake.move(127);
         pros::delay(20);
         if(wallStake.get_position() > 500) {
             if(wallStake.get_actual_velocity() < 10) {
                 break;
             }
+        }
+        if(wallStake.get_position() > 1300) {
+            leftMotors.move(-7);
+            rightMotors.move(-7);
         }
     }
     intake.move(-127);
@@ -256,7 +263,7 @@ void skillsAutonSecondHalf() {
     chassis.moveToPoint(61, 24, 2500, {.minSpeed = 50, .earlyExitRange = 5});
     chassis.waitUntilDone();
     intake.move(0);
-    chassis.moveToPoint(63, 57, 2000, {.minSpeed = 50, .earlyExitRange = 5});
+    chassis.moveToPoint(63, 58.5, 2500, {.minSpeed = 50, .earlyExitRange = 5});
     chassis.moveToPoint(55, 25, 2000, {.forwards = false, .minSpeed=50});
     chassis.moveToPoint(48, 3, 2000, {.forwards = false, .maxSpeed = 60});
     chassis.waitUntilDone();
@@ -294,6 +301,8 @@ void skillsAutonSecondHalf() {
         wallStake.move(80);
     }
     wallStake.move(0);
+    pros::delay(5000);
+    doinker.set_value(true);
 }
 
 
@@ -388,8 +397,9 @@ void nonMogoRushRed() {
     currentPose = chassis.getPose();
     chassis.setPose(-64, 0, currentPose.theta);
     pros::delay(800);
-    chassis.moveToPose(-20, 22, 110, 1500);
-    chassis.turnToPoint(-24, 48, 1500, {.forwards = false});
+    chassis.moveToPose(-12, 22, 110, 1500);
+    //chassis.moveToPose(-20, 22, 110, 1500);
+    //chassis.turnToPoint(-24, 48, 1500, {.forwards = false});
 }
 
 void nonMogoRushBlue() {
@@ -428,8 +438,9 @@ void nonMogoRushBlue() {
     currentPose = chassis.getPose();
     chassis.setPose(64, 0, currentPose.theta);
     pros::delay(800);
-    chassis.moveToPose(15, 18, -110, 1500);
-    chassis.turnToPoint(24, 48, 1500, {.forwards = false});
+    chassis.moveToPose(8, 18, -110, 1500);
+    //chassis.moveToPose(15, 18, -110, 1500);
+    //chassis.turnToPoint(24, 48, 1500, {.forwards = false});
 }
 
 void mogoRushRed() {
