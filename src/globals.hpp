@@ -14,17 +14,17 @@
 #define CONFIG_HPP
 
 //motor ports
-#define lBPort -7
-#define lMPort -8
-#define lFPort -10
+#define lBPort -11
+#define lMPort -12
+#define lFPort -13
 
-#define rBPort 2
-#define rMPort 3
-#define rFPort 4
+#define rBPort 17
+#define rMPort 18
+#define rFPort 19
 
-#define intakePort1 1
-#define intakePort2 9
-#define wallStakePort 6
+#define firstStageIntakePort -1
+#define secondStageIntakePort 14
+#define wallStakePort 20
 
 //sensor ports
 #define imuPort 5
@@ -63,12 +63,13 @@ inline pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 // motors
 inline pros::Motor wallStake(6, pros::v5::MotorGears::rpm_200);
-inline pros::Motor bIntake(intakePort2, pros::v5::MotorGears::rpm_600);
+inline pros::Motor firstStageIntake(firstStageIntakePort);
+inline pros::Motor secondStageIntake(secondStageIntakePort, pros::v5::MotorGears::rpm_600);
 
 // drive motor groups
 inline pros::MotorGroup leftMotors({lBPort, lMPort, lFPort}, pros::v5::MotorGears::rpm_600);	// left motor group
 inline pros::MotorGroup rightMotors({rBPort, rMPort, rFPort}, pros::v5::MotorGears::rpm_600); // right motor group
-inline pros::MotorGroup intake({intakePort1, intakePort2});
+inline pros::MotorGroup intake({firstStageIntakePort, secondStageIntakePort});
 
 //solenoids
 inline pros::adi::DigitalOut mogoMech(mogoMechPort, LOW);

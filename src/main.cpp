@@ -46,14 +46,13 @@ void initialize()
 	//wallStake.set_brake_mode(MOTOR_BRAKE_HOLD);
 	colourSortingSensor.disable_gesture();
 	colourSortingSensor.set_led_pwm(80);
-	bIntake.tare_position();
-
 	// intializing the colour sorting. if colourSortingSelector = 0, No colour sorting
 	// If 1, colour sorting Red (ejecting red)
 	// If 2, colour sorting Blue (ejecting blue)
 	colourSortingSelector = 0;
 	pros::screen::set_eraser(0x00000000); 
 	while (true){
+		break;
 		pros::delay(20);
 		pros::screen::set_pen(0x00FF0000);
 		pros::screen::fill_rect(0,0,150,100);
@@ -144,15 +143,10 @@ void opcontrol()
 	pros::screen::erase();
     while (true) {
 		pros::delay(20);
-		checkColour();
 		mogoMechControls();
-		doinkerControls();
-		descoreControls();
 		drivetrainControls();
 		intakeControls();
 		wallStakeControls();
-		climbControls();
-		colourSortButton();
 		lemlib::Pose pose = chassis.getPose();
 		pros::screen::print(TEXT_LARGE_CENTER, 10, "dist sensor: %d", distanceSort.get());
 		// pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);

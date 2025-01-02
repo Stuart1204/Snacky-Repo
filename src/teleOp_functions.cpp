@@ -64,7 +64,7 @@ void drivetrainControls() {
     int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
     int rightX = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
 
-    chassis.arcade(leftY, rightX, false, 0.5);
+    chassis.arcade(leftY, rightX * 0.8, false, 0.5);
 }
 
 void intakeControls() {
@@ -141,7 +141,7 @@ void climbControls() {
 		climbState = !climbState;
 	}
 	if (climbState) {
-		if (wallStake.get_position() < 1500) {
+		if (wallStake.get_position() < 1440) {
 			wallStake.move(80);
 		} 
 		else {

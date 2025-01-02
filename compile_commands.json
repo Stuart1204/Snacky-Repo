@@ -107,11 +107,11 @@
             "-funwind-tables",
             "--std=gnu++20",
             "-o",
-            "bin/autons.cpp.o",
-            "src/autons.cpp"
+            "bin/main.cpp.o",
+            "src/main.cpp"
         ],
         "directory": "/Users/owenfong/Documents/GitHub/16610A-2024-2025",
-        "file": "src/autons.cpp"
+        "file": "src/main.cpp"
     },
     {
         "arguments": [
@@ -145,10 +145,10 @@
             "-funwind-tables",
             "--std=gnu++20",
             "-o",
-            "bin/main.cpp.o",
-            "src/main.cpp"
+            "bin/autons.cpp.o",
+            "src/autons.cpp"
         ],
         "directory": "/Users/owenfong/Documents/GitHub/16610A-2024-2025",
-        "file": "src/main.cpp"
+        "file": "src/autons.cpp"
     }
 ]
