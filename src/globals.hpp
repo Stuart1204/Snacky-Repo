@@ -29,11 +29,12 @@
 //sensor ports
 #define imuPort 5
 #define colourSortingSensorPort 13
-#define lineSensorPort 'C'
+#define lineSensorPort 'F'
 #define distanceSortPort 9
 //solenoids
 #define mogoMechPort 'B'
 #define doinkerPort 'A' 
+#define mogoStealPort 'C' 
 #define ringDescorePuncherPort 'D'
 #define descoreLifterPort 'E'
 #define horizontalEncoderPort 17
@@ -52,6 +53,8 @@ inline bool mogoState = false;
 
 inline bool exitLoadWallStake = false;
 inline int autonSelection = 0;
+
+inline bool scoreAllianceState = false;
 
 inline bool descoreState = false;
 
@@ -75,6 +78,7 @@ inline pros::MotorGroup intake({firstStageIntakePort, secondStageIntakePort});
 //solenoids
 inline pros::adi::DigitalOut mogoMech(mogoMechPort, LOW);
 inline pros::adi::DigitalOut doinker(doinkerPort, LOW);
+inline pros::adi::DigitalOut mogoSteal(mogoStealPort, LOW);
 inline pros::adi::DigitalOut descorePuncher(ringDescorePuncherPort, LOW);
 inline pros::adi::DigitalOut descoreLifter(descoreLifterPort, LOW);
 

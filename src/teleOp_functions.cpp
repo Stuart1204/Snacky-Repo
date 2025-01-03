@@ -12,6 +12,19 @@ void mogoMechControls() {
 		}
 }
 
+void mogoStealControls() {
+    if(controller.get_digital_new_press(DIGITAL_B)) {
+			stealState = !stealState;
+			if(stealState) {
+				mogoMech.set_value(true);
+				mogoSteal.set_value(true);
+			} else {
+				mogoMech.set_value(false);
+				mogoSteal.set_value(false);
+			}
+		}
+}
+
 void doinkerControls() {
     if(controller.get_digital_new_press(DIGITAL_A)) {
 			doinkerState = !doinkerState;
@@ -187,5 +200,12 @@ void colourSortButton() {
 void newWallStake(){
 	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)){
 		nextState();
+
+	}
+}
+
+void allianceStakeControls(){
+	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)){
+		currentState = 3;
 	}
 }

@@ -3,7 +3,7 @@
 
 //LB variables
 inline int numState = 3;
-inline int state[3] = {0, 27, 120};
+inline int state[4] = {0, 27, 124, 170};
 inline int currentState = 0;
 inline int target = 0;
 
@@ -24,3 +24,4 @@ inline bool wallStakeScoring();
 inline void checkColour();
 inline void liftControl();
 inline void nextState();
+inline void scoreAlliance();

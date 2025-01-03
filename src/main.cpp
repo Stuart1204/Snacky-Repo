@@ -43,7 +43,7 @@ void initialize()
 	chassis.calibrate();
 	chassis.setPose(0, 0, 0);
 	wallStake.tare_position();
-	if(LB_rotation.get_position() > 350 && LB_rotation.get_position() < 360) {
+	if(LB_rotation.get_position()/100 > 350 && LB_rotation.get_position()/100 < 360) {
 		LB_rotation.reset_position();
 	}
 	//wallStake.set_brake_mode(MOTOR_BRAKE_HOLD);
@@ -155,8 +155,10 @@ void opcontrol()
 		mogoMechControls();
 		drivetrainControls();
 		intakeControls();
+		mogoStealControls();
 		// wallStakeControls();
 		newWallStake();
+		allianceStakeControls();
 		lemlib::Pose pose = chassis.getPose();
 		//pros::screen::print(TEXT_LARGE_CENTER, 1, "%f", currentState);
 		//pros::screen::print(TEXT_LARGE_CENTER, 10, "dist sensor: %d", distanceSort.get());

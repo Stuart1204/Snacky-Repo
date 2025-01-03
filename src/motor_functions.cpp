@@ -71,7 +71,7 @@ void checkColour() {
 
 void nextState() {
     currentState += 1;
-    if (currentState == numState) {
+    if (currentState == 3 || currentState == 4) {
         currentState = 0;
     } 
     target = state[currentState];
@@ -83,6 +83,7 @@ void nextState() {
 
 void liftControl() {
     double kp = 1.2;
+    target = state[currentState];
     double error = target - LB_rotation.get_position()/100;
     double velocity = kp * error;
     wallStake.move(velocity);
@@ -93,8 +94,8 @@ void liftControl() {
             firstTimeSwitch = false;
         }
     }
-    //pros::screen::print(TEXT_LARGE_CENTER, 1, "%d", target);
-    pros::screen::print(TEXT_LARGE_CENTER, 3, "%i", (int)LB_rotation.get_position()/100);
-    pros::screen::print(TEXT_LARGE_CENTER, 7, "%i", (int)velocity);
+    pros::screen::print(TEXT_LARGE_CENTER, 3, "%d", error);
+    // pros::screen::print(TEXT_LARGE_CENTER, 3, "%i", (int)LB_rotation.get_position()/100);
+    // pros::screen::print(TEXT_LARGE_CENTER, 7, "%i", (int)velocity);
     //pros::screen::print(TEXT_LARGE_CENTER, 9, "%d", LB_rotation.get_position()/100);
 }

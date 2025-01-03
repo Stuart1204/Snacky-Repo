@@ -3,7 +3,9 @@
 #include "motor_functions.cpp"
 
 inline bool doinkerState = false;
+inline bool stealState = false;
 inline bool climbState = false;
+inline bool allianceState = false;
 
 inline int descoreCounter = 0;
 
@@ -28,5 +30,9 @@ inline void climbControls();
 inline void colourSortButton();
 
 inline void newWallStake();
+
+inline void mogoStealControls();
+
+inline void allianceStakeControls();
 
 
