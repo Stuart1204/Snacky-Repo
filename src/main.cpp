@@ -18,9 +18,9 @@ void screen()
 	while (true)
 	{
 		lemlib::Pose pose = chassis.getPose();			// get the current position of the robot
-		pros::lcd::print(0, "x: %f", pose.x);			// print the x position
-		pros::lcd::print(1, "y: %f", pose.y);			// print the y position
-		pros::lcd::print(2, "heading: %f", pose.theta); // print the heading
+		// pros::lcd::print(0, "x: %f", pose.x);			// print the x position
+		// pros::lcd::print(1, "y: %f", pose.y);			// print the y position
+		// pros::lcd::print(2, "heading: %f", pose.theta); // print the heading
 		pros::delay(10);
 	}
 }
@@ -43,12 +43,21 @@ void initialize()
 	chassis.calibrate();
 	chassis.setPose(0, 0, 0);
 	wallStake.tare_position();
+	if(LB_rotation.get_position() > 350 && LB_rotation.get_position() < 360) {
+		LB_rotation.reset_position();
+	}
 	//wallStake.set_brake_mode(MOTOR_BRAKE_HOLD);
 	colourSortingSensor.disable_gesture();
 	colourSortingSensor.set_led_pwm(80);
 	// intializing the colour sorting. if colourSortingSelector = 0, No colour sorting
 	// If 1, colour sorting Red (ejecting red)
 	// If 2, colour sorting Blue (ejecting blue)
+    pros::Task liftControlTask([]{
+        while (true) {
+            liftControl();
+            pros::delay(20);
+        }
+    });
 	colourSortingSelector = 0;
 	pros::screen::set_eraser(0x00000000); 
 	while (true){
@@ -146,9 +155,11 @@ void opcontrol()
 		mogoMechControls();
 		drivetrainControls();
 		intakeControls();
-		wallStakeControls();
+		// wallStakeControls();
+		newWallStake();
 		lemlib::Pose pose = chassis.getPose();
-		pros::screen::print(TEXT_LARGE_CENTER, 10, "dist sensor: %d", distanceSort.get());
+		//pros::screen::print(TEXT_LARGE_CENTER, 1, "%f", currentState);
+		//pros::screen::print(TEXT_LARGE_CENTER, 10, "dist sensor: %d", distanceSort.get());
 		// pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
 		// pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
 		// pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);

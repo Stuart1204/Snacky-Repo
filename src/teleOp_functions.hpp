@@ -27,3 +27,6 @@ inline void climbControls();
 
 inline void colourSortButton();
 
+inline void newWallStake();
+
+

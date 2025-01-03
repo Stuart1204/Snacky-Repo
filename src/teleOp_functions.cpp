@@ -115,26 +115,26 @@ void intakeControls() {
 	}
 }
 
-void wallStakeControls() {
-	if (controller.get_digital_new_press(DIGITAL_X)) {
-		wallStakeLoad = !wallStakeLoad;
-		exitLoadWallStake=false; 
-	} 
-	if(wallStakeLoad) {
-		wallStakeLoad = wallStakeLoading();
-	}
+// void wallStakeControls() {
+// 	if (controller.get_digital_new_press(DIGITAL_X)) {
+// 		wallStakeLoad = !wallStakeLoad;
+// 		exitLoadWallStake=false; 
+// 	} 
+// 	if(wallStakeLoad) {
+// 		wallStakeLoad = wallStakeLoading();
+// 	}
 
-	if (controller.get_digital_new_press(DIGITAL_R1)) {
-		if(!descoreState) {
-			wallStakeScore = true;
-			wallStakeDirection = true;
-			climbState = false;
-		}
-	}
-	if(wallStakeScore) {
-		wallStakeScore = wallStakeScoring();
-	}
-}
+// 	if (controller.get_digital_new_press(DIGITAL_R1)) {
+// 		if(!descoreState) {
+// 			wallStakeScore = true;
+// 			wallStakeDirection = true;
+// 			climbState = false;
+// 		}
+// 	}
+// 	if(wallStakeScore) {
+// 		wallStakeScore = wallStakeScoring();
+// 	}
+// }
 
 void climbControls() {
     if (controller.get_digital_new_press(DIGITAL_B)) {
@@ -181,5 +181,11 @@ void colourSortButton() {
 	else {
 		colourSortingSelector = 0;
 		controller.print(0, 0, "DISABLED");
+	}
+}
+
+void newWallStake(){
+	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)){
+		nextState();
 	}
 }

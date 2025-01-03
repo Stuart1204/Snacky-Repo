@@ -30,14 +30,15 @@
 #define imuPort 5
 #define colourSortingSensorPort 13
 #define lineSensorPort 'C'
-#define distanceSortPort 20
+#define distanceSortPort 9
 //solenoids
-#define mogoMechPort 'A'
-#define doinkerPort 'B'
+#define mogoMechPort 'B'
+#define doinkerPort 'A' 
 #define ringDescorePuncherPort 'D'
 #define descoreLifterPort 'E'
 #define horizontalEncoderPort 17
 #define verticalEncoderPort 18
+#define LB_rotationPort 15
 
 //drivetrain specs
 #define driveTrackWidth 11.775
@@ -62,7 +63,7 @@ inline bool descoreState = false;
 inline pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 // motors
-inline pros::Motor wallStake(6, pros::v5::MotorGears::rpm_200);
+inline pros::Motor wallStake(wallStakePort, pros::v5::MotorGears::rpm_200);
 inline pros::Motor firstStageIntake(firstStageIntakePort);
 inline pros::Motor secondStageIntake(secondStageIntakePort, pros::v5::MotorGears::rpm_600);
 
@@ -73,7 +74,7 @@ inline pros::MotorGroup intake({firstStageIntakePort, secondStageIntakePort});
 
 //solenoids
 inline pros::adi::DigitalOut mogoMech(mogoMechPort, LOW);
-inline pros::adi::DigitalOut doinker(doinkerPort, HIGH);
+inline pros::adi::DigitalOut doinker(doinkerPort, LOW);
 inline pros::adi::DigitalOut descorePuncher(ringDescorePuncherPort, LOW);
 inline pros::adi::DigitalOut descoreLifter(descoreLifterPort, LOW);
 
@@ -86,7 +87,7 @@ inline pros::Distance distanceSort(distanceSortPort);
 // back tracking wheel encoder
 inline pros::Rotation horizontal_rotation(horizontalEncoderPort); 
 inline pros::Rotation vertical_rotation(-verticalEncoderPort); 
-
+inline pros::Rotation LB_rotation(-LB_rotationPort);
 // back tracking wheel
 inline lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_rotation, 2.125, 2.3); // 2.75" wheel diameter, - offset from tracking center
 inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_rotation, 2.75, 1.5); // 2.75" wheel diameter, - offset from tracking center

@@ -5,14 +5,15 @@
       "includePath": [
         "${workspaceFolder}/**",
         "/Users/owenfong/Documents/GitHub/16610A-2024-2025/include",
-        "/Users/stuartli/Documents/GitHub/16610A-2024-2025/include"
+        "/Users/stuartli/Documents/GitHub/16610A-2024-2025/include",
+        "/Users/stuartli/Documents/GitHub/Gen3-16610A/include"
       ],
       "defines": [
         "_DEBUG",
         "UNICODE",
         "_UNICODE"
       ],
-      "compilerPath": "/Users/owenfong/Library/Application Support/Code/User/globalStorage/sigbots.pros/install/pros-toolchain-macos/bin/arm-none-eabi-g++",
+      "compilerPath": "/Users/stuartli/Library/Application Support/Code/User/globalStorage/sigbots.pros/install/pros-toolchain-macos/bin/arm-none-eabi-g++",
       "cStandard": "gnu11",
       "cppStandard": "gnu++20",
       "intelliSenseMode": "gcc-arm",
@@ -21,7 +22,7 @@
       ],
       "browse": {
         "path": [
-          "/Users/owenfong/Documents/GitHub/16610A-2024-2025"
+          "/Users/stuartli/Documents/GitHub/Gen3-16610A"
         ],
         "limitSymbolsToIncludedHeaders": true,
         "databaseFilename": ""
