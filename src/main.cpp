@@ -159,6 +159,7 @@ void opcontrol()
 		// wallStakeControls();
 		newWallStake();
 		allianceStakeControls();
+		doinkerControls();
 		lemlib::Pose pose = chassis.getPose();
 		//pros::screen::print(TEXT_LARGE_CENTER, 1, "%f", currentState);
 		//pros::screen::print(TEXT_LARGE_CENTER, 10, "dist sensor: %d", distanceSort.get());
