@@ -79,6 +79,8 @@ ASSET(mogoRushRed1_txt);
 void driveToDistance(int distance, int maxSpeed, bool resetPos) {
     double kP = 3;
     double error;
+    leftMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
+    rightMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
     int disToWall = distanceToWall.get_distance() / 25.4; // convert mm to inches
     while(disToWall > distance) {
         disToWall = distanceToWall.get_distance() / 25.4;
@@ -87,8 +89,8 @@ void driveToDistance(int distance, int maxSpeed, bool resetPos) {
             leftMotors.move(maxSpeed);
             rightMotors.move(maxSpeed);
         } else {
-            leftMotors.move(error * kP + 0);
-            rightMotors.move(error * kP + 0);
+            leftMotors.move(error * kP + 15);
+            rightMotors.move(error * kP + 15);
         }
         pros::screen::print(TEXT_LARGE_CENTER, 7, "distance: %i\n", distanceToWall.get());
         pros::delay(20);
@@ -112,21 +114,29 @@ void driveToDistance(int distance, int maxSpeed, bool resetPos) {
 }
 
 void driveDistance(int distance, int maxSpeed) {
-    double kP = 3;
+    double kP = 4.5;
     double error;
-    int destinationPos = leftMotors.get_position() / 10.205 / 360 + distance;
+    double rotationsToInches = 8.164;
+    leftMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
+    rightMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
+    int startingPos = rightMotors.get_position();
+    int destinationPos = startingPos * rotationsToInches + distance;
+    double motorSpeed;
     if(distance > 0) {
-        while(leftMotors.get_position() / 10.205 / 360 < destinationPos) {
-            error = destinationPos - leftMotors.get_position() / 10.205 / 360;
-            if(error * kP + 0 > maxSpeed) {
-                leftMotors.move(maxSpeed);
-                rightMotors.move(maxSpeed);
+        while(rightMotors.get_position() * rotationsToInches < destinationPos) {
+            error = destinationPos - rightMotors.get_position() * rotationsToInches;
+            if(error * kP + 30 > maxSpeed) {
+                motorSpeed = maxSpeed; 
             } else {
-                leftMotors.move(error * kP + 0);
-                rightMotors.move(error * kP + 0);
+                motorSpeed = error * kP + 30;
             }
-            pros::screen::print(TEXT_LARGE_CENTER, 1, "currentPos: %i", leftMotors.get_position()/10.205/360);
-            pros::screen::print(TEXT_LARGE_CENTER, 10, "destinationPos: %d", destinationPos);
+            if(motorSpeed > (rightMotors.get_position() - startingPos) * 360) {
+                motorSpeed = (rightMotors.get_position() - startingPos) * 360 + 50;
+            }
+            leftMotors.move(motorSpeed);
+            rightMotors.move(motorSpeed);
+            pros::screen::print(TEXT_LARGE_CENTER, 1, "currentPos: %f\n", rightMotors.get_position()* rotationsToInches);
+            //pros::screen::print(TEXT_LARGE_CENTER, 10, "destinationPos: %d", destinationPos);
         }
         leftMotors.move(0);
         rightMotors.move(0);
@@ -513,19 +523,66 @@ void nonMogoRushBlue() {
     chassis.turnToPoint(24, 48, 1500, {.forwards = false});
 }
 
-void elimsMogoRushRed() {
-    chassis.setPose(-52, -59.75, 90);
-    chassis.moveToPose(-14, -56, 60, 1500, {.minSpeed = 30, .earlyExitRange = 3});
-    while(LB_rotation.get_position() < 170) {
-        wallStake.move(70);
+void mainMogoRushRed() {
+    chassis.setPose(-52, -59.75, 75);
+    wallStake.move(30);
+    firstStageIntake.move(127);
+	driveDistance(33, 127);
+    wallStake.move(127);
+    lemlib::Pose pose = chassis.getPose();
+    pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
+    pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
+    pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
+    pros::delay(400);
+    wallStake.move(-10);
+    chassis.turnToHeading(135, 1500);
+    chassis.waitUntilDone();
+    wallStake.move(-127);
+    secondStageIntake.move(-50);
+    chassis.moveToPoint(-24, -48, 1500, {.forwards = false});
+    secondStageIntake.move(0);
+    firstStageIntake.move(127);
+    chassis.moveToPoint(-8, -31, 1000);
+    chassis.moveToPoint(-21, -21, 1000, {.forwards = false});
+    chassis.waitUntilDone();
+    mogoMech.set_value(true);
+    chassis.turnToHeading(-90, 1500);
+    pros::delay(300);
+    secondStageIntake.move(127);
+    driveToDistance(8, 80, true);
+    chassis.turnToHeading(-180, 1500);
+    chassis.waitUntilDone();
+    chassis.moveToPoint(-63, -66, 1200);
+    doinker.set_value(true);
+    chassis.turnToHeading(90, 1500, {.minSpeed = 100});
+}
+
+void elimsMogoRushRed() { 
+    mainMogoRushRed();
+    wallStake.set_brake_mode(MOTOR_BRAKE_HOLD);
+    while(LB_rotation.get_position() / 100 < 22) {
+        wallStake.move(30);
     }
     wallStake.move(0);
     chassis.waitUntilDone();
-    while(LB_rotation.get_position() < 220) {
-        wallStake.move(127);
-    }
-    wallStake.move(0);
+    doinker.set_value(false);
+    chassis.moveToPoint(-13, -60, 1500);
+    chassis.waitUntilDone();
+    secondStageIntake.move(0);
+    firstStageIntake.move(0);
+    chassis.turnToHeading(135, 1500);
+    chassis.waitUntilDone();
+    intake.move(-5);
+    wallStake.move(127);
+}
 
+void qualsMogoRushRed() {
+    mainMogoRushRed();
+    chassis.moveToPoint(-24, -20, 3000);
+    chassis.waitUntilDone();
+    wallStake.move(127);
+    pros::delay(1500);
+    wallStake.move(0);
 }
 
 void sigAWPBlue() {

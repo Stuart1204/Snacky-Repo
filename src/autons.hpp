@@ -25,7 +25,11 @@ inline void nonMogoRushRed();
 
 inline void nonMogoRushBlue();
 
+inline void mainMogoRushRed();
+
 inline void elimsMogoRushRed();
+
+inline void qualsMogoRushRed();
 
 inline void sigAWPBlue();
 

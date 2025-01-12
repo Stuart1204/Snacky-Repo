@@ -43,6 +43,10 @@ void initialize()
 	chassis.calibrate();
 	chassis.setPose(0, 0, 0);
 	wallStake.tare_position();
+	rightMotors.set_zero_position_all(0);
+	// rightMotors.set_encoder_units_all(MOTOR_ENCODER_DEGREES);
+	// leftMotors.set_encoder_units_all(MOTOR_ENCODER_DEGREES);
+	leftMotors.set_zero_position_all(0);
 	lBDriveMotor.tare_position_all();
 	if(LB_rotation.get_position()/100 > 350 && LB_rotation.get_position()/100 < 360) {
 		LB_rotation.reset_position();
@@ -53,12 +57,6 @@ void initialize()
 	// intializing the colour sorting. if colourSortingSelector = 0, No colour sorting
 	// If 1, colour sorting Red (ejecting red)
 	// If 2, colour sorting Blue (ejecting blue)
-    pros::Task liftControlTask([]{
-        while (true) {
-            liftControl();
-            pros::delay(20);
-        }
-    });
 	colourSortingSelector = 0;
 	pros::screen::set_eraser(0x00000000); 
 	while (true){
@@ -111,7 +109,10 @@ void disabled() {}
 
 void competition_initialize() {}
 
-void autonomous() {
+void autonomous() { 
+	elimsMogoRushRed();
+	//chassis.moveToPoint(0, 24,10000);
+	/*
 	if (autonSelection == 1) {
 		//mogoRushRed();
 	}
@@ -127,11 +128,19 @@ void autonomous() {
 	else if (autonSelection == 5) {
 		skillsAuton();
 	}
+	*/
 }
 
 void opcontrol()
 {
-	driveToDistance(10, 127, false);
+	chassis.setPose(0,0,0);
+	pros::Task liftControlTask([]{
+        while (true) {
+            liftControl();
+            pros::delay(20);
+        }
+    });
+	//driveToDistance(10, 127, false);
 	if (autonSelection == 1) {
 		colourSortingSelector = 2;
 	}
@@ -165,7 +174,11 @@ void opcontrol()
 		doinkerControls();
 		lemlib::Pose pose = chassis.getPose();
 		//pros::screen::print(TEXT_LARGE_CENTER, 1, "%f", currentState);
-		pros::screen::print(TEXT_LARGE_CENTER, 10, "dist sensor: %d", distanceToWall.get());
+		double a = rightMotors.get_position();
+		std::cout << a<<"\n";
+		pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
+		pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
+		// pros::screen::print(TEXT_LARGE_CENTER, 10, "me: %d", a);
 		// pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
 		// pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
 		// pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);

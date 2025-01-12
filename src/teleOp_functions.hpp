@@ -13,6 +13,8 @@ inline int counterEject = 0;
 inline bool colourSortingEjectionState = false;
 inline bool colourSortButtonState = true;
 
+inline int lbTipCounter = 0;
+
 inline void mogoMechControls();
 
 inline void doinkerControls();

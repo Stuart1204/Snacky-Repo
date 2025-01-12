@@ -210,3 +210,15 @@ void allianceStakeControls(){
 		currentState = 3;
 	}
 }
+
+void lbTip() {
+
+	if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
+		lbTipCounter++;
+	} else {
+		lbTipCounter = 0;
+	}
+	if(lbTipCounter > 10) {
+		
+	}
+}

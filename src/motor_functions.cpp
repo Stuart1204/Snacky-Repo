@@ -94,7 +94,6 @@ void liftControl() {
             firstTimeSwitch = false;
         }
     }
-    pros::screen::print(TEXT_LARGE_CENTER, 3, "%d", error);
     // pros::screen::print(TEXT_LARGE_CENTER, 3, "%i", (int)LB_rotation.get_position()/100);
     // pros::screen::print(TEXT_LARGE_CENTER, 7, "%i", (int)velocity);
     //pros::screen::print(TEXT_LARGE_CENTER, 9, "%d", LB_rotation.get_position()/100);
