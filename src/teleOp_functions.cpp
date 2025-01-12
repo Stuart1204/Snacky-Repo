@@ -84,40 +84,41 @@ void intakeControls() {
 	if(controller.get_digital(DIGITAL_L1) && controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
 		intake.move(60);
 	} else if (controller.get_digital(DIGITAL_L1)) {
-		if(colourSortingSelector == 0) {
-			intake.move(127);
-		} 
-		else if (colourSortingSelector == 1) { //red
-			if(ringColour == false && distanceSort.get() < 200) {
-				colourSortingEjectionState = true;
-			} else {
-				intake.move(127);
-			}
-		} 
-		else if (colourSortingSelector == 2) { //blue
-			if(ringColour == true && distanceSort.get() < 200) {
-				colourSortingEjectionState = true;
-			} else {
-				intake.move(127);
-			}
-		}
+		// if(colourSortingSelector == 0) {
+		// 	intake.move(127);
+		// } 
+		// else if (colourSortingSelector == 1) { //red
+		// 	if(ringColour == false && distanceSort.get() < 200) {
+		// 		colourSortingEjectionState = true;
+		// 	} else {
+		// 		intake.move(127);
+		// 	}
+		// } 
+		// else if (colourSortingSelector == 2) { //blue
+		// 	if(ringColour == true && distanceSort.get() < 200) {
+		// 		colourSortingEjectionState = true;
+		// 	} else {
+		// 		intake.move(127);
+		// 	}
+		// }
 		
-		if(colourSortingEjectionState) {
-			// if(remainder(bIntake.get_position(), 360.0) > 180) {
-			// 	counter = 0;
-			// 	intake.move(0);
-			// 	controller.rumble("-");
-			// }
-			// if(counter > 8) {
-			// 	colourSortingEjectionState = false;
-			// }
-			intake.move(-30);
-			counterEject++;
-			if (counterEject > 8) {
-				colourSortingEjectionState = false;
-				counterEject = 0;
-			}
-		}
+		// if(colourSortingEjectionState) {
+		// 	// if(remainder(bIntake.get_position(), 360.0) > 180) {
+		// 	// 	counter = 0;
+		// 	// 	intake.move(0);
+		// 	// 	controller.rumble("-");
+		// 	// }
+		// 	// if(counter > 8) {
+		// 	// 	colourSortingEjectionState = false;
+		// 	// }
+		// 	intake.move(-30);
+		// 	counterEject++;
+		// 	if (counterEject > 8) {
+		// 		colourSortingEjectionState = false;
+		// 		counterEject = 0;
+		// 	}
+		// }
+		intake.move(127);
 	} 
 	else if (controller.get_digital(DIGITAL_L2)) {
 		intake.move(-127);

@@ -18,48 +18,48 @@ void autonCheckColour() {
 	}
 }
 
-void multitaskIntakeControl_f(void* param) {
-    bool autonColourSortingEjectionState = false;
-    int ejectCounter = 0;
-    while(true) {
-        if(multitaskIntakeControls) {
-            autonCheckColour();
-            intake.move(127);
-            intakeThreadCounter++;
-            if(intakeThreadCounter > 50) {
-                if(intake.get_actual_velocity() < 3) {
-                    intake.move(-127);
-                    intakeThreadCounter = 0;
-                }
-            }
-        } else {
-            intakeThreadCounter = 0;
-        }
-        if(colourSortingSelector == 0) {
+// void multitaskIntakeControl_f(void* param) {
+//     bool autonColourSortingEjectionState = false;
+//     int ejectCounter = 0;
+//     while(true) {
+//         if(multitaskIntakeControls) {
+//             autonCheckColour();
+//             intake.move(127);
+//             intakeThreadCounter++;
+//             if(intakeThreadCounter > 50) {
+//                 if(intake.get_actual_velocity() < 3) {
+//                     intake.move(-127);
+//                     intakeThreadCounter = 0;
+//                 }
+//             }
+//         } else {
+//             intakeThreadCounter = 0;
+//         }
+//         if(colourSortingSelector == 0) {
 
-		} else if (colourSortingSelector == 1) { //red
-			if(ringColour == false && distanceSort.get() < 200) {
-				autonColourSortingEjectionState = true;
-			}
-		} else if (colourSortingSelector == 2) { //blue
-			if(ringColour == true && distanceSort.get() < 200) {
-				autonColourSortingEjectionState = true;
-			}
-        }
+// 		} else if (colourSortingSelector == 1) { //red
+// 			if(ringColour == false && distanceSort.get() < 200) {
+// 				autonColourSortingEjectionState = true;
+// 			}
+// 		} else if (colourSortingSelector == 2) { //blue
+// 			if(ringColour == true && distanceSort.get() < 200) {
+// 				autonColourSortingEjectionState = true;
+// 			}
+//         }
 
-        if(autonColourSortingEjectionState) {
-            intake.move(-10);
-			ejectCounter++;
-			if (ejectCounter > 8) {
-				autonColourSortingEjectionState = false;
-				ejectCounter = 0;
-			}
-		}
-        pros::delay(20);
-    }
-}
+//         if(autonColourSortingEjectionState) {
+//             intake.move(-10);
+// 			ejectCounter++;
+// 			if (ejectCounter > 8) {
+// 				autonColourSortingEjectionState = false;
+// 				ejectCounter = 0;
+// 			}
+// 		}
+//         pros::delay(20);
+//     }
+// }
 
-inline pros::Task multitaskIntakeControl(multitaskIntakeControl_f, nullptr, TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "multitaskIntakeControl");
+//inline pros::Task multitaskIntakeControl(multitaskIntakeControl_f, nullptr, TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "multitaskIntakeControl");
 
 ASSET(skillsPath1_txt);
 ASSET(skillsPath2_txt);
@@ -75,6 +75,76 @@ ASSET(mogoRushBlue1_txt);
 ASSET(nonMogoRushRed1_txt);
 
 ASSET(mogoRushRed1_txt); 
+
+void driveToDistance(int distance, int maxSpeed, bool resetPos) {
+    double kP = 3;
+    double error;
+    int disToWall = distanceToWall.get_distance() / 25.4; // convert mm to inches
+    while(disToWall > distance) {
+        disToWall = distanceToWall.get_distance() / 25.4;
+        error = disToWall - distance;
+        if(error*kP > maxSpeed) {
+            leftMotors.move(maxSpeed);
+            rightMotors.move(maxSpeed);
+        } else {
+            leftMotors.move(error * kP + 0);
+            rightMotors.move(error * kP + 0);
+        }
+        pros::screen::print(TEXT_LARGE_CENTER, 7, "distance: %i\n", distanceToWall.get());
+        pros::delay(20);
+        pros::screen::erase();
+    }
+    leftMotors.move(0);
+    rightMotors.move(0);
+    if(resetPos) {
+        lemlib::Pose currentPose = chassis.getPose();
+        double absoluteTheta = (int)currentPose.theta % 360;
+        if(fabs(absoluteTheta - 0) < 8) {
+            chassis.setPose(currentPose.x, 71 - disToWall, currentPose.theta);
+        } else if(fabs(absoluteTheta - 90) < 8) {
+            chassis.setPose(71 - disToWall, currentPose.y, currentPose.theta);
+        } else if(fabs(absoluteTheta - 180) < 8 || fabs(currentPose.theta + 180) < 8) {
+            chassis.setPose(currentPose.x, -71 + disToWall, currentPose.theta);
+        } else if(fabs(absoluteTheta + 90) < 8) {
+            chassis.setPose(-71 + disToWall, currentPose.y, currentPose.theta);
+        }
+    }
+}
+
+void driveDistance(int distance, int maxSpeed) {
+    double kP = 3;
+    double error;
+    int destinationPos = leftMotors.get_position() / 10.205 / 360 + distance;
+    if(distance > 0) {
+        while(leftMotors.get_position() / 10.205 / 360 < destinationPos) {
+            error = destinationPos - leftMotors.get_position() / 10.205 / 360;
+            if(error * kP + 0 > maxSpeed) {
+                leftMotors.move(maxSpeed);
+                rightMotors.move(maxSpeed);
+            } else {
+                leftMotors.move(error * kP + 0);
+                rightMotors.move(error * kP + 0);
+            }
+            pros::screen::print(TEXT_LARGE_CENTER, 1, "currentPos: %i", leftMotors.get_position()/10.205/360);
+            pros::screen::print(TEXT_LARGE_CENTER, 10, "destinationPos: %d", destinationPos);
+        }
+        leftMotors.move(0);
+        rightMotors.move(0);
+    } if(distance < 0) {
+        while(leftMotors.get_position() / 10.205 / 360 > destinationPos) {
+            error = destinationPos - leftMotors.get_position() / 10.205 / 360;
+            if(error * kP - 0 < maxSpeed) {
+                leftMotors.move(maxSpeed);
+                rightMotors.move(maxSpeed);
+            } else {
+                leftMotors.move(error * kP + 0);
+                rightMotors.move(error * kP + 0);
+            }
+        }
+        leftMotors.move(0);
+        rightMotors.move(0);
+    }
+}
 
 void testingAuton() {
     multitaskIntakeControls = false;
@@ -443,80 +513,19 @@ void nonMogoRushBlue() {
     chassis.turnToPoint(24, 48, 1500, {.forwards = false});
 }
 
-void mogoRushRed() {
-    colourSortingSelector = 2;
-    ringColour = false;
-    chassis.setPose(-52, -61, 90);
-    colourSortingSelector = 0;
-    multitaskIntakeControls = false;
-    chassis.follow(mogoRushRed1_txt, 15, 3000);
-    chassis.waitUntil(18);
-    intake.move(70);
-    chassis.turnToPoint(-10,-49, 300, {.forwards=false,.earlyExitRange = 10});
-    chassis.waitUntilDone();
-    intake.move(0);
-    chassis.moveToPoint(-9, -49, 2000, {.forwards = false, .maxSpeed = 80});
-    chassis.waitUntilDone();
-    mogoMech.set_value(true);
-    pros::delay(300);
-    colourSortingSelector=0;
-    //multitaskIntakeControls = true;
-    chassis.moveToPoint(-34, -49, 1500);
-    chassis.waitUntil(15);
-    multitaskIntakeControls = false;
-    intake.move(0);
-    pros::delay(600);
-    mogoMech.set_value(false);
-    chassis.turnToPoint(-24, -24, 500, {.forwards = false});
-    chassis.moveToPoint(-24, -24, 1500, {.forwards = false, .maxSpeed=65});
-    chassis.waitUntilDone();
-    mogoMech.set_value(true);
-    pros::delay(300);
-    multitaskIntakeControls = true;
-    chassis.moveToPoint(-57, -39, 1500, {.minSpeed=30, .earlyExitRange = 5});
-    chassis.waitUntilDone();
-    //chassis.turnToHeading(0, 1500, {.minSpeed=30, .earlyExitRange = 5});
-    //chassis.waitUntilDone();
-    //multitaskIntakeControls=true;
-    //chassis.moveToPoint(-52,-28, 800, {.minSpeed=127});
-    //chassis.moveToPoint(-57, -34, 1500, {.forwards=false, .minSpeed=30, .earlyExitRange = 5});
-    //chassis.turnToPoint(-48, -48, 1500, {.minSpeed=30, .earlyExitRange = 5});
-    chassis.waitUntilDone();
-    multitaskIntakeControls=false;
-    intake.move(0);
-    //chassis.moveToPoint(-46, -56, 1500, {.minSpeed=30, .earlyExitRange = 5});
-    //chassis.swingToPoint(-62,-62, lemlib::DriveSide::LEFT, 1500, {.minSpeed=30, .earlyExitRange = 5});
+void elimsMogoRushRed() {
+    chassis.setPose(-52, -59.75, 90);
+    chassis.moveToPose(-14, -56, 60, 1500, {.minSpeed = 30, .earlyExitRange = 3});
+    while(LB_rotation.get_position() < 170) {
+        wallStake.move(70);
+    }
     wallStake.move(0);
-    doinker.set_value(LOW);
-    chassis.moveToPoint(-62, -60, 1500);
-    chassis.turnToHeading(45, 1500);
     chassis.waitUntilDone();
-    doinker.set_value(HIGH);
-    pros::delay(300);
-    chassis.turnToHeading(-45, 1500, {.minSpeed = 30, .earlyExitRange = 5});
-    chassis.turnToHeading(-135, 1500);
-    chassis.waitUntilDone();
-    colourSortingSelector = 2;
-    multitaskIntakeControls=true;
-    leftMotors.move(100);
-    rightMotors.move(100);
-    pros::delay(1000);
-    // chassis.moveToPoint(-64,-69, 1000, {.minSpeed =70});
-    // chassis.waitUntilDone();
-    // pros::delay(500);
-    // leftMotors.move(-30);
-    // rightMotors.move(-30);
-    // pros::delay(200);
-    // leftMotors.move(30);
-    // rightMotors.move(30);
-    // pros::delay(1000);
-    //chassis.moveToPoint(-48, -53, 1500, {.forwards = false, .minSpeed =50, .earlyExitRange = 3});
-    //chassis.moveToPoint(-27, -35, 1500);
-    //pros::delay(700);
-    leftMotors.move(0);
-    rightMotors.move(0);
-    multitaskIntakeControls = false;
-    mogoState = true;
+    while(LB_rotation.get_position() < 220) {
+        wallStake.move(127);
+    }
+    wallStake.move(0);
+
 }
 
 void sigAWPBlue() {

@@ -77,7 +77,7 @@ void nextState() {
     target = state[currentState];
     if(currentState == 2) {
         firstTimeSwitch = true;
-        intakeTarget = secondStageIntake.get_position() - 150;
+        intakeTarget = secondStageIntake.get_position() - 100;
     }
 }
 
@@ -89,7 +89,7 @@ void liftControl() {
     wallStake.move(velocity);
     if(firstTimeSwitch) {
         if(secondStageIntake.get_position() > intakeTarget) {
-            secondStageIntake.move(-50);
+            secondStageIntake.move(-20);
         } else {
             firstTimeSwitch = false;
         }

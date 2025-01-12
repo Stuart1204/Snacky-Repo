@@ -27,10 +27,10 @@
 #define wallStakePort 20
 
 //sensor ports
-#define imuPort 5
+#define imuPort 3
 #define colourSortingSensorPort 13
 #define lineSensorPort 'F'
-#define distanceSortPort 9
+#define distanceToWallPort 2
 //solenoids
 #define mogoMechPort 'B'
 #define doinkerPort 'A' 
@@ -42,9 +42,9 @@
 #define LB_rotationPort 15
 
 //drivetrain specs
-#define driveTrackWidth 11.775
-#define driveWheelType lemlib::Omniwheel::NEW_275
-#define driveRPM 450
+#define driveTrackWidth 11.375
+#define driveWheelType lemlib::Omniwheel::OLD_325
+#define driveRPM 480
 
 //global variables
 inline int colourSortingSelector;
@@ -69,6 +69,7 @@ inline pros::Controller controller(pros::E_CONTROLLER_MASTER);
 inline pros::Motor wallStake(wallStakePort, pros::v5::MotorGears::rpm_200);
 inline pros::Motor firstStageIntake(firstStageIntakePort);
 inline pros::Motor secondStageIntake(secondStageIntakePort, pros::v5::MotorGears::rpm_600);
+inline pros::Motor lBDriveMotor(lBPort, pros::v5::MotorGears::rpm_600, pros::v5::MotorEncoderUnits::degrees);
 
 // drive motor groups
 inline pros::MotorGroup leftMotors({lBPort, lMPort, lFPort}, pros::v5::MotorGears::rpm_600);	// left motor group
@@ -86,15 +87,15 @@ inline pros::adi::DigitalOut descoreLifter(descoreLifterPort, LOW);
 inline pros::Imu inertial_sensor(imuPort);
 inline pros::Optical colourSortingSensor(colourSortingSensorPort);
 inline pros::adi::AnalogIn lineTracker(lineSensorPort);
-inline pros::Distance distanceSort(distanceSortPort);
+inline pros::Distance distanceToWall(distanceToWallPort);
 
 // back tracking wheel encoder
-inline pros::Rotation horizontal_rotation(horizontalEncoderPort); 
-inline pros::Rotation vertical_rotation(-verticalEncoderPort); 
+//inline pros::Rotation horizontal_rotation(horizontalEncoderPort); 
+//inline pros::Rotation vertical_rotation(-verticalEncoderPort); 
 inline pros::Rotation LB_rotation(-LB_rotationPort);
 // back tracking wheel
-inline lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_rotation, 2.125, 2.3); // 2.75" wheel diameter, - offset from tracking center
-inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_rotation, 2.75, 1.5); // 2.75" wheel diameter, - offset from tracking center
+//inline lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_rotation, 2.125, 2.3); // 2.75" wheel diameter, - offset from tracking center
+//inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_rotation, 2.75, 1.5); // 2.75" wheel diameter, - offset from tracking center
 
 
 // drivetrain settings
@@ -108,9 +109,9 @@ inline lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
 
 // Odometry sensors struct
 inline lemlib::OdomSensors sensors{
-	&vertical_tracking_wheel, 
+	nullptr, 
 	nullptr,			  
-	&horizontal_tracking_wheel, 
+	nullptr, 
 	nullptr,			  
 	&inertial_sensor	  // inertial sensor
 };

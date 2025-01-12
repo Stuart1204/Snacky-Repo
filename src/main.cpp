@@ -43,6 +43,7 @@ void initialize()
 	chassis.calibrate();
 	chassis.setPose(0, 0, 0);
 	wallStake.tare_position();
+	lBDriveMotor.tare_position_all();
 	if(LB_rotation.get_position()/100 > 350 && LB_rotation.get_position()/100 < 360) {
 		LB_rotation.reset_position();
 	}
@@ -112,7 +113,7 @@ void competition_initialize() {}
 
 void autonomous() {
 	if (autonSelection == 1) {
-		mogoRushRed();
+		//mogoRushRed();
 	}
 	else if (autonSelection == 2) {
 		nonMogoRushRed();
@@ -130,6 +131,7 @@ void autonomous() {
 
 void opcontrol()
 {
+	driveToDistance(10, 127, false);
 	if (autonSelection == 1) {
 		colourSortingSelector = 2;
 	}
@@ -145,10 +147,11 @@ void opcontrol()
 	else if (autonSelection == 5) {
 		colourSortingSelector = 0;
 	}
-	multitaskIntakeControl.suspend();
+	//multitaskIntakeControl.suspend();
 	leftMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	rightMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	wallStake.set_brake_mode(MOTOR_BRAKE_BRAKE);
+	secondStageIntake.set_brake_mode(MOTOR_BRAKE_COAST);
 	pros::screen::erase();
     while (true) {
 		pros::delay(20);
@@ -162,7 +165,7 @@ void opcontrol()
 		doinkerControls();
 		lemlib::Pose pose = chassis.getPose();
 		//pros::screen::print(TEXT_LARGE_CENTER, 1, "%f", currentState);
-		//pros::screen::print(TEXT_LARGE_CENTER, 10, "dist sensor: %d", distanceSort.get());
+		pros::screen::print(TEXT_LARGE_CENTER, 10, "dist sensor: %d", distanceToWall.get());
 		// pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
 		// pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
 		// pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
