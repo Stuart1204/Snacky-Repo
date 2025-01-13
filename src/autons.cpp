@@ -533,8 +533,8 @@ void mainMogoRushRed() {
     pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
     pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
     pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
-    pros::delay(400);
-    wallStake.move(-10);
+    pros::delay(350);
+    wallStake.move(-30);
     chassis.turnToHeading(135, 1500);
     chassis.waitUntilDone();
     wallStake.move(-127);
@@ -552,7 +552,7 @@ void mainMogoRushRed() {
     driveToDistance(8, 80, true);
     chassis.turnToHeading(-180, 1500);
     chassis.waitUntilDone();
-    chassis.moveToPoint(-63, -66, 1200);
+    chassis.moveToPoint(-63, -68, 1200);
     doinker.set_value(true);
     chassis.turnToHeading(90, 1500, {.minSpeed = 100});
 }
@@ -560,19 +560,17 @@ void mainMogoRushRed() {
 void elimsMogoRushRed() { 
     mainMogoRushRed();
     wallStake.set_brake_mode(MOTOR_BRAKE_HOLD);
-    while(LB_rotation.get_position() / 100 < 22) {
-        wallStake.move(30);
+    while(LB_rotation.get_position() / 100 < 18) {
+        wallStake.move(15);
     }
     wallStake.move(0);
     chassis.waitUntilDone();
     doinker.set_value(false);
-    chassis.moveToPoint(-13, -60, 1500);
-    chassis.waitUntilDone();
-    secondStageIntake.move(0);
-    firstStageIntake.move(0);
+    chassis.moveToPoint(-11, -60, 1500);
     chassis.turnToHeading(135, 1500);
     chassis.waitUntilDone();
-    intake.move(-5);
+    firstStageIntake.move(0);
+    secondStageIntake.move(-10);
     wallStake.move(127);
 }
 

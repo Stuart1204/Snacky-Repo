@@ -36,5 +36,6 @@ inline void newWallStake();
 inline void mogoStealControls();
 
 inline void allianceStakeControls();
+inline void lbTipControls();
 
 

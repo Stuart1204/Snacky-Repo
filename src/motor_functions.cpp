@@ -86,7 +86,9 @@ void liftControl() {
     target = state[currentState];
     double error = target - LB_rotation.get_position()/100;
     double velocity = kp * error;
-    wallStake.move(velocity);
+    if(!lbTip) {
+        wallStake.move(velocity);
+    }
     if(firstTimeSwitch) {
         if(secondStageIntake.get_position() > intakeTarget) {
             secondStageIntake.move(-20);

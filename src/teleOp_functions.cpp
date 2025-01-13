@@ -200,8 +200,13 @@ void colourSortButton() {
 
 void newWallStake(){
 	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)){
-		nextState();
-
+		if(!lbTip) {
+			nextState();
+		} else {
+			lbTip = false;
+			nextState();
+		}
+		lbTipCounter = 0;
 	}
 }
 
@@ -211,14 +216,12 @@ void allianceStakeControls(){
 	}
 }
 
-void lbTip() {
-
+void lbTipControls() {
 	if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
 		lbTipCounter++;
-	} else {
-		lbTipCounter = 0;
 	}
-	if(lbTipCounter > 10) {
-		
+	if(lbTipCounter > 12) {
+		lbTip = true;
+		wallStake.move(127);
 	}
 }

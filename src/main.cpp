@@ -172,6 +172,7 @@ void opcontrol()
 		newWallStake();
 		allianceStakeControls();
 		doinkerControls();
+		lbTipControls();
 		lemlib::Pose pose = chassis.getPose();
 		//pros::screen::print(TEXT_LARGE_CENTER, 1, "%f", currentState);
 		double a = rightMotors.get_position();
