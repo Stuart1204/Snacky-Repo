@@ -110,7 +110,7 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() { 
-	elimsMogoRushRed();
+	mainnonMogoRushRed();
 	//chassis.moveToPoint(0, 24,10000);
 	/*
 	if (autonSelection == 1) {
@@ -183,5 +183,6 @@ void opcontrol()
 		// pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
 		// pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
 		// pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
+		
     }
 }

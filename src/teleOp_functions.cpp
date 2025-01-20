@@ -123,7 +123,7 @@ void intakeControls() {
 	else if (controller.get_digital(DIGITAL_L2)) {
 		intake.move(-127);
 	} 
-	else if (wallStakeLoad || climbState){
+	else if (wallStakeLoad || climbState || firstTimeSwitch){
 	} else {
 		intake.move(0);
 	}

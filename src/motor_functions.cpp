@@ -91,7 +91,7 @@ void liftControl() {
     }
     if(firstTimeSwitch) {
         if(secondStageIntake.get_position() > intakeTarget) {
-            secondStageIntake.move(-20);
+            secondStageIntake.move(-30);
         } else {
             firstTimeSwitch = false;
         }

@@ -9,9 +9,9 @@ inline void multitaskIntakeControl_f(void* param);
 inline lemlib::Pose currentPose = chassis.getPose();
 inline bool exitLoop = false;
 
-inline void driveDistance(int distance, int maxSpeed);
+inline void driveDistance(double distance, double maxSpeed);
 
-inline void driveToDistance(int distance, int maxSpeed, bool resetPos);
+inline void driveToDistance(double distance, int maxSpeed, bool resetPos);
 
 inline void testingAuton();
 
@@ -33,3 +33,4 @@ inline void qualsMogoRushRed();
 
 inline void sigAWPBlue();
 
+inline void mainnonMogoRushRed();
