@@ -386,59 +386,49 @@ void skillsAutonSecondHalf() {
 }
 
 
-void mogoRushBlue() {
-    colourSortingSelector = 1;
-    ringColour = true;
-    chassis.setPose(52, -61, -90);
-    colourSortingSelector = 0;
-    multitaskIntakeControls = false;
-    chassis.follow(mogoRushBlue1_txt, 15, 3000);
-    chassis.waitUntil(18);
-    intake.move(70);
-    chassis.turnToPoint(10,-49, 300, {.forwards=false,.earlyExitRange = 10});
+void mainPosBlue() {
+    chassis.setPose(52, -59.75, -76);
+    wallStake.move(30);
+    firstStageIntake.move(127);
+	driveDistance(31.5, 127);
+    int count = 0;
+    while(LB_rotation.get_position() / 100 < 205) {
+        wallStake.move(127);
+        count += 1;
+        if (count > 65) {
+            break;
+        }
+        pros::delay(20);
+    }
+    wallStake.move(-60);
+    lemlib::Pose pose = chassis.getPose();
+    pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
+    pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
+    pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
+    pros::delay(350);
+    wallStake.move(-30);
+    chassis.turnToHeading(-135, 1500);
     chassis.waitUntilDone();
-    intake.move(0);
-    chassis.moveToPoint(9, -49, 2000, {.forwards = false, .maxSpeed = 80});
-    chassis.waitUntilDone();
-    mogoMech.set_value(true);
-    pros::delay(300);
-    colourSortingSelector=0;
-    multitaskIntakeControls = true;
-    chassis.moveToPoint(34, -49, 1500);
-    chassis.waitUntilDone();
-    pros::delay(500);
-    mogoMech.set_value(false);
-    multitaskIntakeControls = false;
-    intake.move(0);
-    chassis.turnToPoint(28, -24, 500, {.forwards = false});
-    chassis.moveToPoint(26, -26, 1500, {.forwards = false, .maxSpeed=80});
-    chassis.waitUntilDone();
-    mogoMech.set_value(true);
-    pros::delay(300);
-    chassis.moveToPoint(57, -39, 1500, {.minSpeed = 30, .earlyExitRange = 5});
-    chassis.turnToHeading(0, 1500, {.minSpeed = 50, .earlyExitRange = 10});
-    chassis.waitUntilDone();
-    multitaskIntakeControls=true;
-    chassis.moveToPoint(52,-28, 800, {.minSpeed=127});
-    chassis.moveToPoint(57, -34, 1500, {.forwards=false});
-    chassis.turnToPoint(48, -48, 1500, {.minSpeed = 30, .earlyExitRange = 5});
-    chassis.waitUntilDone();
-    multitaskIntakeControls=false;
-    intake.move(-127);
-    chassis.moveToPoint(46, -56, 1500, {.minSpeed = 30, .earlyExitRange = 5});
-    chassis.swingToPoint(62,-62, lemlib::DriveSide::RIGHT, 1500, {.minSpeed = 30, .earlyExitRange = 5});
+    wallStake.move(-127);
+    secondStageIntake.move(-50);
+    chassis.moveToPoint(26, -48, 1500, {.forwards = false});
+    secondStageIntake.move(0);
+    firstStageIntake.move(127);
     wallStake.move(0);
+    chassis.moveToPoint(12, -44, 1000);
+    chassis.moveToPoint(24, -28, 1000, {.forwards = false});
+    chassis.moveToPoint(28, -24, 1000, {.forwards = false, .maxSpeed = 30});
     chassis.waitUntilDone();
-    colourSortingSelector = 1;
-    multitaskIntakeControls=true;
-    chassis.moveToPoint(64,-64, 1500, {.minSpeed =70});
+    mogoMech.set_value(true); 
+    chassis.moveToPoint(44, -65, 1500);
+    chassis.turnToHeading(110, 1000);
     chassis.waitUntilDone();
-    pros::delay(1000);
-    chassis.moveToPoint(48, -48, 1500, {.forwards = false, .minSpeed =50, .earlyExitRange = 3});
-    chassis.moveToPoint(27, -8, 1500);
-    pros::delay(700);
-    multitaskIntakeControls = false;
-    mogoState = true;
+    doinker.set_value(true);
+    secondStageIntake.move(127);
+    chassis.moveToPoint(59, -67, 1500);
+    chassis.turnToHeading(0, 1500);
+    chassis.waitUntilDone();
+    doinker.set_value(false);
 }
 
 void nonMogoRushRed() {
@@ -600,55 +590,72 @@ void qualsMogoRushRed() {
     wallStake.move(0);
 }
 
-void mainnonMogoRushRed() {
+void mainNegRed() {
     chassis.setPose(-63,13, 210);
     wallStake.move(127);
     pros::delay(750);
-    wallStake.move(0);
+    wallStake.move(-4);
     leftMotors.move(-60);
     rightMotors.move(-60);
     pros::delay(200);
-    chassis.moveToPose(-24, 24, 270, 1000, {.forwards = false, .maxSpeed = 70, .minSpeed = 40});
+    chassis.moveToPose(-30, 24, 270, 1000, {.forwards = false, .maxSpeed = 80, .minSpeed = 40});
+    chassis.moveToPose(-23, 24, 270, 1000, {.forwards = false, .maxSpeed = 50, .minSpeed = 40});
     wallStake.move(-127);
     chassis.waitUntilDone();
     mogoMech.set_value(true);
-    pros::delay(300);
+    pros::delay(400);
     wallStake.move(0);
     firstStageIntake.move(127);
     secondStageIntake.move(127);
     lemlib::Pose currentPose = chassis.getPose();
-    chassis.setPose(currentPose.x + 3, currentPose.y - 2, currentPose.theta);
-    chassis.moveToPoint(-26, 44, 1500);
-    chassis.waitUntilDone();
-    //driveToDistance(24, 100, true); // chagen back to true
-    chassis.turnToHeading(90, 1000);
-    chassis.waitUntilDone();
-    chassis.moveToPose(-10, 43, 90, 2000);
-    chassis.moveToPoint(-22, 52, 1500, {.forwards = false});
+    chassis.setPose(currentPose.x + 10  , currentPose.y + 0, currentPose.theta);
+    chassis.moveToPose(-10, 34, 45, 2000);
+    chassis.moveToPoint(-9, 54, 1500);
     chassis.waitUntilDone();
     if(secondStageIntake.get_actual_velocity() < 10) {
         secondStageIntake.move(-80);
         pros::delay(300);
         secondStageIntake.move(127);
     }
-    chassis.moveToPoint(-10, 52, 1500);
-    chassis.moveToPoint(-48, 48, 1500, {.forwards = false});
+    chassis.moveToPoint(-22, 28, 1500, {.forwards = false});
+    chassis.moveToPoint(-28, 47, 1500);
+    chassis.turnToHeading(45, 1500);
+    chassis.moveToPoint(-48, 44, 1500, {.forwards = false});
     chassis.waitUntilDone();
-    if(secondStageIntake.get_actual_velocity() <10) {
+    //driveToDistance(24, 100, true); // chagen back to true
+    // chassis.turnToHeading(90, 1000);
+    // chassis.waitUntilDone();
+    
+    chassis.turnToHeading(-90, 1500);
+    if(secondStageIntake.get_actual_velocity() < 10) {
         secondStageIntake.move(-80);
         pros::delay(300);
         secondStageIntake.move(127);
     }
-    chassis.turnToHeading(-90, 1500);
     chassis.waitUntilDone();
     firstStageIntake.move(127);
     secondStageIntake.move(127);
     chassis.waitUntilDone();
     driveToDistance(8, 90, true);
-    chassis.turnToHeading(0, 1500, {.minSpeed = 20, .earlyExitRange = 10});
-    chassis.moveToPoint(-68, 67, 1500, {.maxSpeed = 120, .minSpeed = 90});
-    pros::delay(300);
-    chassis.moveToPoint(-48, 24, 1500, {.forwards = false, .maxSpeed = 50});
+    chassis.turnToHeading(-30, 1500, {.minSpeed = 20, .earlyExitRange = 10});
+    chassis.moveToPoint(-72, 67, 1500, {.maxSpeed = 120, .minSpeed = 90});
+    pros::delay(400);
+}
+
+void elimsNegRed() {
+    mainNegRed();
+    chassis.moveToPoint(-48, 48, 1500, {.forwards = false, .maxSpeed = 50});
+    secondStageIntake.move(0);
+    firstStageIntake.move(0);
+    chassis.moveToPoint(-48, -24, 1500);
+}
+
+void qualsNegRed() {
+    mainNegRed();
+    chassis.moveToPoint(-24, 24, 1500, {.forwards = false, .maxSpeed = 50});
+    chassis.moveToPoint(-20, 20, 1500);
+    chassis.waitUntilDone();
+    wallStake.move(127);
 }
 
 void sigAWPBlue() {

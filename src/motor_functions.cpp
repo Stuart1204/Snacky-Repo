@@ -71,9 +71,9 @@ void checkColour() {
 
 void nextState() {
     currentState += 1;
-    if (currentState == 3 || currentState == 4) {
+    if (currentState == 3 || currentState == 4 || currentState == 5) {
         currentState = 0;
-    } 
+    }
     target = state[currentState];
     if(currentState == 2) {
         firstTimeSwitch = true;

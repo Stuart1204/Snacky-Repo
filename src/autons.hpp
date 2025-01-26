@@ -19,7 +19,7 @@ inline void lineUpWallStake(bool direction);
 inline void skillsAuton();
 inline void skillsAutonSecondHalf();
 
-inline void mogoRushBlue();
+inline void mainPosBlue();
 
 inline void nonMogoRushRed();
 
@@ -33,4 +33,8 @@ inline void qualsMogoRushRed();
 
 inline void sigAWPBlue();
 
-inline void mainnonMogoRushRed();
+inline void mainNegRed();
+
+inline void elimsNegRed();
+
+inline void qualsNegRed();

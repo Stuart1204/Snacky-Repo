@@ -110,7 +110,7 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() { 
-	mainnonMogoRushRed();
+	mainPosBlue();
 	//chassis.moveToPoint(0, 24,10000);
 	/*
 	if (autonSelection == 1) {
@@ -171,6 +171,7 @@ void opcontrol()
 		// wallStakeControls();
 		newWallStake();
 		allianceStakeControls();
+		lbMiddleTipControl();
 		doinkerControls();
 		lbTipControls();
 		lemlib::Pose pose = chassis.getPose();

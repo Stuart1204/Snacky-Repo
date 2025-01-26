@@ -38,4 +38,6 @@ inline void mogoStealControls();
 inline void allianceStakeControls();
 inline void lbTipControls();
 
+inline void lbMiddleTipControl();
+
 

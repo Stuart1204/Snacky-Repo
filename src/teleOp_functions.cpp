@@ -225,3 +225,9 @@ void lbTipControls() {
 		wallStake.move(127);
 	}
 }
+
+void lbMiddleTipControl() {
+	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
+		currentState = 4;
+	}
+}
