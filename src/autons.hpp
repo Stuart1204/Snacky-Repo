@@ -16,6 +16,9 @@ inline void driveToDistance(double distance, int maxSpeed, bool resetPos);
 inline void testingAuton();
 
 inline void lineUpWallStake(bool direction);
+inline void autoLoadLB();
+inline void autoScoreLB();
+inline void checkJam();
 inline void skillsAuton();
 inline void skillsAutonSecondHalf();
 

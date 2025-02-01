@@ -103,6 +103,12 @@ void initialize()
 			break;
 		}
 	}
+	pros::Task liftControlTask([]{
+        while (true) {
+            liftControl();
+            pros::delay(20);
+        }
+    });
 }
 
 void disabled() {}
@@ -110,9 +116,7 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() { 
-	mainPosBlue();
-	//chassis.moveToPoint(0, 24,10000);
-	/*
+	skillsAuton();
 	if (autonSelection == 1) {
 		//mogoRushRed();
 	}
@@ -120,7 +124,7 @@ void autonomous() {
 		nonMogoRushRed();
 	}
 	else if (autonSelection == 3) {
-		mogoRushBlue();
+		//mogoRushBlue();
 	}
 	else if (autonSelection == 4) {
 		nonMogoRushBlue();
@@ -128,18 +132,11 @@ void autonomous() {
 	else if (autonSelection == 5) {
 		skillsAuton();
 	}
-	*/
 }
 
 void opcontrol()
 {
-	chassis.setPose(0,0,0);
-	pros::Task liftControlTask([]{
-        while (true) {
-            liftControl();
-            pros::delay(20);
-        }
-    });
+	//chassis.setPose(0,0,0);
 	//driveToDistance(10, 127, false);
 	if (autonSelection == 1) {
 		colourSortingSelector = 2;
@@ -175,15 +172,9 @@ void opcontrol()
 		doinkerControls();
 		lbTipControls();
 		lemlib::Pose pose = chassis.getPose();
-		//pros::screen::print(TEXT_LARGE_CENTER, 1, "%f", currentState);
-		double a = rightMotors.get_position();
-		std::cout << a<<"\n";
+		pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
 		pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
 		pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
-		// pros::screen::print(TEXT_LARGE_CENTER, 10, "me: %d", a);
-		// pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
-		// pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
-		// pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
 		
     }
 }
