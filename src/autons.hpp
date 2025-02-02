@@ -13,6 +13,8 @@ inline void driveDistance(double distance, double maxSpeed);
 
 inline void driveToDistance(double distance, int maxSpeed, bool resetPos);
 
+inline void resetPos();
+
 inline void testingAuton();
 
 inline void lineUpWallStake(bool direction);

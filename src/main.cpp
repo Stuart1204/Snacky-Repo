@@ -116,7 +116,8 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() { 
-	skillsAuton();
+	driveDistance(48, 127);
+	//skillsAuton();
 	if (autonSelection == 1) {
 		//mogoRushRed();
 	}

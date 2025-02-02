@@ -82,15 +82,20 @@ void driveToDistance(double distance, int maxSpeed, bool resetPos) {
     leftMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
     rightMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
     double disToWall = distanceToWall.get_distance() / 25.4; // convert mm to inches
-    while(disToWall > distance) {
+    while(fabs(disToWall - distance) > 0.5) {
         disToWall = distanceToWall.get_distance() / 25.4;
         error = disToWall - distance;
-        if(error*kP > maxSpeed) {
+        if(fabs(error*kP) > abs(maxSpeed)) {
             leftMotors.move(maxSpeed);
             rightMotors.move(maxSpeed);
         } else {
-            leftMotors.move(error * kP + 15);
-            rightMotors.move(error * kP + 15);
+            if(error > 0) {
+                leftMotors.move(error * kP + 20);
+                rightMotors.move(error * kP + 20);
+            } else {
+                leftMotors.move(error * kP - 20);
+                rightMotors.move(error * kP - 20);
+            }
         }
         pros::screen::print(TEXT_LARGE_CENTER, 7, "distance: %i\n", distanceToWall.get());
         pros::delay(20);
@@ -102,7 +107,7 @@ void driveToDistance(double distance, int maxSpeed, bool resetPos) {
         lemlib::Pose currentPose = chassis.getPose();
         double absoluteTheta = (int)currentPose.theta % 360;
         if(fabs(absoluteTheta - 0) < 8) {
-            chassis.setPose(currentPose.x, 767 - disToWall, currentPose.theta);
+            chassis.setPose(currentPose.x, 67 - disToWall, currentPose.theta);
         } else if(fabs(absoluteTheta - 90) < 8) {
             chassis.setPose(67 - disToWall, currentPose.y, currentPose.theta);
         } else if(fabs(absoluteTheta - 180) < 8 || fabs(currentPose.theta + 180) < 8) {
@@ -113,8 +118,23 @@ void driveToDistance(double distance, int maxSpeed, bool resetPos) {
     }
 }
 
+void resetPos() {
+    double disToWall = distanceToWall.get_distance() / 25.4;
+    lemlib::Pose currentPose = chassis.getPose();
+        double absoluteTheta = (int)currentPose.theta % 360;
+        if(fabs(absoluteTheta - 0) < 8) {
+            chassis.setPose(currentPose.x, 67 - disToWall, currentPose.theta);
+        } else if(fabs(absoluteTheta - 90) < 8) {
+            chassis.setPose(67 - disToWall, currentPose.y, currentPose.theta);
+        } else if(fabs(absoluteTheta - 180) < 8 || fabs(currentPose.theta + 180) < 8) {
+            chassis.setPose(currentPose.x, -67 + disToWall, currentPose.theta);
+        } else if(fabs(absoluteTheta + 90) < 8) {
+            chassis.setPose(-67 + disToWall, currentPose.y, currentPose.theta);
+        }
+}
+
 void driveDistance(double distance, double maxSpeed) {
-    double kP = 4.5;
+    double kP = 3;
     double error;
     double degreeToInches = 0.01854411111;
     leftMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
@@ -124,23 +144,26 @@ void driveDistance(double distance, double maxSpeed) {
     double motorSpeed;
     if(distance > 0) {
         while(vertical_rotation.get_position() / 100.0 * degreeToInches < destinationPos) {
-            error = destinationPos - vertical_rotation.get_position() / 100.0 * degreeToInches;
-            if(error * kP + 30 > maxSpeed) {
+            error = destinationPos - (vertical_rotation.get_position() / 100.0 * degreeToInches);
+            if(error * kP + 8 > maxSpeed) {
                 motorSpeed = maxSpeed; 
             } else {
-                motorSpeed = error * kP + 30;
+                motorSpeed = error * kP + 8;
             }
-            if(motorSpeed > (vertical_rotation.get_position() / 100.0 - startingPos) * 360) {
-                motorSpeed = (vertical_rotation.get_position() / 100.0 - startingPos) * 360 + 50;
+            if(motorSpeed > (vertical_rotation.get_position() / 200.0 - startingPos)) {
+                motorSpeed = (vertical_rotation.get_position() / 200.0 - startingPos) + 50;
             }
             leftMotors.move(motorSpeed);
             rightMotors.move(motorSpeed);
+            pros::delay(20);
             pros::screen::print(TEXT_LARGE_CENTER, 1, "currentPos: %f\n", rightMotors.get_position()* degreeToInches);
             //pros::screen::print(TEXT_LARGE_CENTER, 10, "destinationPos: %d", destinationPos);
         }
         leftMotors.move(0);
         rightMotors.move(0);
-    } if(distance < 0) {
+        leftMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
+        rightMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);  
+    } else {
        while(vertical_rotation.get_position() * degreeToInches < destinationPos) {
             error = destinationPos - vertical_rotation.get_position() * degreeToInches;
             if(error * kP + 30 > maxSpeed) {
@@ -153,6 +176,7 @@ void driveDistance(double distance, double maxSpeed) {
             }
             leftMotors.move(motorSpeed);
             rightMotors.move(motorSpeed);
+            pros::delay(20);
             pros::screen::print(TEXT_LARGE_CENTER, 1, "currentPos: %f\n", rightMotors.get_position()* degreeToInches);
             //pros::screen::print(TEXT_LARGE_CENTER, 10, "destinationPos: %d", destinationPos);
         }
@@ -203,7 +227,7 @@ void autoLoadLB() {
     int counter = 0;
     intake.move(127);
     pros::delay(400);
-    while(secondStageIntake.get_actual_velocity() > 10 && counter < 1500) {
+    while(secondStageIntake.get_actual_velocity() > 10 && counter < 150) {
         pros::delay(20);
         counter++;
         pros::screen::print(TEXT_LARGE_CENTER, 1, "velo: %f", secondStageIntake.get_actual_velocity());
@@ -289,6 +313,7 @@ void skillsAuton() {
     chassis.follow(skillsPath4_txt, 18, 2000);
     chassis.turnToHeading(-90, 1500);
     driveToDistance(17, 60, true);
+    pros::delay(300);
     chassis.turnToHeading(180, 1500, {.minSpeed = 30, .earlyExitRange = 5});
     chassis.moveToPoint(-48, 24, 2000, {.forwards = false, .maxSpeed = 80});
     chassis.waitUntilDone();
@@ -340,25 +365,53 @@ void skillsAuton() {
     intake.move(-127);
     pros::delay(200);
     currentPose = chassis.getPose();
-    chassis.setPose(currentPose.x+2, currentPose.y+1, currentPose.theta);
+    chassis.setPose(currentPose.x, currentPose.y, currentPose.theta);
     skillsAutonSecondHalf();
 }
 
 void skillsAutonSecondHalf() {
-    //chassis.setPose(-55, 63, 90);
-    chassis.follow(skillsPath7_txt, 15, 6000);
+    //chassis.follow(skillsPath7_txt, 15, 6000);
+    chassis.moveToPoint(0, 48, 1500, {.minSpeed = 50, .earlyExitRange = 5});
     chassis.waitUntilDone();
-    intake.move(70);
-    chassis.moveToPoint(61, 24, 2500, {.minSpeed = 50, .earlyExitRange = 5});
+    secondStageIntake.move(45);
+    firstStageIntake.move(127);
+    chassis.moveToPoint(24, 22, 1500);
+    chassis.turnToHeading(120, 1500);
     chassis.waitUntilDone();
-    intake.move(0);
-    chassis.moveToPoint(63, 58.5, 2500, {.minSpeed = 50, .earlyExitRange = 5});
-    chassis.moveToPoint(55, 25, 2000, {.forwards = false, .minSpeed=50});
-    chassis.moveToPoint(48, 3, 2000, {.forwards = false, .maxSpeed = 60});
+    chassis.moveToPoint(48, 15, 1500, {.minSpeed = 40, .earlyExitRange = 3});
     chassis.waitUntilDone();
+    secondStageIntake.move(0);
+    firstStageIntake.move(-127);
+    chassis.moveToPoint(66, 55, 2500, {.minSpeed = 60});
+    chassis.moveToPoint(57, 44, 1500, {.forwards = false});
+    chassis.waitUntilDone();
+    firstStageIntake.move(127);
+    chassis.turnToHeading(0, 1500);
+    chassis.waitUntilDone();
+    resetPos();
+    chassis.moveToPoint(52, 8, 1500, {.forwards = false, .maxSpeed = 80});
+    chassis.waitUntilDone();
+    chassis.moveToPoint(48, 0, 1500, {.forwards = false, .maxSpeed = 50});
+    chassis.waitUntil(4);
     mogoMech.set_value(true);
+    pros::delay(300);
     currentPose = chassis.getPose();
-    chassis.setPose(currentPose.x, currentPose.y -3, currentPose.theta);
+    chassis.setPose(currentPose.x, currentPose.y, currentPose.theta);
+    chassis.turnToHeading(90, 1500, {.minSpeed = 10});
+    chassis.waitUntilDone();
+    intake.move(127);
+    autoLoadLB();
+    leftMotors.move(80);
+    rightMotors.move(80);
+    pros::delay(800);
+    leftMotors.move(0);
+    rightMotors.move(0);
+    driveToDistance(8, -60, true);
+    currentState = 4;
+    pros::delay(800);
+    currentState = 3;
+    driveToDistance(14, -60, false);
+    currentState = 0;
     chassis.moveToPoint(24, 42, 2000, {.earlyExitRange = 5});
     chassis.waitUntilDone();
     intake.move(127);
