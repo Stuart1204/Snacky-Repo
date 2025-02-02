@@ -38,8 +38,8 @@
 #define ringDescorePuncherPort 'D'
 #define descoreLifterPort 'E'
 #define horizontalEncoderPort 17
-#define verticalEncoderPort 18
-#define LB_rotationPort 15
+#define verticalEncoderPort 4
+#define LB_rotationPort -15
 
 //drivetrain specs
 #define driveTrackWidth 11.375
@@ -60,6 +60,7 @@ inline bool descoreState = false;
 
 inline bool lbTip = false;
 
+inline int currentState = 0;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93,11 +94,11 @@ inline pros::Distance distanceToWall(distanceToWallPort);
 
 // back tracking wheel encoder
 //inline pros::Rotation horizontal_rotation(horizontalEncoderPort); 
-//inline pros::Rotation vertical_rotation(-verticalEncoderPort); 
-inline pros::Rotation LB_rotation(-LB_rotationPort);
+inline pros::Rotation vertical_rotation(verticalEncoderPort); 
+inline pros::Rotation LB_rotation(LB_rotationPort);
 // back tracking wheel
 //inline lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_rotation, 2.125, 2.3); // 2.75" wheel diameter, - offset from tracking center
-//inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_rotation, 2.75, 1.5); // 2.75" wheel diameter, - offset from tracking center
+inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_rotation, 2.125, -.75); // 2.75" wheel diameter, - offset from tracking center
 
 
 // drivetrain settings
@@ -111,7 +112,7 @@ inline lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
 
 // Odometry sensors struct
 inline lemlib::OdomSensors sensors{
-	nullptr, 
+	&vertical_tracking_wheel, 
 	nullptr,			  
 	nullptr, 
 	nullptr,			  
@@ -119,27 +120,27 @@ inline lemlib::OdomSensors sensors{
 };
 
 // lateral motion controller
-inline lemlib::ControllerSettings linearController(11, // proportional gain (kP)
+inline lemlib::ControllerSettings linearController(5, // proportional gain (kP)
                                             0, // integral gain (kI)
-                                            50, // derivative gain (kD)
+                                            40, // derivative gain (kD)
                                             3, // anti windup
                                             1, // small error range, in inches
                                             100, // small error range timeout, in milliseconds
                                             3, // large error range, in inches
                                             200, // large error range timeout, in milliseconds
-                                            80 // maximum acceleration (slew)
+                                            30 // maximum acceleration (slew)
 );
 
 // angular motion controller
-inline lemlib::ControllerSettings angularController(3.5, // proportional gain (kP)
+inline lemlib::ControllerSettings angularController(2.5, // proportional gain (kP)
                                              0, // integral gain (kI)
-                                             33, // derivative gain (kD)
+                                             25, // derivative gain (kD)
                                              3, // anti windup
                                              1, // small error range, in degrees
                                              100, // small error range timeout, in milliseconds
                                              5, // large error range, in degrees
                                              200, // large error range timeout, in milliseconds
-                                             90 // maximum acceleration (slew)
+                                             40 // maximum acceleration (slew)
 );
 
 // Creating chassis object

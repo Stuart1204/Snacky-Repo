@@ -60,86 +60,151 @@ void initialize()
 	colourSortingSelector = 0;
 	pros::screen::set_eraser(0x00000000); 
 	while (true){
-		break;
-		pros::delay(20);
-		pros::screen::set_pen(0x00FF0000);
-		pros::screen::fill_rect(0,0,150,100);
-		pros::screen::fill_rect(0,150, 150, 240);
-		pros::screen::set_pen(0x000000FF);
-		pros::screen::fill_rect(200,0,350,100);
-		pros::screen::fill_rect(200,150, 350, 240);
+		pros::delay(30);
+		pros::screen::set_pen(0x00FFD700);
+		pros::screen::fill_rect(0,0,150,240);
+		pros::screen::set_pen(0x00FF69B4);
+		pros::screen::fill_rect(200,0,350,240);
 		pros::screen::set_pen(0x00008000);
 		pros::screen::fill_rect(400,0,475,240);
 		pros::screen::set_pen(0x00FFFFFF);
-		pros::screen::print(pros::E_TEXT_MEDIUM, 20,35, "Red Positive"); 
-		pros::screen::print(pros::E_TEXT_MEDIUM, 20,185, "Red Negative"); 
-		pros::screen::print(pros::E_TEXT_MEDIUM, 215,35, "Blue Positive"); 
-		pros::screen::print(pros::E_TEXT_MEDIUM, 215,185, "Blue Negative"); 
-		pros::screen::print(pros::E_TEXT_MEDIUM, 405,115, "Skills");
+		pros::screen::print(pros::E_TEXT_MEDIUM, 45,110, "Quals"); 
+		pros::screen::print(pros::E_TEXT_MEDIUM, 250,110, "Elims");  
+		pros::screen::print(pros::E_TEXT_MEDIUM, 405,110, "Skills");
 		status = pros::screen::touch_status();
-		if (status.x > 0 && status.x < 150 && status.y > 0 && status.y < 100) {
-			pros::screen::print(pros::E_TEXT_MEDIUM, 20,35, "Selected     "); 
-			autonSelection = 1;
+		if (status.x > 0 && status.x < 150 && status.y > 0 && status.y < 240) {
+			pros::screen::print(pros::E_TEXT_MEDIUM, 30, 110, "Selected"); 
+			pros::delay(500);
+			pros::screen::set_eraser(0x00000000);
+			pros::screen::erase();
+			while (true) {
+				pros::delay(30);
+				pros::screen::set_pen(0x00FF0000);
+				pros::screen::fill_rect(0,0,210,90);
+				pros::screen::fill_rect(0,150, 210, 240);
+				pros::screen::set_pen(0x000000FF);
+				pros::screen::fill_rect(270,0,480,90);
+				pros::screen::fill_rect(270,150, 480, 240);
+				pros::screen::set_pen(0x00FFFFFF);
+				pros::screen::print(pros::E_TEXT_MEDIUM, 30,35, "Red Positive"); 
+				pros::screen::print(pros::E_TEXT_MEDIUM, 30,185, "Red Negative"); 
+				pros::screen::print(pros::E_TEXT_MEDIUM, 310,35, "Blue Positive"); 
+				pros::screen::print(pros::E_TEXT_MEDIUM, 310,185, "Blue Negative"); 
+				status = pros::screen::touch_status();
+				if (status.x > 0 && status.x < 210 && status.y > 0 && status.y < 90) {
+					pros::screen::print(pros::E_TEXT_MEDIUM, 30,35, "Selected     "); 
+					autonSelection = 1;
+					break;
+				}
+				else if (status.x > 0 && status.x < 210 && status.y > 150 && status.y < 240) {
+					pros::screen::print(pros::E_TEXT_MEDIUM, 30,185, "Selected     "); 
+					autonSelection = 2;
+					break;
+				}
+				else if (status.x > 270 && status.x < 480 && status.y > 0 && status.y < 90) {
+					pros::screen::print(pros::E_TEXT_MEDIUM, 310,35, "Selected     "); 
+					autonSelection = 3;
+					break;
+				}
+				else if (status.x > 270 && status.x < 480 && status.y > 150 && status.y < 240) {
+					pros::screen::print(pros::E_TEXT_MEDIUM, 310,185, "Selected     "); 
+					autonSelection = 4;
+					break;
+				}
+			}
 			break;
 		}
-		if (status.x > 0 && status.x < 150 && status.y > 150 && status.y < 240) {
-			pros::screen::print(pros::E_TEXT_MEDIUM, 20,185, "Selected     "); 
-			autonSelection = 2;
+		else if (status.x > 200 && status.x < 350 && status.y > 0 && status.y < 240) {
+			pros::screen::print(pros::E_TEXT_MEDIUM, 235,110, "Selected"); 
+			pros::delay(500);
+			pros::screen::set_eraser(0x00000000);
+			pros::screen::erase();
+			while (true) {
+				pros::delay(30);
+				pros::screen::set_pen(0x00FF0000);
+				pros::screen::fill_rect(0,0,210,90);
+				pros::screen::fill_rect(0,150, 210, 240);
+				pros::screen::set_pen(0x000000FF);
+				pros::screen::fill_rect(270,0,480,90);
+				pros::screen::fill_rect(270,150, 480, 240);
+				pros::screen::set_pen(0x00FFFFFF);
+				pros::screen::print(pros::E_TEXT_MEDIUM, 30,35, "Red Positive"); 
+				pros::screen::print(pros::E_TEXT_MEDIUM, 30,185, "Red Negative"); 
+				pros::screen::print(pros::E_TEXT_MEDIUM, 310,35, "Blue Positive"); 
+				pros::screen::print(pros::E_TEXT_MEDIUM, 310,185, "Blue Negative"); 
+				status = pros::screen::touch_status();
+				if (status.x > 0 && status.x < 210 && status.y > 0 && status.y < 90) {
+					pros::screen::print(pros::E_TEXT_MEDIUM, 30,35, "Selected     "); 
+					autonSelection = 5;
+					break;
+				}
+				if (status.x > 0 && status.x < 210 && status.y > 150 && status.y < 240) {
+					pros::screen::print(pros::E_TEXT_MEDIUM, 30,185, "Selected     "); 
+					autonSelection = 6;
+					break;
+				}
+				if (status.x > 270 && status.x < 480 && status.y > 0 && status.y < 90) {
+					pros::screen::print(pros::E_TEXT_MEDIUM, 310,35, "Selected     "); 
+					autonSelection = 7;
+					break;
+				}
+				if (status.x > 270 && status.x < 480 && status.y > 150 && status.y < 240) {
+					pros::screen::print(pros::E_TEXT_MEDIUM, 310,185, "Selected     "); 
+					autonSelection = 8;
+					break;
+				}
+			}
 			break;
 		}
-		if (status.x > 200 && status.x < 350 && status.y > 0 && status.y < 100) {
-			pros::screen::print(pros::E_TEXT_MEDIUM, 215,35, "Selected     "); 
-			autonSelection = 3;
-			break;
-		}
-		if (status.x > 200 && status.x < 350 && status.y > 150 && status.y < 240) {
-			pros::screen::print(pros::E_TEXT_MEDIUM, 215,185, "Selected     "); 
-			autonSelection = 4;
-			break;
-		}
-		if (status.x > 400 && status.x < 480 && status.y > 0  && status.y < 240) {
-			pros::screen::print(pros::E_TEXT_MEDIUM, 405,115, "Selected     "); 
-			autonSelection = 5;
-			break;
+		else if (status.x > 400 && status.x < 480 && status.y > 0  && status.y < 240) {
+			pros::screen::print(pros::E_TEXT_MEDIUM, 395,110, "Selected"); 
+			autonSelection = 9;
 		}
 	}
-}
-
-void disabled() {}
-
-void competition_initialize() {}
-
-void autonomous() { 
-	mainPosBlue();
-	//chassis.moveToPoint(0, 24,10000);
-	/*
-	if (autonSelection == 1) {
-		//mogoRushRed();
 	}
-	else if (autonSelection == 2) {
-		nonMogoRushRed();
-	}
-	else if (autonSelection == 3) {
-		mogoRushBlue();
-	}
-	else if (autonSelection == 4) {
-		nonMogoRushBlue();
-	}
-	else if (autonSelection == 5) {
-		skillsAuton();
-	}
-	*/
-}
-
-void opcontrol()
-{
-	chassis.setPose(0,0,0);
 	pros::Task liftControlTask([]{
         while (true) {
             liftControl();
             pros::delay(20);
         }
     });
+void disabled() {}
+
+void competition_initialize() {}
+
+void autonomous() { 
+	if (autonSelection == 1) {
+		qualsPosRed();
+	}
+	else if (autonSelection == 2) {
+		qualsNegRed();
+	}
+	else if (autonSelection == 3) {
+		qualsPosBlue();
+	}
+	else if (autonSelection == 4) {
+		qualsNegBlue();
+	}
+	else if (autonSelection == 5) {
+		elimsPosRed();
+	}
+	else if (autonSelection == 6) {
+		elimsNegRed();
+	}
+	else if (autonSelection == 7) {
+		elimsPosBlue();
+	}
+	else if (autonSelection == 8) {
+		elimsNegBlue();
+	}
+	else if (autonSelection == 9) {
+		skillsAuton();
+	}
+}
+
+void opcontrol()
+{
+	//chassis.setPose(0,0,0);
 	//driveToDistance(10, 127, false);
 	if (autonSelection == 1) {
 		colourSortingSelector = 2;
@@ -175,14 +240,9 @@ void opcontrol()
 		doinkerControls();
 		lbTipControls();
 		lemlib::Pose pose = chassis.getPose();
-		//pros::screen::print(TEXT_LARGE_CENTER, 1, "%f", currentState);
-		double a = rightMotors.get_position();
-		std::cout << a<<"\n";
+		pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
 		pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
 		pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
-		// pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
-		// pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
-		// pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
 		
     }
 }
