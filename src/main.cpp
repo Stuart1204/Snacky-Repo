@@ -180,7 +180,6 @@ void opcontrol()
 		std::cout << a<<"\n";
 		pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
 		pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
-		// pros::screen::print(TEXT_LARGE_CENTER, 10, "me: %d", a);
 		// pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
 		// pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
 		// pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
