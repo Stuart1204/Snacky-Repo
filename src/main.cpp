@@ -116,19 +116,19 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() { 
-	driveDistance(48, 127);
+	elimsNegBlue();
 	//skillsAuton();
 	if (autonSelection == 1) {
 		//mogoRushRed();
 	}
 	else if (autonSelection == 2) {
-		nonMogoRushRed();
+		//nonMogoRushRed();
 	}
 	else if (autonSelection == 3) {
 		//mogoRushBlue();
 	}
 	else if (autonSelection == 4) {
-		nonMogoRushBlue();
+		//nonMogoRushBlue();
 	}
 	else if (autonSelection == 5) {
 		skillsAuton();
