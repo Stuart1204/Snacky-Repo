@@ -159,8 +159,8 @@ void initialize()
 		else if (status.x > 400 && status.x < 480 && status.y > 0  && status.y < 240) {
 			pros::screen::print(pros::E_TEXT_MEDIUM, 395,110, "Selected"); 
 			autonSelection = 9;
+			break;
 		}
-	}
 	}
 	pros::Task liftControlTask([]{
         while (true) {
@@ -168,6 +168,7 @@ void initialize()
             pros::delay(20);
         }
     });
+}
 void disabled() {}
 
 void competition_initialize() {}
