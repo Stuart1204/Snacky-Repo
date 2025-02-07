@@ -60,6 +60,7 @@ void initialize()
 	colourSortingSelector = 0;
 	pros::screen::set_eraser(0x00000000); 
 	while (true){
+		break; // remove 
 		pros::delay(30);
 		pros::screen::set_pen(0x00FFD700);
 		pros::screen::fill_rect(0,0,150,240);
@@ -174,6 +175,8 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() { 
+	skillsAuton();
+	pros::delay(10000);
 	if (autonSelection == 1) {
 		qualsPosRed();
 	}

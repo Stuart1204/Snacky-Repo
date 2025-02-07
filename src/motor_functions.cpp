@@ -87,7 +87,14 @@ void liftControl() {
     double error = target - LB_rotation.get_position()/100;
     double velocity = kp * error;
     if(!lbTip) {
-        wallStake.move(velocity);
+        if(currentState == 2 && distanceToWall.get_distance() < 340 && LB_rotation.get_position() < state[2]) {
+            wallStake.move(127);
+        } else {
+            wallStake.move(velocity);
+        }
+    }
+    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+        firstTimeSwitch = false;
     }
     if(firstTimeSwitch) {
         if(secondStageIntake.get_position() > intakeTarget) {

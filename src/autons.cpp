@@ -273,7 +273,7 @@ void skillsAuton() {
     chassis.moveToPoint(22, -49, 1500);
     chassis.waitUntilDone();
     chassis.turnToHeading(-90, 1000, {.minSpeed = 20});
-    chassis.moveToPoint(2, -60, 1000);
+    chassis.moveToPoint(-1, -60, 1000);
     chassis.turnToHeading(180, 1000, {.minSpeed = 30});
     autoLoadLB();
     chassis.waitUntilDone();
@@ -287,8 +287,9 @@ void skillsAuton() {
     autoScoreLB();
     intake.move(-127);
     //SCORED THE FIRST WALLSTAKE!! and scored the first two rings on mogooo
-    chassis.moveToPoint(0, -48, 1500, {.forwards = false});
+    chassis.moveToPoint(0, -48, 1500, {.forwards = false, .minSpeed = 30, .earlyExitRange = 5});
     chassis.waitUntilDone();
+    checkJam();
     currentState = 0;
     chassis.turnToHeading(-90, 1500, {.minSpeed = 60, .earlyExitRange = 5});
     intake.move(127);
@@ -304,22 +305,22 @@ void skillsAuton() {
     chassis.moveToPoint(-59, -62, 3000, {.forwards=false, .minSpeed=30});
     checkJam();
     chassis.waitUntilDone();
-    pros::delay(500);
+    pros::delay(300);
     mogoMech.set_value(false);
     intake.move(-127);
-    pros::delay(300);
+    pros::delay(150);
     currentPose = chassis.getPose();
     chassis.setPose(currentPose.x + 2, currentPose.y, currentPose.theta);
     chassis.follow(skillsPath4_txt, 18, 2000);
-    chassis.turnToHeading(-90, 1500);
-    driveToDistance(17, 60, true);
+    chassis.turnToHeading(-90, 1500, {.minSpeed = 30, .earlyExitRange = 5});
+    driveToDistance(17, 80, true);
     pros::delay(300);
-    chassis.turnToHeading(180, 1500, {.minSpeed = 30, .earlyExitRange = 5});
+    chassis.turnToHeading(180, 1500, {.minSpeed = 40, .earlyExitRange = 10});
     chassis.moveToPoint(-48, 24, 2000, {.forwards = false, .maxSpeed = 80});
     chassis.waitUntilDone();
     intake.move(0);
     mogoMech.set_value(true);
-    pros::delay(300);
+    pros::delay(150);
     chassis.moveToPoint(-24, 26, 1500, {.minSpeed = 50, .earlyExitRange = 10});
     chassis.waitUntil(6);
     intake.move(127);
@@ -343,10 +344,11 @@ void skillsAuton() {
 
     //SCORED THE SECOND WALLSTAKE!!    
     
-    chassis.moveToPoint(0, 48, 1500, {.forwards = false});
+    chassis.moveToPoint(0, 48, 1500, {.forwards = false, .minSpeed = 30, .earlyExitRange = 5});
     chassis.waitUntilDone();
+    checkJam();
     currentState = 0;
-    chassis.turnToHeading(-90, 1500, {.minSpeed = 60, .earlyExitRange = 5});
+    chassis.turnToHeading(-60, 1500, {.minSpeed = 80, .earlyExitRange = 5});
     intake.move(127);
     chassis.moveToPoint(-24, 48, 1500, {.minSpeed = 40, .earlyExitRange = 5});
     chassis.turnToHeading(-90, 1500);
@@ -386,11 +388,13 @@ void skillsAutonSecondHalf() {
     chassis.moveToPoint(57, 44, 1500, {.forwards = false});
     chassis.waitUntilDone();
     firstStageIntake.move(127);
-    chassis.turnToHeading(0, 1500);
+    chassis.turnToHeading(0, 1500, {.minSpeed = 30, .earlyExitRange = 5});
     chassis.waitUntilDone();
+    autoLoadLB();
     resetPos();
     chassis.moveToPoint(52, 8, 1500, {.forwards = false, .maxSpeed = 80});
     chassis.waitUntilDone();
+    intake.move(127);
     chassis.moveToPoint(48, 0, 1500, {.forwards = false, .maxSpeed = 50});
     chassis.waitUntil(4);
     mogoMech.set_value(true);
@@ -399,10 +403,8 @@ void skillsAutonSecondHalf() {
     chassis.setPose(currentPose.x, currentPose.y, currentPose.theta);
     chassis.turnToHeading(90, 1500, {.minSpeed = 10});
     chassis.waitUntilDone();
-    intake.move(127);
-    autoLoadLB();
-    leftMotors.move(80);
-    rightMotors.move(80);
+    leftMotors.move(90);
+    rightMotors.move(90);
     pros::delay(800);
     leftMotors.move(0);
     rightMotors.move(0);
@@ -419,35 +421,42 @@ void skillsAutonSecondHalf() {
     chassis.moveToPoint(48, 48, 1500, {.minSpeed = 30});
     chassis.moveToPoint(38, 48, 1500, {.forwards = false, .minSpeed = 30});
     chassis.moveToPoint(45, 58, 1500, {.minSpeed = 30});
+    chassis.waitUntilDone();
     chassis.moveToPoint(39, 54, 1500, {.forwards = false, .minSpeed = 30, .earlyExitRange = 5});
     chassis.turnToHeading(180, 1000, {.minSpeed = 30, .earlyExitRange = 5});
+    checkJam();
     chassis.moveToPoint(48, 0, 1500, {.minSpeed = 40, .earlyExitRange = 5});
     chassis.turnToPoint(24, -24, 1500, {.minSpeed = 30});
     chassis.moveToPoint(24, -24, 2000);
     chassis.turnToHeading(180, 1500, {.minSpeed = 20});
+    chassis.waitUntilDone();
     driveToDistance(15, 127, true);
     chassis.turnToHeading(90, 1500);
-    driveToDistance(20, 127, true);
+    chassis.waitUntilDone();
+    driveToDistance(22, 127, true);
     chassis.turnToHeading(0, 1500, {.minSpeed = 20, .earlyExitRange = 5});
     chassis.moveToPoint(48, -50, 1500);
     chassis.turnToHeading(150, 1500);
     chassis.waitUntilDone();
     secondStageIntake.move(0);
-    chassis.moveToPoint(59, -59, 1500);
-    chassis.turnToHeading(-45, 1500);
+    chassis.moveToPoint(58, -58, 1500, {.minSpeed = 35, .earlyExitRange = 5});
+    chassis.turnToHeading(-20, 1500, {.minSpeed = 30});
     chassis.waitUntilDone();
-    leftMotors.move(50);
-    rightMotors.move(50);
     mogoMech.set_value(false);
-    pros::delay(500);
-    chassis.moveToPoint(36, -36, 2000, {.minSpeed = 30, .earlyExitRange = 10});
-    chassis.moveToPoint(0, 0, 3000, {.forwards = false,.maxSpeed = 60, .minSpeed = 30});
-    while(wallStake.get_position() < 1500) {
-        wallStake.move(80);
-    }
-    wallStake.move(0);
-    pros::delay(5000);
-    doinker.set_value(true);
+    secondStageIntake.move(-127);
+    pros::delay(100);
+    leftMotors.move(-40);
+    rightMotors.move(-40);
+    // chassis.turnToHeading(90, 1500, {.minSpeed = 50});
+    // pros::delay(500);
+    // chassis.moveToPoint(36, -36, 2000, {.minSpeed = 30, .earlyExitRange = 10});
+    // chassis.moveToPoint(0, 0, 3000, {.forwards = false,.maxSpeed = 60, .minSpeed = 30});
+    // while(wallStake.get_position() < 1500) {
+    //     wallStake.move(80);
+    // }
+    // wallStake.move(0);
+    // pros::delay(5000);
+    // doinker.set_value(true);
 }
 
 
