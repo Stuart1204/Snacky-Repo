@@ -24,6 +24,8 @@ inline void checkJam();
 inline void skillsAuton();
 inline void skillsAutonSecondHalf();
 
+inline void scorePosBlue();
+inline void disruptPosBlue();
 inline void mainPosBlue();
 inline void elimsPosBlue();
 inline void qualsPosBlue();
@@ -32,6 +34,8 @@ inline void mainNegBlue();
 inline void elimsNegBlue();
 inline void qualsNegBlue();
 
+inline void scorePosRed();
+inline void disruptPosRed();
 inline void mainPosRed();
 inline void elimsPosRed();
 inline void qualsPosRed();

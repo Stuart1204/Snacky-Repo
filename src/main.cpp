@@ -175,8 +175,7 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() { 
-	skillsAuton();
-	pros::delay(10000);
+	mainPosRed();
 	if (autonSelection == 1) {
 		qualsPosRed();
 	}
@@ -243,6 +242,7 @@ void opcontrol()
 		lbMiddleTipControl();
 		doinkerControls();
 		lbTipControls();
+		allianceAutoScore();
 		lemlib::Pose pose = chassis.getPose();
 		pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
 		pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);

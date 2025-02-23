@@ -8,10 +8,13 @@ inline bool climbState = false;
 inline bool allianceState = false;
 
 inline int descoreCounter = 0;
+inline int mogoMechCounter = 20;
 
 inline int counterEject = 0;
 inline bool colourSortingEjectionState = false;
 inline bool colourSortButtonState = true;
+
+inline bool teleOpAllianceScoring = false;
 
 inline int lbTipCounter = 0;
 
@@ -39,5 +42,7 @@ inline void allianceStakeControls();
 inline void lbTipControls();
 
 inline void lbMiddleTipControl();
+
+inline void allianceAutoScore();
 
 

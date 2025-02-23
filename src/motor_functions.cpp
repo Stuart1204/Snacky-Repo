@@ -87,7 +87,7 @@ void liftControl() {
     double error = target - LB_rotation.get_position()/100;
     double velocity = kp * error;
     if(!lbTip) {
-        if(currentState == 2 && distanceToWall.get_distance() < 340 && LB_rotation.get_position() < state[2]) {
+        if(currentState == 2 && velocity > 0) {
             wallStake.move(127);
         } else {
             wallStake.move(velocity);

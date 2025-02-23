@@ -7,19 +7,26 @@ void mogoMechControls() {
 			if(mogoState) {
 				mogoMech.set_value(true);
 			} else {
+				mogoMechCounter = 0;
 				mogoMech.set_value(false);
 			}
 		}
+	if(!mogoState) {
+		mogoMechCounter++;
+		if(mogoMechCounter < 5 && !controller.get_digital(DIGITAL_L1)) {
+			intake.move(-127);
+		}
+	}
 }
 
 void mogoStealControls() {
     if(controller.get_digital_new_press(DIGITAL_B)) {
 			stealState = !stealState;
 			if(stealState) {
-				mogoMech.set_value(true);
+				// mogoMech.set_value(true);
 				mogoSteal.set_value(true);
 			} else {
-				mogoMech.set_value(false);
+				// mogoMech.set_value(false);
 				mogoSteal.set_value(false);
 			}
 		}
@@ -123,7 +130,7 @@ void intakeControls() {
 	else if (controller.get_digital(DIGITAL_L2)) {
 		intake.move(-127);
 	} 
-	else if (wallStakeLoad || climbState || firstTimeSwitch){
+	else if (wallStakeLoad || climbState || firstTimeSwitch || mogoMechCounter < 5){
 	} else {
 		intake.move(0);
 	}
@@ -229,5 +236,27 @@ void lbTipControls() {
 void lbMiddleTipControl() {
 	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
 		currentState = 4;
+	}
+}
+
+void allianceAutoScore() {
+	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
+		teleOpAllianceScoring = true;
+	}
+	if(teleOpAllianceScoring) {
+		if(distanceToWall.get_distance() < 10 * 25.4) {
+			if(distanceToWall.get_distance() > (25.4 * 10) * 0.45) {
+				leftMotors.move(-15);
+				rightMotors.move(-15);
+			} else {
+				leftMotors.move(-50);
+				rightMotors.move(-50);
+			}
+		} else {
+			leftMotors.move(0);
+			rightMotors.move(0);
+			teleOpAllianceScoring = false;
+			currentState = 4;
+		}
 	}
 }
