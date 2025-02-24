@@ -82,7 +82,7 @@ void nextState() {
 }
 
 void liftControl() {
-    double kp = 1.2;
+    double kp = 1.3;
     target = state[currentState];
     double error = target - LB_rotation.get_position()/100;
     double velocity = kp * error;
