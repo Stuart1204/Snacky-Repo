@@ -15,26 +15,26 @@
 
 //motor ports
 #define lBPort -11
-#define lMPort -12
+#define lMPort -14
 #define lFPort -13
 
 #define rBPort 17
 #define rMPort 18
 #define rFPort 19
 
-#define firstStageIntakePort -1
-#define secondStageIntakePort 14
+#define firstStageIntakePort -5
+#define secondStageIntakePort 16
 #define wallStakePort 20
 
 //sensor ports
-#define imuPort 3
+#define imuPort 1
 #define colourSortingSensorPort 13
 #define lineSensorPort 'F'
 #define distanceToWallPort 2
 //solenoids
 #define mogoMechPort 'B'
-#define doinkerPort 'A' 
-#define mogoStealPort 'C' 
+#define doinkerPort 'C' 
+#define mogoStealPort 'D' 
 #define ringDescorePuncherPort 'D'
 #define descoreLifterPort 'E'
 #define horizontalEncoderPort 17

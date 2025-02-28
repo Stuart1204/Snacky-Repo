@@ -3,7 +3,7 @@
 
 //LB variables
 inline int numState = 3;
-inline int state[5] = {0, 22, 130, 148, 220};
+inline int state[5] = {0, 25, 130, 148, 220};
 inline int target = 0;
 
 
