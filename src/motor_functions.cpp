@@ -71,7 +71,7 @@ void checkColour() {
 
 void nextState() {
     currentState += 1;
-    if (currentState == 3 || currentState == 4 || currentState == 5) {
+    if (currentState == 3 || currentState == 4 || currentState == 5 || currentState == 6) {
         currentState = 0;
     }
     target = state[currentState];

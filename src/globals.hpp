@@ -23,7 +23,7 @@
 #define rFPort 19
 
 #define firstStageIntakePort -5
-#define secondStageIntakePort 16
+#define secondStageIntakePort 15
 #define wallStakePort 20
 
 //sensor ports
@@ -39,7 +39,7 @@
 #define descoreLifterPort 'E'
 #define horizontalEncoderPort 17
 #define verticalEncoderPort 4
-#define LB_rotationPort -15
+#define LB_rotationPort -16
 
 //drivetrain specs
 #define driveTrackWidth 11.375

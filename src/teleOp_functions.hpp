@@ -32,6 +32,8 @@ inline void wallStakeControls();
 
 inline void climbControls();
 
+inline void lbMogoScoreControl();
+
 inline void colourSortButton();
 
 inline void newWallStake();

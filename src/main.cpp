@@ -11,6 +11,7 @@
 
 // pros screen formatting
 pros::screen_touch_status_s_t status;
+pros::screen_touch_status_s_t status2;
 
 void screen()
 { 
@@ -60,7 +61,7 @@ void initialize()
 	colourSortingSelector = 0;
 	pros::screen::set_eraser(0x00000000); 
 	while (true){
-		// break; // remove 
+		//break; // remove 
 		pros::delay(30);
 		pros::screen::set_pen(0x00FFD700);
 		pros::screen::fill_rect(0,0,150,240);
@@ -117,7 +118,7 @@ void initialize()
 		}
 		else if (status.x > 200 && status.x < 350 && status.y > 0 && status.y < 240) {
 			pros::screen::print(pros::E_TEXT_MEDIUM, 235,110, "Selected"); 
-			pros::delay(500);
+			pros::delay(1000);
 			pros::screen::set_eraser(0x00000000);
 			pros::screen::erase();
 			while (true) {
@@ -133,23 +134,23 @@ void initialize()
 				pros::screen::print(pros::E_TEXT_MEDIUM, 30,185, "Red Negative"); 
 				pros::screen::print(pros::E_TEXT_MEDIUM, 310,35, "Blue Positive"); 
 				pros::screen::print(pros::E_TEXT_MEDIUM, 310,185, "Blue Negative"); 
-				status = pros::screen::touch_status();
-				if (status.x > 0 && status.x < 210 && status.y > 0 && status.y < 90) {
+				status2 = pros::screen::touch_status();
+				if (status2.x > 0 && status2.x < 210 && status2.y > 0 && status2.y < 90) {
 					pros::screen::print(pros::E_TEXT_MEDIUM, 30,35, "Selected     "); 
 					autonSelection = 5;
 					break;
 				}
-				if (status.x > 0 && status.x < 210 && status.y > 150 && status.y < 240) {
+				if (status2.x > 0 && status2.x < 210 && status2.y > 150 && status2.y < 240) {
 					pros::screen::print(pros::E_TEXT_MEDIUM, 30,185, "Selected     "); 
 					autonSelection = 6;
 					break;
 				}
-				if (status.x > 270 && status.x < 480 && status.y > 0 && status.y < 90) {
+				if (status2.x > 270 && status2.x < 480 && status2.y > 0 && status2.y < 90) {
 					pros::screen::print(pros::E_TEXT_MEDIUM, 310,35, "Selected     "); 
 					autonSelection = 7;
 					break;
 				}
-				if (status.x > 270 && status.x < 480 && status.y > 150 && status.y < 240) {
+				if (status2.x > 270 && status2.x < 480 && status2.y > 150 && status2.y < 240) {
 					pros::screen::print(pros::E_TEXT_MEDIUM, 310,185, "Selected     "); 
 					autonSelection = 8;
 					break;
@@ -242,6 +243,7 @@ void opcontrol()
 		doinkerControls();
 		lbTipControls();
 		allianceAutoScore();
+		lbMogoScoreControl();
 		lemlib::Pose pose = chassis.getPose();
 		pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
 		pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);

@@ -218,7 +218,7 @@ void newWallStake(){
 }
 
 void allianceStakeControls(){
-	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)){
+	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)){
 		currentState = 3;
 	}
 }
@@ -239,13 +239,19 @@ void lbMiddleTipControl() {
 	}
 }
 
+void lbMogoScoreControl() {
+	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
+		currentState = 5;
+	}
+}
+
 void allianceAutoScore() {
 	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
 		teleOpAllianceScoring = true;
 	}
 	if(teleOpAllianceScoring) {
-		if(distanceToWall.get_distance() < 10 * 25.4) {
-			if(distanceToWall.get_distance() > (25.4 * 10) * 0.45) {
+		if(distanceToWall.get_distance() < 9 * 25.4) {
+			if(distanceToWall.get_distance() > (25.4 * 9) * 0.45) {
 				leftMotors.move(-15);
 				rightMotors.move(-15);
 			} else {
