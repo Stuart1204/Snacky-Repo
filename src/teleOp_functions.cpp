@@ -34,12 +34,12 @@ void mogoStealControls() {
 
 void doinkerControls() {
     if(controller.get_digital_new_press(DIGITAL_A)) {
-			doinkerState = !doinkerState;
-			if(doinkerState) {
-				doinker.set_value(true);
-			} else {
-				doinker.set_value(false);
-			}
+		doinkerState = !doinkerState;
+		if(doinkerState) {
+			doinker.set_value(true);
+		} else {
+			doinker.set_value(false);
+		}
 	}
 }
 
@@ -245,13 +245,22 @@ void lbMogoScoreControl() {
 	}
 }
 
+void lbTransport() {
+	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+		currentState = 6;
+		firstTimeSwitch = true;
+        intakeTarget = secondStageIntake.get_position() - 100;
+	}
+
+}
+
 void allianceAutoScore() {
 	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
 		teleOpAllianceScoring = true;
 	}
 	if(teleOpAllianceScoring) {
-		if(distanceToWall.get_distance() < 9 * 25.4) {
-			if(distanceToWall.get_distance() > (25.4 * 9) * 0.45) {
+		if(distanceToWall.get_distance() < 10 * 25.4) {
+			if(distanceToWall.get_distance() > (25.4 * 10) * 0.45) {
 				leftMotors.move(-15);
 				rightMotors.move(-15);
 			} else {

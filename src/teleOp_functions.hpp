@@ -7,6 +7,8 @@ inline bool stealState = false;
 inline bool climbState = false;
 inline bool allianceState = false;
 
+inline bool transportState = false;
+
 inline int descoreCounter = 0;
 inline int mogoMechCounter = 20;
 
@@ -44,6 +46,8 @@ inline void allianceStakeControls();
 inline void lbTipControls();
 
 inline void lbMiddleTipControl();
+
+inline void lbTransport();
 
 inline void allianceAutoScore();
 

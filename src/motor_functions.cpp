@@ -74,6 +74,9 @@ void nextState() {
     if (currentState == 3 || currentState == 4 || currentState == 5 || currentState == 6) {
         currentState = 0;
     }
+    if (currentState == 7) {
+        currentState = 2;
+    }
     target = state[currentState];
     if(currentState == 2) {
         firstTimeSwitch = true;
