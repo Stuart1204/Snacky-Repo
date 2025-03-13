@@ -61,12 +61,15 @@
 // }
 
 void checkColour() {
-	if (colourSortingSensor.get_hue() > 80 && colourSortingSensor.get_hue() < 300 && colourSortingSensor.get_proximity() > 160) {
-		ringColour = true; //blue
+	if (colourSortingSensor.get_hue() > 80 && colourSortingSensor.get_hue() < 300 && colourSortingSensor.get_proximity() > 220) {
+		ringColour = 2; //blue
 	}
-	else if (colourSortingSensor.get_hue() < 20 || colourSortingSensor.get_hue() > 320 && colourSortingSensor.get_proximity() > 160){
-		ringColour = false; //red
+	else if (colourSortingSensor.get_hue() < 20 || colourSortingSensor.get_hue() > 320 && colourSortingSensor.get_proximity() > 220){
+		ringColour = 1; //red
 	}
+    else {
+        ringColour = 0; //background
+    }
 }
 
 void nextState() {
@@ -109,4 +112,21 @@ void liftControl() {
     // pros::screen::print(TEXT_LARGE_CENTER, 3, "%i", (int)LB_rotation.get_position()/100);
     // pros::screen::print(TEXT_LARGE_CENTER, 7, "%i", (int)velocity);
     //pros::screen::print(TEXT_LARGE_CENTER, 9, "%d", LB_rotation.get_position()/100);
+}
+
+void colourSort() {
+    if (colourSortingSelector == 1 && ringColour == 1) { //We are blue, ejecting red
+        colourSortingEjectionState = true;
+    } 
+    else if (colourSortingSelector == 2 && ringColour == 2) { //We are red, ejecting blue
+        colourSortingEjectionState = true;
+    }
+    if (colourSortingEjectionState) {
+        ejectCounter++;
+        secondStageIntake.move(-50);
+        if (ejectCounter > 15) {
+            colourSortingEjectionState = false;
+            ejectCounter = 0;
+        }
+    }
 }

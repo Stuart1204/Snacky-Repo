@@ -6,14 +6,11 @@ inline bool doinkerState = false;
 inline bool stealState = false;
 inline bool climbState = false;
 inline bool allianceState = false;
-
 inline bool transportState = false;
 
 inline int descoreCounter = 0;
 inline int mogoMechCounter = 20;
 
-inline int counterEject = 0;
-inline bool colourSortingEjectionState = false;
 inline bool colourSortButtonState = true;
 
 inline bool teleOpAllianceScoring = false;
@@ -50,5 +47,3 @@ inline void lbMiddleTipControl();
 inline void lbTransport();
 
 inline void allianceAutoScore();
-
-

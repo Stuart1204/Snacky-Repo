@@ -28,7 +28,7 @@
 
 //sensor ports
 #define imuPort 1
-#define colourSortingSensorPort 13
+#define colourSortingSensorPort 10
 #define lineSensorPort 'F'
 #define distanceToWallPort 2
 //solenoids
@@ -48,7 +48,7 @@
 
 //global variables
 inline int colourSortingSelector;
-inline bool ringColour;
+inline int ringColour;
 inline bool mogoState = false;
 
 inline bool exitLoadWallStake = false;

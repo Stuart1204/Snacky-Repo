@@ -11,7 +11,6 @@
 
 // pros screen formatting
 pros::screen_touch_status_s_t status;
-pros::screen_touch_status_s_t status2;
 
 void screen()
 { 
@@ -48,17 +47,17 @@ void initialize()
 	// rightMotors.set_encoder_units_all(MOTOR_ENCODER_DEGREES);
 	// leftMotors.set_encoder_units_all(MOTOR_ENCODER_DEGREES);
 	leftMotors.set_zero_position_all(0);
+	// colourSortingSelector = 2;
 	lBDriveMotor.tare_position_all();
 	if(LB_rotation.get_position()/100 > 350 && LB_rotation.get_position()/100 < 360) {
 		LB_rotation.reset_position();
 	}
 	//wallStake.set_brake_mode(MOTOR_BRAKE_HOLD);
 	colourSortingSensor.disable_gesture();
-	colourSortingSensor.set_led_pwm(80);
+	colourSortingSensor.set_led_pwm(40);
 	// intializing the colour sorting. if colourSortingSelector = 0, No colour sorting
 	// If 1, colour sorting Red (ejecting red)
 	// If 2, colour sorting Blue (ejecting blue)
-	colourSortingSelector = 0;
 	pros::screen::set_eraser(0x00000000); 
 	while (true){
 		//break; // remove 
@@ -134,23 +133,23 @@ void initialize()
 				pros::screen::print(pros::E_TEXT_MEDIUM, 30,195, "Red Negative"); 
 				pros::screen::print(pros::E_TEXT_MEDIUM, 310,25, "Blue Positive"); 
 				pros::screen::print(pros::E_TEXT_MEDIUM, 310,195, "Blue Negative"); 
-				status2 = pros::screen::touch_status();
-				if (status2.x > 0 && status2.x < 200 && status2.y > 0 && status2.y < 70) {
+				status = pros::screen::touch_status();
+				if (status.x > 0 && status.x < 200 && status.y > 0 && status.y < 70) {
 					pros::screen::print(pros::E_TEXT_MEDIUM, 30,25, "Selected     "); 
 					autonSelection = 5;
 					break;
 				}
-				if (status2.x > 0 && status2.x < 200 && status2.y > 170 && status2.y < 240) {
+				if (status.x > 0 && status.x < 200 && status.y > 170 && status.y < 240) {
 					pros::screen::print(pros::E_TEXT_MEDIUM, 30,195, "Selected     "); 
 					autonSelection = 6;
 					break;
 				}
-				if (status2.x > 270 && status2.x < 490 && status2.y > 0 && status2.y < 70) {
+				if (status.x > 270 && status.x < 490 && status.y > 0 && status.y < 70) {
 					pros::screen::print(pros::E_TEXT_MEDIUM, 310,25, "Selected     "); 
 					autonSelection = 7;
 					break;
 				}
-				if (status2.x > 270 && status2.x < 490 && status2.y > 170 && status2.y < 240) {
+				if (status.x > 270 && status.x < 490 && status.y > 170 && status.y < 240) {
 					pros::screen::print(pros::E_TEXT_MEDIUM, 310,195, "Selected     "); 
 					autonSelection = 8;
 					break;
@@ -164,12 +163,21 @@ void initialize()
 			break;
 		}
 	}
-	pros::Task liftControlTask([]{
+	pros::Task Task([]{
         while (true) {
             liftControl();
-            pros::delay(20);
+			checkColour();
+			colourSort();
+			std::cout <<ringColour << " " <<colourSortingSensor.get_hue()<<" "<< ejectCounter << " " << colourSortingSensor.get_proximity() << " " <<colourSortingEjectionState <<"\n";
+			pros::delay(20);
         }
     });
+	// pros::Task colourSortTask([]{
+	// 	while (true) {
+			
+	// 		pros::delay(20);
+	// 	}
+	// });
 }
 void disabled() {}
 
@@ -178,30 +186,39 @@ void competition_initialize() {}
 void autonomous() { 
 	if (autonSelection == 1) {
 		qualsPosRed();
+		colourSortingSelector = 2;
 	}
 	else if (autonSelection == 2) {
 		qualsNegRed();
+		colourSortingSelector = 2;
 	}
 	else if (autonSelection == 3) {
 		qualsPosBlue();
+		colourSortingSelector = 1;
 	}
 	else if (autonSelection == 4) {
 		qualsNegBlue();
+		colourSortingSelector = 1;
 	}
 	else if (autonSelection == 5) {
 		elimsPosRed();
+		colourSortingSelector = 2;
 	}
 	else if (autonSelection == 6) {
 		elimsNegRed();
+		colourSortingSelector = 2;
 	}
 	else if (autonSelection == 7) {
 		elimsPosBlue();
+		colourSortingSelector = 1;
 	}
 	else if (autonSelection == 8) {
 		elimsNegBlue();
+		colourSortingSelector = 1;
 	}
 	else if (autonSelection == 9) {
 		skillsAuton();
+		colourSortingSelector = 0 ;
 	}
 }
 
@@ -209,21 +226,6 @@ void opcontrol()
 {
 	//chassis.setPose(0,0,0);
 	//driveToDistance(10, 127, false);
-	if (autonSelection == 1) {
-		colourSortingSelector = 2;
-	}
-	else if (autonSelection == 2) {
-		colourSortingSelector = 2;
-	}
-	else if (autonSelection == 3) {
-		colourSortingSelector = 1;
-	}
-	else if (autonSelection == 4) {
-		colourSortingSelector = 1;
-	}
-	else if (autonSelection == 5) {
-		colourSortingSelector = 0;
-	}
 	//multitaskIntakeControl.suspend();
 	leftMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	rightMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
@@ -249,6 +251,5 @@ void opcontrol()
 		pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
 		pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
 		pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
-		
     }
 }

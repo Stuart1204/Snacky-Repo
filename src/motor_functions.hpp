@@ -3,7 +3,7 @@
 
 //LB variables
 inline int numState = 3;
-inline int state[7] = {0, 22, 135, 148, 220, 172, 60}; //  Transport Height 
+inline int state[7] = {0, 21, 135, 148, 220, 172, 60}; //  Transport Height 
 inline int target = 0;
 
 
@@ -11,6 +11,9 @@ inline int target = 0;
 inline bool wallStakeLoad = false;
 inline bool inWallStake = false;
 inline int counter = 0;
+
+inline int ejectCounter = 0;
+inline bool colourSortingEjectionState = false;
 
 //for wall stake scoring
 inline bool firstTimeSwitch = false;
@@ -24,3 +27,4 @@ inline void checkColour();
 inline void liftControl();
 inline void nextState();
 inline void scoreAlliance();
+inline void colourSort();
