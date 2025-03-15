@@ -91,7 +91,7 @@ void intakeControls() {
 	if(controller.get_digital(DIGITAL_L1) && controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
 		intake.move(60);
 	} else if (controller.get_digital(DIGITAL_L1)) {
-		std::cout <<ringColour << " " <<colourSortingSensor.get_hue()<<" "<< ejectCounter << " " << colourSortingSensor.get_proximity() << " " <<colourSortingEjectionState <<"\n";
+		std::cout <<ringColour << " " <<colourSortingSensor.get_hue()<<" "<< ejectCounter << " " << colourSortingSensor.get_proximity() << " " <<colourSortingEjectionState <<" " <<colourSortingSelector<<"\n";
 		// if(colourSortingSelector == 0) {
 		// 	intake.move(127);
 		// } 
