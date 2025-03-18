@@ -175,9 +175,11 @@ void initialize()
 	pros::Task Task([]{
         while (true) {
             liftControl();
-			checkColour();
-			colourSort();
-			std::cout <<ringColour << " " <<colourSortingSensor.get_hue()<<" "<< ejectCounter << " " << colourSortingSensor.get_proximity() << " " <<colourSortingEjectionState <<" "<<colourSortingSelector<<"\n";
+			if (colourSortButtonState) {
+				checkColour();
+				colourSort();
+			}
+			//std::cout <<ringColour << " " <<colourSortingSensor.get_hue()<<" "<< ejectCounter << " " << colourSortingSensor.get_proximity() << " " <<colourSortingEjectionState <<" "<<colourSortingSelector<<"\n";
 			pros::delay(20);
         }
     });
@@ -240,6 +242,7 @@ void opcontrol()
 		//mogoStealControls();
 		// wallStakeControls();
 		newWallStake();
+		colourSortButton();
 		allianceStakeControls();
 		lbMiddleTipControl();
 		doinkerControls();

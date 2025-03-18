@@ -186,22 +186,35 @@ void climbControls() {
 		}
 	}
 }
+// void colourSortButton() {
+// 	if (controller.get_digital_new_press(DIGITAL_UP)) {
+// 		colourSortButtonState = !colourSortButtonState;
+// 		controller.rumble("-");
+// 	}
+// 	if (colourSortButtonState) {
+// 		if(autonSelection == 1 || autonSelection == 2 || autonSelection == 5) {
+// 			colourSortingSelector = 2;
+// 		}
+// 		else if (autonSelection == 3 || autonSelection == 4){
+// 			colourSortingSelector = 1;
+// 		}
+// 		controller.print(0, 0, "ENABLED");
+// 	}
+// 	else {
+// 		colourSortingSelector = 0;
+// 		controller.print(0, 0, "DISABLED");
+// 	}
+// }
+
 void colourSortButton() {
-	if (controller.get_digital_new_press(DIGITAL_UP)) {
+	if (controller.get_digital_new_press(DIGITAL_B)) {
 		colourSortButtonState = !colourSortButtonState;
 		controller.rumble("-");
 	}
 	if (colourSortButtonState) {
-		if(autonSelection == 1 || autonSelection == 2 || autonSelection == 5) {
-			colourSortingSelector = 2;
-		}
-		else if (autonSelection == 3 || autonSelection == 4){
-			colourSortingSelector = 1;
-		}
-		controller.print(0, 0, "ENABLED");
+		controller.print(0, 0, "ENABLED ");
 	}
 	else {
-		colourSortingSelector = 0;
 		controller.print(0, 0, "DISABLED");
 	}
 }
@@ -221,6 +234,8 @@ void newWallStake(){
 void allianceStakeControls(){
 	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)){
 		currentState = 3;
+		firstTimeSwitch = true;
+		intakeTarget = secondStageIntake.get_position() - 100;
 	}
 }
 
@@ -243,6 +258,8 @@ void lbMiddleTipControl() {
 void lbMogoScoreControl() {
 	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
 		currentState = 5;
+		firstTimeSwitch = true;
+		intakeTarget = secondStageIntake.get_position() - 100;
 	}
 }
 
@@ -260,8 +277,10 @@ void allianceAutoScore() {
 		teleOpAllianceScoring = true;
 	}
 	if(teleOpAllianceScoring) {
-		if(distanceToWall.get_distance() < 10 * 25.4) {
-			if(distanceToWall.get_distance() > (25.4 * 10) * 0.45) {
+		firstTimeSwitch = true;
+		intakeTarget = secondStageIntake.get_position() - 100;
+		if(distanceToWall.get_distance() < 280) {
+			if(distanceToWall.get_distance() > (280) * 0.45) {
 				leftMotors.move(-15);
 				rightMotors.move(-15);
 			} else {

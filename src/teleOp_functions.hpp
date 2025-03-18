@@ -11,8 +11,6 @@ inline bool transportState = false;
 inline int descoreCounter = 0;
 inline int mogoMechCounter = 20;
 
-inline bool colourSortButtonState = true;
-
 inline bool teleOpAllianceScoring = false;
 
 inline int lbTipCounter = 0;

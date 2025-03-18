@@ -64,7 +64,7 @@ void checkColour() {
 	if (colourSortingSensor.get_hue() > 80 && colourSortingSensor.get_hue() < 300 && colourSortingSensor.get_proximity() > 220) {
 		ringColour = 2; //blue
 	}
-	else if (colourSortingSensor.get_hue() < 20 || colourSortingSensor.get_hue() > 320 && colourSortingSensor.get_proximity() > 220){
+	else if ((colourSortingSensor.get_hue() < 20 || colourSortingSensor.get_hue() > 32) && colourSortingSensor.get_proximity() > 220){
 		ringColour = 1; //red
 	}
     else {
@@ -88,12 +88,12 @@ void nextState() {
 }
 
 void liftControl() {
-    double kp = 1.3;
+    double kp = 1.4;
     target = state[currentState];
     double error = target - LB_rotation.get_position()/100;
     double velocity = kp * error;
     if(!lbTip) {
-        if(currentState == 2 && velocity > 0) {
+        if(currentState == 2 && velocity > 10) {
             wallStake.move(127);
         } else {
             wallStake.move(velocity);

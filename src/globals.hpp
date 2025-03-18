@@ -54,6 +54,8 @@ inline bool mogoState = false;
 inline bool exitLoadWallStake = false;
 inline int autonSelection = 0;
 
+inline bool colourSortButtonState = true;
+
 inline bool scoreAllianceState = false;
 
 inline bool descoreState = false;
