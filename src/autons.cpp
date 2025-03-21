@@ -818,7 +818,7 @@ void mainNegBlue() {
     chassis.waitUntilDone();
     driveToDistance(8, 90, true);
     chassis.turnToHeading(30, 1500, {.minSpeed = 20, .earlyExitRange = 10});
-    chassis.moveToPoint(72, 67, 1500, {.maxSpeed = 50, .minSpeed = 45});
+    chassis.moveToPoint(72, 67, 1500, {.maxSpeed = 70, .minSpeed = 60});
     chassis.waitUntilDone();
     pros::delay(600);
     chassis.moveToPoint(48, 48, 1500, {.forwards = false, .maxSpeed = 60, .minSpeed = 40, .earlyExitRange = 5});
