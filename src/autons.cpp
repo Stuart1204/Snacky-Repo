@@ -568,14 +568,15 @@ void mainPosBlue() {
 
 void elimsPosBlue() {
     mainPosBlue();
-    autoLoadLB();
+    //autoLoadLB();
     chassis.waitUntilDone();
     doinker.set_value(false);
     chassis.turnToHeading(-90, 1500);
-    chassis.moveToPoint(15, -64, 1500, {.maxSpeed = 70});
-    chassis.swingToHeading(-130, lemlib::DriveSide::LEFT, 1500);
-    chassis.waitUntilDone();
-    currentState = 2;
+    chassis.moveToPoint(24, -48, 2000);
+    // chassis.moveToPoint(15, -64, 1500, {.maxSpeed = 70});
+    // chassis.swingToHeading(-130, lemlib::DriveSide::LEFT, 1500);
+    // chassis.waitUntilDone();
+    // currentState = 2;
 }
 
 void qualsPosBlue() {
@@ -655,37 +656,38 @@ void mainPosRed() {
     mogoMech.set_value(true);
     pros::delay(200);
     intake.move(127);
-    chassis.moveToPoint(-28, -40, 1500, {.minSpeed = 30});
+    chassis.moveToPoint(-28, -37, 1500, {.minSpeed = 30});
     chassis.waitUntilDone();
     checkJam();
     chassis.turnToHeading(-90, 1500, {.maxSpeed = 80, .minSpeed = 30});
     chassis.waitUntilDone();
     intake.move(-30);
     driveToDistance(18, 80, true);
-    chassis.moveToPoint(-48, -20, 1500, {.forwards = false, .minSpeed = 30});
+    chassis.moveToPoint(-48, -18, 1500, {.forwards = false, .minSpeed = 30});
     chassis.waitUntilDone();
     mogoMech.set_value(false);
     chassis.moveToPoint(-48, -24, 1500, {.minSpeed = 30, .earlyExitRange = 3});
     chassis.turnToHeading(-90, 1500, {.minSpeed = 30, .earlyExitRange = 3});
-    chassis.moveToPoint(-28, -24, 1500, {.forwards = false, .maxSpeed = 70, .minSpeed = 30, .earlyExitRange = 3});
+    chassis.moveToPoint(-24, -19, 1500, {.forwards = false, .maxSpeed = 70, .minSpeed = 30});
     chassis.waitUntilDone();
     mogoMech.set_value(true);
     intake.move(0);
     pros::delay(300);
     chassis.turnToHeading(-90, 1500);
-    pros::delay(300);
-    secondStageIntake.move(127);
     driveToDistance(8, 80, true);
     checkJam();
+    intake.move(127);
     chassis.turnToHeading(-150, 1500);
     chassis.waitUntilDone();
-    chassis.moveToPoint(-67, -70, 1200, {.maxSpeed = 60, .minSpeed = 59});
+    chassis.moveToPoint(-70, -74, 2500, {.maxSpeed = 75, .minSpeed = 60});
     doinker.set_value(true);
+    chassis.waitUntilDone();
+    pros::delay(500);
     chassis.turnToHeading(90, 1500, {.minSpeed = 100});
 }
 
 void elimsPosRed() { 
-    disruptPosRed();
+    // disruptPosRed();
     mainPosRed();
     // autoLoadLB();
     // chassis.waitUntilDone();
@@ -696,15 +698,15 @@ void elimsPosRed() {
     // currentState = 2;
     chassis.waitUntilDone();
     doinker.set_value(false);
-    pros::delay(1500);
-    intake.move(0);
-    chassis.moveToPoint(-44, -60, 1500);
+    // pros::delay(1500);
+    // chassis.moveToPoint(-44, -60, 1500);
+    chassis.moveToPoint(-23, -48, 2000);
     mogoState = true;
     chassis.waitUntilDone();
 }
 
 void qualsPosRed() {
-    scorePosRed();
+    // scorePosRed();
     mainPosRed();
     // autoLoadLB();
     // chassis.waitUntilDone();
@@ -713,13 +715,13 @@ void qualsPosRed() {
     // chassis.moveToPose(-11, -64, 145, 1500, {.maxSpeed = 70});
     // chassis.waitUntilDone();
     // currentState = 2;
-    chassis.waitUntilDone();
     doinker.set_value(false);
-    pros::delay(1500);
-    intake.move(0);
-    chassis.moveToPoint(-44, -60, 1500);
-    mogoState = true;
+    // pros::delay(1500);
+    // chassis.moveToPoint(-44, -60, 1500);
+    chassis.moveToPoint(-21, -26, 3000);
     chassis.waitUntilDone();
+    currentState = 4;
+    mogoState = true;
 }
 
 void mainNegRed() {
@@ -747,7 +749,7 @@ void mainNegRed() {
     chassis.waitUntilDone();
     checkJam();
     chassis.moveToPoint(-22, 28, 1500, {.forwards = false, .minSpeed = 50, .earlyExitRange = 5});
-    chassis.moveToPoint(-28, 47, 1500);
+    chassis.moveToPoint(-26, 47, 1500);
     chassis.turnToHeading(45, 1500);
     chassis.moveToPoint(-48, 44, 1500, {.forwards = false});
     chassis.waitUntilDone();
@@ -758,11 +760,11 @@ void mainNegRed() {
     secondStageIntake.move(127);
     chassis.waitUntilDone();
     driveToDistance(8, 90, true);
-    chassis.turnToHeading(-30, 1500, {.minSpeed = 20, .earlyExitRange = 10});
-    chassis.moveToPoint(-72, 67, 1500, {.maxSpeed = 60, .minSpeed = 55});
+    chassis.turnToHeading(-25, 1500, {.minSpeed = 20, .earlyExitRange = 10});
+    chassis.moveToPoint(-76, 69, 2500, {.minSpeed = 70});
     chassis.waitUntilDone();
     pros::delay(600);
-    chassis.moveToPoint(-48, 48, 1500, {.forwards = false, .maxSpeed = 70, .minSpeed = 50, .earlyExitRange = 5});
+    chassis.moveToPoint(-47, 47, 1500, {.forwards = false, .maxSpeed = 70, .minSpeed = 50, .earlyExitRange = 5});
 }
 
 void elimsNegRed() {
@@ -775,7 +777,7 @@ void elimsNegRed() {
 
 void qualsNegRed() {
     mainNegRed();
-    chassis.moveToPoint(-21, 21, 1500);
+    chassis.moveToPoint(-22, 22, 1500);
     chassis.waitUntil(27);
     currentState = 3;
     chassis.turnToHeading(135, 1500);

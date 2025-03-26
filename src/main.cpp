@@ -75,7 +75,7 @@ void initialize()
 		status = pros::screen::touch_status();
 		if (status.x > 0 && status.x < 130 && status.y > 70 && status.y < 170) {
 			pros::screen::print(pros::E_TEXT_MEDIUM, 30, 110, "Selected"); 
-			pros::delay(500);
+			pros::delay(250);
 			pros::screen::set_eraser(0x00000000);
 			pros::screen::erase();
 			while (true) {
@@ -121,7 +121,7 @@ void initialize()
 		}
 		else if (status.x > 200 && status.x < 340 && status.y > 70 && status.y < 170) {
 			pros::screen::print(pros::E_TEXT_MEDIUM, 235,110, "Selected"); 
-			pros::delay(1000);
+			pros::delay(250);
 			pros::screen::set_eraser(0x00000000);
 			pros::screen::erase();
 			while (true) {
