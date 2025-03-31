@@ -248,6 +248,7 @@ void opcontrol()
 		doinkerControls();
 		lbTransport();
 		lbTipControls();
+		//left();
 		allianceAutoScore();
 		lbMogoScoreControl();
 		lemlib::Pose pose = chassis.getPose();

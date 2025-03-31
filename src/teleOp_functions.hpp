@@ -11,6 +11,8 @@ inline bool transportState = false;
 inline int descoreCounter = 0;
 inline int mogoMechCounter = 20;
 
+inline int currentHeading = 0;
+
 inline bool teleOpAllianceScoring = false;
 
 inline int lbTipCounter = 0;
@@ -45,3 +47,5 @@ inline void lbMiddleTipControl();
 inline void lbTransport();
 
 inline void allianceAutoScore();
+
+inline void left();

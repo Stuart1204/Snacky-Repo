@@ -295,3 +295,12 @@ void allianceAutoScore() {
 		}
 	}
 }
+
+void left() {
+	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+		int angle = currentHeading  - 90;
+		chassis.turnToHeading(angle, 1000);
+		lemlib::Pose currentPose = chassis.getPose();
+		currentHeading = currentPose.theta;
+	}
+}
