@@ -118,6 +118,8 @@ void driveToDistance(double distance, int maxSpeed, bool resetPos) {
     }
 }
 
+
+
 void resetPos() {
     double disToWall = distanceToWall.get_distance() / 25.4;
     lemlib::Pose currentPose = chassis.getPose();
@@ -184,6 +186,35 @@ void driveDistance(double distance, double maxSpeed) {
         rightMotors.move(0);
     }
 }
+void driveD(double distance) {
+    // double kP = 1;
+    // double kD = 1;
+    double inchToPosition = 56.2;
+    lemlib::PID pid(0.18, 0.0001, 1.5);
+    double target = distance * inchToPosition;
+    leftMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
+    rightMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
+    double current = vertical_rotation.get_position() / 100.0;
+    double error = target - current;
+    // double prevError = error;
+    // double deltaError;
+    double Speed;
+    while (abs(error) > 10 || abs(current) < abs(target) - 10) {
+        current = vertical_rotation.get_position() / 100.0;
+        error = target - current;
+        Speed = pid.update(error);
+        leftMotors.move(Speed);
+        rightMotors.move(Speed);
+        pros::delay(20);
+    }
+    leftMotors.move(0);
+    rightMotors.move(0);
+    leftMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
+    rightMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);  
+    
+}
+
+
 
 void testingAuton() {
     multitaskIntakeControls = false;

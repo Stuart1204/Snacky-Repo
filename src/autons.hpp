@@ -10,7 +10,7 @@ inline lemlib::Pose currentPose = chassis.getPose();
 inline bool exitLoop = false;
 
 inline void driveDistance(double distance, double maxSpeed);
-
+inline void driveD(double distance);
 inline void driveToDistance(double distance, int maxSpeed, bool resetPos);
 
 inline void resetPos();

@@ -60,7 +60,7 @@ void initialize()
 	// If 2, colour sorting Blue (ejecting blue)
 	pros::screen::set_eraser(0x00000000); 
 	while (true){
-		//break; // remove 
+		break; // remove 
 		pros::delay(30);
 		pros::screen::set_pen(0x00FFD700);
 		pros::screen::fill_rect(0,70,130,170);
@@ -195,6 +195,7 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() { 
+	driveD(24);
 	if (autonSelection == 1) {
 		qualsPosRed();
 	}
