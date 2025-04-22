@@ -122,7 +122,7 @@ void intakeControl() {
     }
     lastIntakeSpeed = intakeSpeed;
 
-    if(intakeJamCheck() && !intakeSpeed == 0 && currentState != 1) {
+    if(intakeJamCheck() && intakeSpeed != 0 && currentState != 1) {
         intake.move(-100);
         pros::delay(150);
     }
