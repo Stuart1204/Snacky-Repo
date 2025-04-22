@@ -89,7 +89,7 @@ void drivetrainControls() {
 
 void intakeControls() {
 	if(controller.get_digital(DIGITAL_L1) && controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
-		intake.move(60);
+		intakeSpeed = 60;
 	} else if (controller.get_digital(DIGITAL_L1)) {
 		std::cout <<ringColour << " " <<colourSortingSensor.get_hue()<<" "<< ejectCounter << " " << colourSortingSensor.get_proximity() << " " <<colourSortingEjectionState <<" " <<colourSortingSelector<<"\n";
 		// if(colourSortingSelector == 0) {
@@ -126,14 +126,14 @@ void intakeControls() {
 		// 		counterEject = 0;
 		// 	}
 		// }
-		intake.move(127);
+		intakeSpeed = 127;
 	} 
 	else if (controller.get_digital(DIGITAL_L2)) {
-		intake.move(-127);
+		intakeSpeed = -127;
 	} 
 	else if (wallStakeLoad || climbState || firstTimeSwitch || mogoMechCounter < 5){
 	} else {
-		intake.move(0);
+		intakeSpeed = 0;
 	}
 }
 
@@ -235,7 +235,7 @@ void allianceStakeControls(){
 	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)){
 		currentState = 3;
 		firstTimeSwitch = true;
-		intakeTarget = secondStageIntake.get_position() - 100;
+		intakeTarget = intake.get_position() - 100;
 	}
 }
 
@@ -259,7 +259,7 @@ void lbMogoScoreControl() {
 	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
 		currentState = 5;
 		firstTimeSwitch = true;
-		intakeTarget = secondStageIntake.get_position() - 100;
+		intakeTarget = intake.get_position() - 100;
 	}
 }
 
@@ -267,7 +267,7 @@ void lbTransport() {
 	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)) {
 		currentState = 6;
 		firstTimeSwitch = true;
-        intakeTarget = secondStageIntake.get_position() - 100;
+        intakeTarget = intake.get_position() - 100;
 	}
 
 }
@@ -278,7 +278,7 @@ void allianceAutoScore() {
 	}
 	if(teleOpAllianceScoring) {
 		firstTimeSwitch = true;
-		intakeTarget = secondStageIntake.get_position() - 100;
+		intakeTarget = intake.get_position() - 100;
 		if(distanceToWall.get_distance() < 280) {
 			if(distanceToWall.get_distance() > (280) * 0.45) {
 				leftMotors.move(-15);

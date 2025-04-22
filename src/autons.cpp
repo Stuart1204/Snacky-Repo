@@ -258,10 +258,10 @@ void autoLoadLB() {
     int counter = 0;
     intake.move(127);
     pros::delay(300);
-    while(secondStageIntake.get_actual_velocity() > 10 && counter < 145) {
+    while(intake.get_actual_velocity() > 10 && counter < 145) {
         pros::delay(20);
         counter++;
-        pros::screen::print(TEXT_LARGE_CENTER, 1, "velo: %f", secondStageIntake.get_actual_velocity());
+        pros::screen::print(TEXT_LARGE_CENTER, 1, "velo: %f", intake.get_actual_velocity());
     }
     intake.move(0);
 }
@@ -278,7 +278,7 @@ void autoScoreLB() {
 }
 
 void checkJam() {
-    if(secondStageIntake.get_actual_velocity() < 10) {
+    if(intake.get_actual_velocity() < 10) {
         intake.move(-127);
         pros::delay(200);
         intake.move(127);
@@ -408,18 +408,18 @@ void skillsAutonSecondHalf() {
     intake.move(0);
     chassis.moveToPoint(0, 46, 1500, {.minSpeed = 50, .earlyExitRange = 5});
     chassis.waitUntilDone();
-    firstStageIntake.move(127);
+    intake.move(127);
     chassis.moveToPoint(24, 22, 1500);
     chassis.turnToHeading(120, 1500);
     chassis.waitUntilDone();
     checkJam();
     chassis.moveToPoint(48, 15, 1500, {.minSpeed = 40, .earlyExitRange = 3});
     chassis.waitUntilDone();
-    firstStageIntake.move(-127);
+    intake.move(-127);
     chassis.moveToPoint(66, 55, 2500, {.minSpeed = 60});
     chassis.moveToPoint(57, 44, 1500, {.forwards = false});
     chassis.waitUntilDone();
-    firstStageIntake.move(127);
+    intake.move(127);
     chassis.turnToHeading(0, 1500, {.minSpeed = 30, .earlyExitRange = 5});
     chassis.waitUntilDone();
     currentState = 1;
@@ -503,7 +503,7 @@ void skillsAutonSecondHalf() {
 
 void scorePosBlue() {
     chassis.setPose(52, -59.75, -76);
-    firstStageIntake.move(127);
+    intake.move(127);
     currentState = 2;
 	driveDistance(34, 127);
     int count = 0;
@@ -517,7 +517,7 @@ void scorePosBlue() {
 
 void disruptPosBlue() {
     chassis.setPose(52, -59.75, -76);
-    firstStageIntake.move(127);
+    intake.move(127);
     currentState = 4;
 	driveDistance(34, 127);
     lemlib::Pose pose = chassis.getPose();
@@ -531,10 +531,10 @@ void disruptPosBlue() {
 //     chassis.turnToHeading(-140, 1500);
 //     chassis.waitUntilDone();
 //     currentState = 2;
-//     secondStageIntake.move(-50);
+//     intake.move(-50);
 //     chassis.moveToPoint(24, -48, 1500, {.forwards = false});
-//     secondStageIntake.move(0);
-//     firstStageIntake.move(127);
+//     intake.move(0);
+//     intake.move(127);
 //     chassis.moveToPoint(8, -40, 1000);
 //     chassis.moveToPoint(22, -22, 1000, {.forwards = false});
 //     chassis.moveToPoint(23, -26, 1000, {.forwards = false, .maxSpeed = 30});
@@ -545,14 +545,14 @@ void disruptPosBlue() {
 //     chassis.turnToHeading(110, 1000);
 //     chassis.waitUntilDone();
 //     doinker.set_value(true);
-//     secondStageIntake.move(127);
+//     intake.move(127);
 //     chassis.moveToPoint(63, -67, 1500, {.maxSpeed = 50, .minSpeed = 49});
 //     chassis.turnToHeading(0, 1500);
 // }
 
 void mainPosBlue() {
     chassis.setPose(58, -37.25, -90);
-    firstStageIntake.move(127);
+    intake.move(127);
     chassis.moveToPoint(21, -45, 1500, {.minSpeed = 90, .earlyExitRange = 3});
     chassis.waitUntilDone();
     doinker.set_value(true);
@@ -621,7 +621,7 @@ void qualsPosBlue() {
 
 void scorePosRed() {
     chassis.setPose(-52, -59.75, 76);
-    firstStageIntake.move(127);
+    intake.move(127);
     currentState = 2;
 	driveDistance(34, 127);
     int count = 0;
@@ -635,7 +635,7 @@ void scorePosRed() {
 
 void disruptPosRed() {
     chassis.setPose(-52, -59.75, 76);
-    firstStageIntake.move(127);
+    intake.move(127);
     currentState = 4;
 	driveDistance(34, 127);
     int count = 0;
@@ -649,10 +649,10 @@ void disruptPosRed() {
 //     chassis.turnToHeading(140, 1500);
 //     chassis.waitUntilDone();
 //     currentState = 2;
-//     secondStageIntake.move(-50);
+//     intake.move(-50);
 //     chassis.moveToPoint(-33, -48, 1500, {.forwards = false});
-//     secondStageIntake.move(0);
-//     firstStageIntake.move(127);
+//     intake.move(0);
+//     intake.move(127);
 //     chassis.moveToPoint(-10, -36, 1000);
 //     chassis.waitUntilDone();
 //     chassis.moveToPoint(-22, -22, 1000, {.forwards = false, .maxSpeed = 70});
@@ -662,7 +662,7 @@ void disruptPosRed() {
 //     pros::delay(300);
 //     chassis.turnToHeading(-90, 1500);
 //     pros::delay(300);
-//     secondStageIntake.move(127);
+//     intake.move(127);
 //     driveToDistance(8, 80, true);
 //     checkJam();
 //     chassis.turnToHeading(-150, 1500);
@@ -674,7 +674,7 @@ void disruptPosRed() {
 
 void mainPosRed() {
     chassis.setPose(-58, -58.75, 90);
-    firstStageIntake.move(127);
+    intake.move(127);
     chassis.moveToPoint(-21, -45, 1500, {.minSpeed = 90, .earlyExitRange = 5});
     chassis.waitUntilDone();
     doinker.set_value(true);
@@ -770,8 +770,8 @@ void mainNegRed() {
     chassis.waitUntilDone();
     mogoMech.set_value(true);
     pros::delay(100);
-    firstStageIntake.move(127);
-    secondStageIntake.move(127);
+    intake.move(127);
+    intake.move(127);
     lemlib::Pose currentPose = chassis.getPose();
     chassis.setPose(currentPose.x, currentPose.y, currentPose.theta);
     checkJam();
@@ -787,8 +787,8 @@ void mainNegRed() {
     chassis.turnToHeading(-90, 1500);
     checkJam();
     chassis.waitUntilDone();
-    firstStageIntake.move(127);
-    secondStageIntake.move(127);
+    intake.move(127);
+    intake.move(127);
     chassis.waitUntilDone();
     driveToDistance(10, 90, true);
     chassis.turnToHeading(-10, 1000, {.minSpeed = 20, .earlyExitRange = 10});
@@ -829,8 +829,8 @@ void mainNegBlue() {
     chassis.waitUntilDone();
     mogoMech.set_value(true);
     pros::delay(100);
-    firstStageIntake.move(127);
-    secondStageIntake.move(127);
+    intake.move(127);
+    intake.move(127);
     lemlib::Pose currentPose = chassis.getPose();
     chassis.setPose(currentPose.x, currentPose.y, currentPose.theta);
     checkJam();
@@ -846,8 +846,8 @@ void mainNegBlue() {
     chassis.turnToHeading(90, 1500);
     checkJam();
     chassis.waitUntilDone();
-    firstStageIntake.move(127);
-    secondStageIntake.move(127);
+    intake.move(127);
+    intake.move(127);
     chassis.waitUntilDone();
     driveToDistance(8, 90, true);
     chassis.turnToHeading(30, 1500, {.minSpeed = 20, .earlyExitRange = 10});

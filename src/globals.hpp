@@ -14,32 +14,34 @@
 #define CONFIG_HPP
 
 //motor ports
-#define lBPort -11
-#define lMPort -14
-#define lFPort -13
+#define lBPort -9
+#define lMPort -10
+#define lFPort -20
 
-#define rBPort 17
-#define rMPort 18
-#define rFPort 19
 
-#define firstStageIntakePort -5
-#define secondStageIntakePort 15
-#define wallStakePort 20
+#define rBPort 12
+#define rMPort 3
+#define rFPort 4
+
+
+#define intakePort 19
+#define wallStakePort 6
+
 
 //sensor ports
-#define imuPort 1
+#define imuPort 2
 #define colourSortingSensorPort 10
 #define lineSensorPort 'F'
 #define distanceToWallPort 2
 //solenoids
 #define mogoMechPort 'B'
-#define doinkerPort 'C' 
-#define mogoStealPort 'D' 
+#define doinkerPort 'A'
+#define mogoStealPort 'D'
 #define ringDescorePuncherPort 'D'
 #define descoreLifterPort 'E'
-#define horizontalEncoderPort 17
-#define verticalEncoderPort 4
-#define LB_rotationPort -16
+#define verticalEncoderPort -5
+#define LB_rotationPort 8
+
 
 //drivetrain specs
 #define driveTrackWidth 11.375
@@ -63,6 +65,7 @@ inline bool descoreState = false;
 inline bool lbTip = false;
 
 inline int currentState = 0;
+inline int intakeSpeed = 0;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -72,14 +75,12 @@ inline pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 // motors
 inline pros::Motor wallStake(wallStakePort, pros::v5::MotorGears::rpm_200);
-inline pros::Motor firstStageIntake(firstStageIntakePort);
-inline pros::Motor secondStageIntake(secondStageIntakePort, pros::v5::MotorGears::rpm_600);
+inline pros::Motor intake(intakePort, pros::v5::MotorGears::rpm_600);
 inline pros::Motor lBDriveMotor(lBPort, pros::v5::MotorGears::rpm_600, pros::v5::MotorEncoderUnits::degrees);
 
 // drive motor groups
 inline pros::MotorGroup leftMotors({lBPort, lMPort, lFPort}, pros::v5::MotorGears::rpm_600);	// left motor group
 inline pros::MotorGroup rightMotors({rBPort, rMPort, rFPort}, pros::v5::MotorGears::rpm_600); // right motor group
-inline pros::MotorGroup intake({firstStageIntakePort, secondStageIntakePort});
 
 //solenoids
 inline pros::adi::DigitalOut mogoMech(mogoMechPort, LOW);
@@ -100,7 +101,7 @@ inline pros::Rotation vertical_rotation(verticalEncoderPort);
 inline pros::Rotation LB_rotation(LB_rotationPort);
 // back tracking wheel
 //inline lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_rotation, 2.125, 2.3); // 2.75" wheel diameter, - offset from tracking center
-inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_rotation, 2.125, -.75); // 2.75" wheel diameter, - offset from tracking center
+inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_rotation, 2.125, 1.4); // 2.75" wheel diameter, - offset from tracking center
 
 
 // drivetrain settings

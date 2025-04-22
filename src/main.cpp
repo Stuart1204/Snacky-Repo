@@ -172,30 +172,33 @@ void initialize()
 			break;
 		}
 	}
-	pros::Task Task([]{
+	pros::Task LBTask([]{
         while (true) {
             liftControl();
-			if (colourSortButtonState) {
-				checkColour();
-				colourSort();
-			}
 			//std::cout <<ringColour << " " <<colourSortingSensor.get_hue()<<" "<< ejectCounter << " " << colourSortingSensor.get_proximity() << " " <<colourSortingEjectionState <<" "<<colourSortingSelector<<"\n";
 			pros::delay(20);
         }
     });
-	// pros::Task colourSortTask([]{
-	// 	while (true) {
-			
-	// 		pros::delay(20);
-	// 	}
-	// });
+
+	pros::Task intakeTask([]{
+	while (true) {
+		intakeControl();
+		if (colourSortButtonState) {
+			checkColour();
+			colourSort();
+		}
+		pros::delay(30);
+	}
+	});
 }
 void disabled() {}
 
 void competition_initialize() {}
 
 void autonomous() { 
-	driveD(24);
+	//driveD(24);
+	chassis.setPose(0,0,0);
+	chassis.moveToPoint(12, 24, 1500);
 	if (autonSelection == 1) {
 		qualsPosRed();
 	}
@@ -233,7 +236,6 @@ void opcontrol()
 	leftMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	rightMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
 	wallStake.set_brake_mode(MOTOR_BRAKE_BRAKE);
-	secondStageIntake.set_brake_mode(MOTOR_BRAKE_COAST);
 	pros::screen::erase();
     while (true) {
 		pros::delay(20);
