@@ -87,6 +87,14 @@ void nextState() {
     }
 }
 
+void updateHookForLB() {
+    if(lastCurrentState != currentState && lastCurrentState == 1) {
+       firstTimeSwitch = true;
+        intakeTarget = intake.get_position() - 100; 
+    }
+    lastCurrentState = currentState;
+}
+
 void liftControl() {
     double kp = 3;
     target = state[currentState];
@@ -104,7 +112,11 @@ void liftControl() {
     }
     if(firstTimeSwitch) {
         if(intake.get_position() > intakeTarget) {
-            intake.move(-30);
+            if(intakeSpeed == 0) {
+                intake.move(-30);
+            } else {
+                firstTimeSwitch = false;
+            }
         } else {
             firstTimeSwitch = false;
         }
@@ -122,10 +134,10 @@ void intakeControl() {
     }
     lastIntakeSpeed = intakeSpeed;
 
-    if(intakeJamCheck() && intakeSpeed != 0 && currentState != 1) {
-        intake.move(-100);
-        pros::delay(150);
-    }
+    // if(intakeJamCheck() && intakeSpeed == 127 && currentState != 1) {
+    //     intake.move(-100);
+    //     pros::delay(150);
+    // }
 
     if(currentState == 1 && intakeJamCheck()) {
         if(intake.get_actual_velocity() < 5) {

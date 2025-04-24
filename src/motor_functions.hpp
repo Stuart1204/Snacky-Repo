@@ -3,7 +3,7 @@
 
 //LB variables
 inline int numState = 3;
-inline int state[7] = {0, 20, 142, 148, 212, 172, 60}; //  Transport Height 
+inline int state[7] = {0, 20, 142, 148, 235, 172, 60}; //  Transport Height 
 inline int target = 0;
 
 
@@ -21,6 +21,8 @@ inline double intakeTarget = 0;
 inline bool wallStakeDirection = false;
 inline bool wallStakeScore = false;
 
+inline int lastCurrentState = 0;
+
 // intake variables
 inline int intakeJamCounter = 0;
 inline int lastIntakeSpeed = 0;
@@ -33,5 +35,6 @@ inline void liftControl();
 inline void intakeControl();
 inline bool intakeJamCheck();
 inline void nextState();
+inline void updateHookForLB();
 inline void scoreAlliance();
 inline void colourSort();

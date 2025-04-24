@@ -32,7 +32,7 @@
 #define imuPort 2
 #define colourSortingSensorPort 10
 #define lineSensorPort 'F'
-#define distanceToWallPort 2
+#define distanceToWallPort 7
 //solenoids
 #define mogoMechPort 'B'
 #define doinkerPort 'A'
@@ -123,7 +123,31 @@ inline lemlib::OdomSensors sensors{
 };
 
 // lateral motion controller
-inline lemlib::ControllerSettings linearController(5, // proportional gain (kP)
+inline lemlib::ControllerSettings linearController(6, // proportional gain (kP)
+                                            0, // integral gain (kI)
+                                            30, // derivative gain (kD)
+                                            3, // anti windup
+                                            1, // small error range, in inches
+                                            100, // small error range timeout, in milliseconds
+                                            3, // large error range, in inches
+                                            200, // large error range timeout, in milliseconds
+                                            30 // maximum acceleration (slew)
+);
+
+// angular motion controller
+inline lemlib::ControllerSettings angularController(1.6, // proportional gain (kP)
+                                             0, // integral gain (kI)
+                                             12, // derivative gain (kD)
+                                             3, // anti windup
+                                             1, // small error range, in degrees
+                                             100, // small error range timeout, in milliseconds
+                                             5, // large error range, in degrees
+                                             200, // large error range timeout, in milliseconds
+                                             40 // maximum acceleration (slew)
+);
+
+// lateral motion controller
+inline lemlib::ControllerSettings mogoLinearController(10, // proportional gain (kP)
                                             0, // integral gain (kI)
                                             40, // derivative gain (kD)
                                             3, // anti windup
@@ -135,9 +159,9 @@ inline lemlib::ControllerSettings linearController(5, // proportional gain (kP)
 );
 
 // angular motion controller
-inline lemlib::ControllerSettings angularController(2.5, // proportional gain (kP)
+inline lemlib::ControllerSettings mogoAngularController(1.7, // proportional gain (kP)
                                              0, // integral gain (kI)
-                                             25, // derivative gain (kD)
+                                             13, // derivative gain (kD)
                                              3, // anti windup
                                              1, // small error range, in degrees
                                              100, // small error range timeout, in milliseconds
@@ -148,5 +172,6 @@ inline lemlib::ControllerSettings angularController(2.5, // proportional gain (k
 
 // Creating chassis object
 inline lemlib::Chassis chassis(drivetrain, linearController, angularController, sensors);
+inline lemlib::Chassis mogoChassis(drivetrain, mogoLinearController, mogoAngularController, sensors);
 
 #endif

@@ -23,6 +23,7 @@ inline void autoScoreLB();
 inline void checkJam();
 inline void skillsAuton();
 inline void skillsAutonSecondHalf();
+inline void autoScoreAlliance();
 
 inline void scorePosBlue();
 inline void disruptPosBlue();

@@ -8,6 +8,7 @@
 #include "pros/rtos.hpp"
 #include "pros/screen.h"
 #include "pros/screen.hpp"
+#include <future>
 
 void autonCheckColour() {
 	if (colourSortingSensor.get_hue() > 80 && colourSortingSensor.get_hue() < 300 && colourSortingSensor.get_proximity() > 200) {
@@ -190,7 +191,6 @@ void driveD(double distance) {
     // double kP = 1;
     // double kD = 1;
     double inchToPosition = 56.2;
-    lemlib::PID pid(0.18, 0.0001, 1.5);
     double target = distance * inchToPosition;
     leftMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
     rightMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);
@@ -199,13 +199,32 @@ void driveD(double distance) {
     // double prevError = error;
     // double deltaError;
     double Speed;
-    while (abs(error) > 10 || abs(current) < abs(target) - 10) {
-        current = vertical_rotation.get_position() / 100.0;
-        error = target - current;
-        Speed = pid.update(error);
-        leftMotors.move(Speed);
-        rightMotors.move(Speed);
-        pros::delay(20);
+    if(distance > 0) {
+        lemlib::PID pid(0.18, 0, 1);
+        while (fabs(error) > 10 || fabs(current) < fabs(target) - 10) {
+            current = vertical_rotation.get_position() / 100.0;
+            error = target - current;
+            Speed = pid.update(error) + 10;
+            leftMotors.move(Speed);
+            rightMotors.move(Speed);
+            pros::delay(20);
+        } 
+    } else {
+        lemlib::PID pid(0.12, 0, 0.7);
+        while (fabs(error) > 10 || fabs(current) > fabs(target) + 10) {
+            current = vertical_rotation.get_position() / 100.0;
+            error = target - current;
+            Speed = pid.update(error) - 10;
+            if(Speed < -80) {
+                Speed = -80;
+            }
+            leftMotors.move(Speed);
+            rightMotors.move(Speed);
+            pros::delay(20);
+            std::cout << "target" << target << std::endl;
+            std::cout << "current" << current << std::endl;
+            std::cout << "error" << error << std::endl;
+        } 
     }
     leftMotors.move(0);
     rightMotors.move(0);
@@ -213,7 +232,23 @@ void driveD(double distance) {
     rightMotors.set_brake_mode(MOTOR_BRAKE_BRAKE);  
 }
 
-
+void autoScoreAlliance() {
+    double targetDistance = 10;
+    double error;
+    double kP = 10;
+    leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+    rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+    double currentDistance = distanceToWall.get_distance() / 25.4;
+    while(currentDistance < targetDistance) {
+        currentDistance = distanceToWall.get_distance() / 25.4;
+        error = currentDistance - targetDistance;
+        leftMotors.move(error * kP - 10);
+        rightMotors.move(error * kP - 10);
+    }
+    leftMotors.move(0);
+    rightMotors.move(0);
+    currentState = 4;
+}
 
 void testingAuton() {
     multitaskIntakeControls = false;
@@ -754,7 +789,7 @@ void qualsPosRed() {
     mogoState = true;
 }
 
-void mainNegRed() {
+/*void mainNegRed() {
     chassis.setPose(-63,13, 210);
     currentState = 4;
     pros::delay(650);
@@ -795,7 +830,79 @@ void mainNegRed() {
     chassis.moveToPoint(-75, 65, 600, {.minSpeed = 120}); 
     chassis.waitUntilDone();
     chassis.moveToPoint(-47, 47, 1500, {.forwards = false, .maxSpeed = 70, .minSpeed = 50, .earlyExitRange = 5});
+}*/
+
+void mainNegRed() {
+    chassis.setPose(-53.5, 64, 90);
+    chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
+    doinker.set_value(true);
+    intakeSpeed = 127;    
+    chassis.moveToPose(-6, 52, 120, 1500, {.lead = 0.3, .minSpeed = 60});
+    chassis.waitUntilDone();
+    pros::delay(250);
+    intakeSpeed = 127;
+    chassis.moveToPoint(-32, 61, 1500, {.forwards = false, .minSpeed = 20, .earlyExitRange = 5});
+    chassis.waitUntil(11);
+    intakeSpeed = 0;
+    chassis.swingToHeading(30, lemlib::DriveSide::RIGHT, 500, {.minSpeed = 30, .earlyExitRange=5});
+    chassis.moveToPoint(-34, 38, 1500, {.forwards = false, .minSpeed = 30, .earlyExitRange = 5});
+    chassis.waitUntilDone();
+    doinker.set_value(false);
+    intakeSpeed = 0;
+
+    // OFFSETTING ODOMETRY
+    lemlib::Pose currentPose = chassis.getPose();
+    chassis.setPose(currentPose.x - 3, currentPose.y + 3, currentPose.theta);
+
+    chassis.moveToPoint(-24, 24, 1500, {.forwards = false, .maxSpeed = 60});
+    chassis.waitUntilDone();
+    mogoMech.set_value(true);
+    pros::delay(200);
+    chassis.turnToHeading(0,300);
+    chassis.waitUntilDone();
+    intakeSpeed = 127;
+    chassis.moveToPoint(-23, 46, 1500, {.minSpeed = 30});
+    chassis.waitUntilDone();
+    chassis.moveToPoint(-46, 48, 1500, {.maxSpeed = 90, .minSpeed = 30, .earlyExitRange = 5});
+    chassis.moveToPoint(-58, 55, 1500, {.maxSpeed = 90, .minSpeed = 30});
+    chassis.turnToHeading(-90, 1500, {.minSpeed = 30});
+    chassis.waitUntilDone();
+    intakeSpeed = 127;
+    driveToDistance(6, 100, true);
+    chassis.turnToHeading(-20, 300);
+    chassis.waitUntilDone();
+    leftMotors.move(50);
+    rightMotors.move(50);
+    pros::delay(200);
+    leftMotors.move(100);
+    rightMotors.move(100);
+    pros::delay(700);
+    currentState = 1;
+    leftMotors.move(-80);
+    rightMotors.move(-80);
+    pros::delay(400);
+    leftMotors.move(60);
+    rightMotors.move(60);
+    pros::delay(700);
+    chassis.turnToHeading(0, 300, {.minSpeed = 30});
+    chassis.waitUntilDone();
+    intakeSpeed = 127;
+    resetPos();
+    chassis.moveToPoint(-48, 24, 1500, {.forwards = false, .minSpeed = 30, .earlyExitRange = 5});
+    chassis.waitUntilDone();
+    intakeSpeed = 0;
+    currentState = 6;
+    chassis.turnToPoint(-72, 0, 500);
+    chassis.waitUntilDone();
+    intakeSpeed = 127;
+    leftMotors.move(127);
+    rightMotors.move(127);
+    pros::delay(600);
+    leftMotors.move(0);
+    rightMotors.move(0);
+    autoScoreAlliance();
 }
+ 
 void elimsNegRed() {
     mainNegRed();
     chassis.turnToHeading(180, 1500);

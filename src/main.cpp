@@ -175,6 +175,7 @@ void initialize()
 	pros::Task LBTask([]{
         while (true) {
             liftControl();
+			updateHookForLB();
 			//std::cout <<ringColour << " " <<colourSortingSensor.get_hue()<<" "<< ejectCounter << " " << colourSortingSensor.get_proximity() << " " <<colourSortingEjectionState <<" "<<colourSortingSelector<<"\n";
 			pros::delay(20);
         }
@@ -196,9 +197,12 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() { 
-	//driveD(24);
-	chassis.setPose(0,0,0);
-	chassis.moveToPoint(12, 24, 1500);
+	mainNegRed();
+
+	lemlib::Pose pose = chassis.getPose();
+		pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
+		pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
+		pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
 	if (autonSelection == 1) {
 		qualsPosRed();
 	}
