@@ -183,7 +183,11 @@ void initialize()
 
 	pros::Task intakeTask([]{
 	while (true) {
-		intakeControl();
+		if(doubleLBLoading) {
+			doubleLBLoad();
+		} else {
+			intakeControl();
+		}
 		if (colourSortButtonState) {
 			checkColour();
 			colourSort();

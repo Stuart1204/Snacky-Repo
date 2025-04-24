@@ -28,10 +28,9 @@ inline int intakeJamCounter = 0;
 inline int lastIntakeSpeed = 0;
 inline bool intakeJustStarted = true;;
 
-inline bool wallStakeLoading();
-inline bool wallStakeScoring();
 inline void checkColour();
 inline void liftControl();
+inline void doubleLBLoad();
 inline void intakeControl();
 inline bool intakeJamCheck();
 inline void nextState();

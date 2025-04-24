@@ -88,9 +88,14 @@ void drivetrainControls() {
 }
 
 void intakeControls() {
+	if(controller.get_digital_new_press(DIGITAL_L1) && controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
+		intakeJustStarted = true;
+	}
+
 	if(controller.get_digital(DIGITAL_L1) && controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
-		intakeSpeed = 60;
+		doubleLBLoading = true;
 	} else if (controller.get_digital(DIGITAL_L1)) {
+		doubleLBLoading = false;
 		std::cout <<ringColour << " " <<colourSortingSensor.get_hue()<<" "<< ejectCounter << " " << colourSortingSensor.get_proximity() << " " <<colourSortingEjectionState <<" " <<colourSortingSelector<<"\n";
 		// if(colourSortingSelector == 0) {
 		// 	intake.move(127);
@@ -129,10 +134,13 @@ void intakeControls() {
 		intakeSpeed = 127;
 	} 
 	else if (controller.get_digital(DIGITAL_L2)) {
+		doubleLBLoading = false;
 		intakeSpeed = -127;
 	} 
 	else if (wallStakeLoad || climbState || firstTimeSwitch || mogoMechCounter < 5){
+		doubleLBLoading = false;
 	} else {
+		doubleLBLoading = false;
 		intakeSpeed = 0;
 	}
 }
