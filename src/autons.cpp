@@ -108,13 +108,13 @@ void driveToDistance(double distance, int maxSpeed, bool resetPos) {
         lemlib::Pose currentPose = chassis.getPose();
         double absoluteTheta = (int)currentPose.theta % 360;
         if(fabs(absoluteTheta - 0) < 8) {
-            chassis.setPose(currentPose.x, 67 - disToWall, currentPose.theta);
+            chassis.setPose(currentPose.x, 70 - disToWall - 4, currentPose.theta);
         } else if(fabs(absoluteTheta - 90) < 8) {
-            chassis.setPose(67 - disToWall, currentPose.y, currentPose.theta);
+            chassis.setPose(70 - disToWall - 4, currentPose.y, currentPose.theta);
         } else if(fabs(absoluteTheta - 180) < 8 || fabs(currentPose.theta + 180) < 8) {
-            chassis.setPose(currentPose.x, -67 + disToWall, currentPose.theta);
+            chassis.setPose(currentPose.x, -70 + disToWall + 4, currentPose.theta);
         } else if(fabs(absoluteTheta + 90) < 8) {
-            chassis.setPose(-67 + disToWall, currentPose.y, currentPose.theta);
+            chassis.setPose(-70 + disToWall + 4, currentPose.y, currentPose.theta);
         }
     }
 }
