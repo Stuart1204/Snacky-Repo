@@ -32,7 +32,6 @@ void nextState() {
 void updateHookForLB() {
     if(lastCurrentState != currentState && lastCurrentState == 1) {
        firstTimeSwitch = true;
-       controller.rumble("...");
         intakeTarget = intake.get_position() - 200; 
     }
     lastCurrentState = currentState;
@@ -44,7 +43,7 @@ void liftControl() {
     double error = target - LB_rotation.get_position()/100.0;
     double velocity = kp * error;
     if(!lbTip) {
-        if(currentState == 2 && velocity > 10) {
+        if(currentState == 2 && velocity > 25) {
             wallStake.move(127);
         } else {
             wallStake.move(velocity);
@@ -55,11 +54,7 @@ void liftControl() {
     }
     if(firstTimeSwitch) {
         if(intake.get_position() > intakeTarget) {
-            if(intakeSpeed == 0) {
-                intake.move(-45);
-            } else {
-                firstTimeSwitch = false;
-            }
+            intake.move(-45);
         } else {
             firstTimeSwitch = false;
         }
