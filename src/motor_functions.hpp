@@ -3,7 +3,7 @@
 
 //LB variables
 inline int numState = 3;
-inline int state[8] = {0, 20, 160, 148, 235, 172, 60, 200}; //  Transport Height 
+inline int state[8] = {0, 20, 160, 148, 235, 172, 60, 192}; //  Transport Height 
 inline int target = 0;
 
 

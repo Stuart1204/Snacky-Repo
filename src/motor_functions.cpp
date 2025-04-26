@@ -104,7 +104,7 @@ bool intakeJamCheck() {
     if (!intakeJustStarted) {
         if(fabs(intake.get_actual_velocity()) < 10) {
             intakeJamCounter++;
-            if(intakeJamCounter > 3) {
+            if(intakeJamCounter > 5) {
                 return true;
             }
             return false;
