@@ -38,7 +38,7 @@ void updateHookForLB() {
 }
 
 void liftControl() {
-    double kp = 3;
+    double kp = 2.2;
     target = state[currentState];
     double error = target - LB_rotation.get_position()/100.0;
     double velocity = kp * error;
@@ -54,7 +54,7 @@ void liftControl() {
     }
     if(firstTimeSwitch) {
         if(intake.get_position() > intakeTarget) {
-            intake.move(-45);
+            intake.move(-60);
         } else {
             firstTimeSwitch = false;
         }
@@ -66,6 +66,7 @@ void liftControl() {
 
 void doubleLBLoad() {
     if(currentState == 0) {
+        intakeJustStarted = true;
         currentState = 1;
     }
     if(!firstTimeSwitch) {
@@ -84,10 +85,10 @@ void intakeControl() {
     }
     lastIntakeSpeed = intakeSpeed;
 
-    // if(intakeJamCheck() && intakeSpeed == 127 && currentState != 1) {
-    //     intake.move(-100);
-    //     pros::delay(150);
-    // }
+    if(intakeJamCheck() && intakeSpeed == 127 && currentState != 1) {
+        intake.move(-100);
+        pros::delay(150);
+    }
 
     if(currentState == 1 && intakeJamCheck()) {
         if(intake.get_actual_velocity() < 5) {
@@ -97,15 +98,23 @@ void intakeControl() {
 }
 
 bool intakeJamCheck() {
-    if(intake.get_actual_velocity() > 100) {
+    if(intake.get_actual_velocity() > 110) {
         intakeJustStarted = false;
     }
 
     if (!intakeJustStarted) {
         if(fabs(intake.get_actual_velocity()) < 10) {
             intakeJamCounter++;
-            if(intakeJamCounter > 5) {
-                return true;
+            if(doubleLBLoading) {
+                if(intakeJamCounter > 2) {
+                    intakeJamCounter = 0;
+                    return true;
+                }
+            } else {
+               if(intakeJamCounter > 5) {
+                    intakeJamCounter = 0;
+                    return true;
+                } 
             }
             return false;
         } else {

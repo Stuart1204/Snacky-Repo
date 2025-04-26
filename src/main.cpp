@@ -201,7 +201,8 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() { 
-	qualsNegBlue();
+	mainPosBlue(); 
+	pros::delay(3000);
 
 	lemlib::Pose pose = chassis.getPose();
 		pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
