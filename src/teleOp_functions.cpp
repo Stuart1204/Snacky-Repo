@@ -216,14 +216,15 @@ void climbControls() {
 
 void colourSortButton() {
 	if (controller.get_digital_new_press(DIGITAL_B)) {
-		colourSortButtonState = !colourSortButtonState;
+		enableColourSort = !enableColourSort;
 		controller.rumble("-");
-	}
-	if (colourSortButtonState) {
-		controller.print(0, 0, "ENABLED ");
-	}
-	else {
-		controller.print(0, 0, "DISABLED");
+
+		if (enableColourSort) {
+			controller.print(0, 0, "ENABLED ");
+		}
+		else {
+			controller.print(0, 0, "DISABLED");
+		}
 	}
 }
 

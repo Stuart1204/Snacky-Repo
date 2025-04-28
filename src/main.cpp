@@ -47,17 +47,18 @@ void initialize()
 	// rightMotors.set_encoder_units_all(MOTOR_ENCODER_DEGREES);
 	// leftMotors.set_encoder_units_all(MOTOR_ENCODER_DEGREES);
 	leftMotors.set_zero_position_all(0);
-	// colourSortingSelector = 2;
+	colourSortingSensor.disable_gesture();
+	colourSortingSensor.set_led_pwm(100);
+	colourSortingSensor.set_integration_time(10);
+	colourSortingSelector = 2;
+	// intializing the colour sorting. if colourSortingSelector = 0, No colour sorting
+	// If 1, colour sorting Red (ejecting red)
+	// If 2, colour sorting Blue (ejecting blue)
 	lBDriveMotor.tare_position_all();
 	if(LB_rotation.get_position()/100 > 350 && LB_rotation.get_position()/100 < 360) {
 		LB_rotation.reset_position();
 	}
 	//wallStake.set_brake_mode(MOTOR_BRAKE_HOLD);
-	colourSortingSensor.disable_gesture();
-	colourSortingSensor.set_led_pwm(50);
-	// intializing the colour sorting. if colourSortingSelector = 0, No colour sorting
-	// If 1, colour sorting Red (ejecting red)
-	// If 2, colour sorting Blue (ejecting blue)
 	pros::screen::set_eraser(0x00000000); 
 	while (true){
 		break; // remove 
@@ -181,6 +182,7 @@ void initialize()
         }
     });
 
+
 	pros::Task intakeTask([]{
 	while (true) {
 		if(doubleLBLoading) {
@@ -188,10 +190,14 @@ void initialize()
 		} else {
 			intakeControl();
 		}
-		if (colourSortButtonState) {
-			checkColour();
+		if (enableColourSort) {
 			colourSort();
+			colourSortingSensor.set_led_pwm(100);
+			colourSortingSensor.set_integration_time(10);
 		}
+
+		
+
 		pros::delay(30);
 	}
 	});
@@ -263,9 +269,11 @@ void opcontrol()
 		//left();
 		allianceAutoScore();
 		lbMogoScoreControl();
-		lemlib::Pose pose = chassis.getPose();
-		pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
-		pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
-		pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
+		// lemlib::Pose pose = chassis.getPose();
+		// pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
+		// pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
+		// pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
+
+		pros::screen::print(TEXT_LARGE_CENTER, 7, "pos: %f", wallStake.get_position());
     }
 }

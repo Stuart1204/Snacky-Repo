@@ -789,19 +789,18 @@ void mainPosRed() {
     pros::delay(400);
     leftMotors.move(0);
     rightMotors.move(0);
-    // pros::delay(150);
-    // leftMotors.move(40);
-    // rightMotors.move(60);
-    // pros::delay(700);
-    // leftMotors.move(-50);
-    // rightMotors.move(-50);
-    // pros::delay(300);
-    // leftMotors.move(0);
-    // rightMotors.move(0);
-    mogoState = true;
+    pros::delay(150);
+    leftMotors.move(40);
+    rightMotors.move(60);
+    pros::delay(700);
+    leftMotors.move(-50);
+    rightMotors.move(-50);
+    pros::delay(300);
+    leftMotors.move(0);
+    rightMotors.move(0);
     // currentState = 2;
     // chassis.moveToPoint(-24, -24, 1500);
-    chassis.turnToHeading(90, 1500);
+    // chassis.turnToHeading(90, 1500);
 }
 
 void elimsPosRed() { 
@@ -833,10 +832,10 @@ void qualsPosRed() {
     // chassis.moveToPose(-11, -64, 145, 1500, {.maxSpeed = 70});
     // chassis.waitUntilDone();
     // currentState = 2;
-    doinker.set_value(false);
+    // doinker.set_value(false);
     // pros::delay(1500);
     // chassis.moveToPoint(-44, -60, 1500);
-    chassis.moveToPoint(-21, -26, 3000);
+    chassis.moveToPoint(-24, -24, 3000);
     chassis.waitUntilDone();
     currentState = 4;
     mogoState = true;
@@ -890,13 +889,13 @@ void mainNegRed() {
     chassis.setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
     doinker.set_value(true);
     intakeSpeed = 127;    
-    chassis.moveToPose(-6, 52, 120, 1500, {.lead = 0.3, .minSpeed = 60});
+    chassis.moveToPose(-6, 51, 125, 1500, {.lead = 0.3, .minSpeed = 60});
     chassis.waitUntilDone();
     pros::delay(250);
     intakeSpeed = 127;
     chassis.moveToPoint(-32, 61, 1500, {.forwards = false, .minSpeed = 20, .earlyExitRange = 5});
     chassis.waitUntil(11);
-    intakeSpeed = 30;
+    intakeSpeed = 20;
     chassis.swingToHeading(30, lemlib::DriveSide::RIGHT, 500, {.minSpeed = 30, .earlyExitRange=5});
     chassis.moveToPoint(-34, 38, 1500, {.forwards = false, .minSpeed = 30, .earlyExitRange = 5});
     chassis.waitUntilDone();
@@ -944,7 +943,7 @@ void mainNegRed() {
     chassis.turnToHeading(0, 300, {.minSpeed = 30});
     chassis.waitUntilDone();
     resetPos();
-    chassis.moveToPoint(-58, 12, 1500, {.forwards = false, .minSpeed = 30, .earlyExitRange = 5});
+    chassis.moveToPoint(-58, 11, 1500, {.forwards = false, .minSpeed = 30, .earlyExitRange = 5});
     chassis.waitUntilDone();
     currentState = 6;
     chassis.turnToPoint(-72, 0, 500);
@@ -958,7 +957,6 @@ void mainNegRed() {
     rightMotors.move(0);
     currentState = 7;
     driveD(-8);
-    mogoState = true;
 }
  
 void elimsNegRed() {

@@ -3,7 +3,7 @@
 
 //LB variables
 inline int numState = 3;
-inline int state[8] = {0, 23, 163, 151, 238, 175, 63, 195}; //  Transport Height 
+inline int state[8] = {0, 26, 163, 151, 238, 175, 63, 195}; //  Transport Height 
 inline int target = 0;
 
 
@@ -28,7 +28,7 @@ inline int intakeJamCounter = 0;
 inline int lastIntakeSpeed = 0;
 inline bool intakeJustStarted = true;;
 
-inline void checkColour();
+inline int checkColour();
 inline void liftControl();
 inline void doubleLBLoad();
 inline void intakeControl();

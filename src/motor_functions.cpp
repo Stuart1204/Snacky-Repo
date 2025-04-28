@@ -2,15 +2,14 @@
 #include "pros/misc.h"
 #include "pros/motors.h"
 
-void checkColour() {
-	if (colourSortingSensor.get_hue() > 80 && colourSortingSensor.get_hue() < 300 && colourSortingSensor.get_proximity() > 220) {
-		ringColour = 2; //blue
+int checkColour() {
+	if (colourSortingSensor.get_hue() > 150 && colourSortingSensor.get_hue() < 280 && colourSortingSensor.get_proximity() > 180) {
+		return 2; //blue
 	}
-	else if ((colourSortingSensor.get_hue() < 20 || colourSortingSensor.get_hue() > 32) && colourSortingSensor.get_proximity() > 220){
-		ringColour = 1; //red
-	}
-    else {
-        ringColour = 0; //background
+	else if (colourSortingSensor.get_hue() < 10 && colourSortingSensor.get_proximity() > 180){
+		return 1; //red
+	} else {
+        return 0; //background
     }
 }
 
@@ -38,7 +37,7 @@ void updateHookForLB() {
 }
 
 void liftControl() {
-    double kp = 2.2;
+    double kp = 1.7;
     target = state[currentState];
     double error = target - LB_rotation.get_position()/100.0;
     double velocity = kp * error;
@@ -127,16 +126,18 @@ bool intakeJamCheck() {
 }
 
 void colourSort() {
-    if (colourSortingSelector == 1 && ringColour == 1) { //We are blue, ejecting red
+    int ringState = checkColour();
+
+    if (colourSortingSelector == 1 && ringState == 1) { //We are blue, ejecting red
         colourSortingEjectionState = true;
     } 
-    else if (colourSortingSelector == 2 && ringColour == 2) { //We are red, ejecting blue
+    else if (colourSortingSelector == 2 && ringState == 2) { //We are red, ejecting blue
         colourSortingEjectionState = true;
     }
     if (colourSortingEjectionState) {
         ejectCounter++;
         intake.move(-50);
-        if (ejectCounter > 15) {
+        if (ejectCounter > 10) {
             colourSortingEjectionState = false;
             ejectCounter = 0;
         }

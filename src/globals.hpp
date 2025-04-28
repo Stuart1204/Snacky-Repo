@@ -30,7 +30,7 @@
 
 //sensor ports
 #define imuPort 2
-#define colourSortingSensorPort 10
+#define colourSortingSensorPort 13
 #define lineSensorPort 'F'
 #define distanceToWallPort 7
 //solenoids
@@ -56,7 +56,7 @@ inline bool mogoState = false;
 inline bool exitLoadWallStake = false;
 inline int autonSelection = 0;
 
-inline bool colourSortButtonState = true;
+inline bool enableColourSort = true;
 
 inline bool scoreAllianceState = false;
 
