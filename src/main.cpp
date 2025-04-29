@@ -47,9 +47,6 @@ void initialize()
 	// rightMotors.set_encoder_units_all(MOTOR_ENCODER_DEGREES);
 	// leftMotors.set_encoder_units_all(MOTOR_ENCODER_DEGREES);
 	leftMotors.set_zero_position_all(0);
-	colourSortingSensor.disable_gesture();
-	colourSortingSensor.set_led_pwm(100);
-	colourSortingSensor.set_integration_time(10);
 	colourSortingSelector = 2;
 	// intializing the colour sorting. if colourSortingSelector = 0, No colour sorting
 	// If 1, colour sorting Red (ejecting red)
@@ -192,15 +189,14 @@ void initialize()
 		}
 		if (enableColourSort) {
 			colourSort();
-			colourSortingSensor.set_led_pwm(100);
-			colourSortingSensor.set_integration_time(10);
 		}
-
-		
 
 		pros::delay(30);
 	}
 	});
+
+	colourSortingSensor.set_led_pwm(99);
+	colourSortingSensor.set_integration_time(10);
 }
 void disabled() {}
 

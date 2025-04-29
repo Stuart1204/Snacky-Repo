@@ -215,7 +215,7 @@ void climbControls() {
 // }
 
 void colourSortButton() {
-	if (controller.get_digital_new_press(DIGITAL_B)) {
+	if (controller.get_digital_new_press(DIGITAL_DOWN)) {
 		enableColourSort = !enableColourSort;
 		controller.rumble("-");
 
@@ -241,10 +241,8 @@ void newWallStake(){
 }
 
 void allianceStakeControls(){
-	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)){
+	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)){
 		currentState = 3;
-		firstTimeSwitch = true;
-		intakeTarget = intake.get_position() - 100;
 	}
 }
 
@@ -259,7 +257,7 @@ void lbTipControls() {
 }
 
 void lbMiddleTipControl() {
-	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
+	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
 		currentState = 4;
 	}
 }
@@ -267,8 +265,6 @@ void lbMiddleTipControl() {
 void lbMogoScoreControl() {
 	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
 		currentState = 5;
-		firstTimeSwitch = true;
-		intakeTarget = intake.get_position() - 100;
 	}
 }
 

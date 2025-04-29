@@ -136,8 +136,8 @@ void colourSort() {
     }
     if (colourSortingEjectionState) {
         ejectCounter++;
-        intake.move(-50);
-        if (ejectCounter > 10) {
+        intake.move(-30);
+        if (ejectCounter > 6) {
             colourSortingEjectionState = false;
             ejectCounter = 0;
         }
