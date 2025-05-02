@@ -254,11 +254,10 @@ void opcontrol()
 	pros::screen::erase();
     while (true) {
 		pros::delay(20);
+		descoreControls();
 		mogoMechControls();
 		drivetrainControls();
 		intakeControls();
-		//mogoStealControls();
-		// wallStakeControls();
 		newWallStake();
 		colourSortButton();
 		allianceStakeControls();
@@ -266,7 +265,6 @@ void opcontrol()
 		doinkerControls();
 		lbTransport();
 		lbTipControls();
-		//left();
 		allianceAutoScore();
 		lbMogoScoreControl();
 		// lemlib::Pose pose = chassis.getPose();

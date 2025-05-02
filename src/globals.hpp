@@ -36,9 +36,8 @@
 //solenoids
 #define mogoMechPort 'B'
 #define doinkerPort 'A'
-#define mogoStealPort 'D'
-#define ringDescorePuncherPort 'D'
-#define descoreLifterPort 'E'
+#define ringDescorePuncherPort 'C'
+#define descoreLifterPort 'D'
 #define verticalEncoderPort -5
 #define LB_rotationPort 8
 
@@ -87,7 +86,6 @@ inline pros::MotorGroup rightMotors({rBPort, rMPort, rFPort}, pros::v5::MotorGea
 //solenoids
 inline pros::adi::DigitalOut mogoMech(mogoMechPort, LOW);
 inline pros::adi::DigitalOut doinker(doinkerPort, LOW);
-inline pros::adi::DigitalOut mogoSteal(mogoStealPort, LOW);
 inline pros::adi::DigitalOut descorePuncher(ringDescorePuncherPort, LOW);
 inline pros::adi::DigitalOut descoreLifter(descoreLifterPort, LOW);
 

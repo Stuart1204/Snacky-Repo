@@ -19,19 +19,6 @@ void mogoMechControls() {
 	}
 }
 
-void mogoStealControls() {
-    if(controller.get_digital_new_press(DIGITAL_B)) {
-			stealState = !stealState;
-			if(stealState) {
-				// mogoMech.set_value(true);
-				mogoSteal.set_value(true);
-			} else {
-				// mogoMech.set_value(false);
-				mogoSteal.set_value(false);
-			}
-		}
-}
-
 void doinkerControls() {
     if(controller.get_digital_new_press(DIGITAL_A)) {
 		doinkerState = !doinkerState;
@@ -47,35 +34,33 @@ void descoreControls() {
 	if(controller.get_digital_new_press(DIGITAL_Y)) {
 			descoreState = !descoreState;
 			descoreCounter = 0;
+			if(descoreState) {
+				currentState = 2;
+			}
 	}
 	if(descoreState == true) {
 		if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)) {
 			descoreState = false;
 			descoreCounter = 0;
+			descorePuncher.set_value(true);
 		}
 	}
 	if(descoreState) {
 		descoreCounter++;
-		if(wallStake.get_position() < 1000) {
-			wallStake.move(127);
-		} 
-		else {
-			wallStake.move(0);
-		}
 
 		if(descoreCounter > 5) {
 			descoreLifter.set_value(HIGH);
 		}
-		if(descoreCounter > 28) {
-			descorePuncher.set_value(HIGH);
+		if(descoreCounter > 50) {
+			//descorePuncher.set_value(HIGH);
 		}
 	} 
 	else {
 		descoreLifter.set_value(false);
-		descorePuncher.set_value(false);
-		descoreCounter ++;
-		if (descoreCounter < 30) {
-			wallStake.move(0);
+		descoreCounter++;
+		if (descoreCounter == 30) {
+			currentState = 0;
+			descorePuncher.set_value(LOW);
 		} 
 	}
 }
@@ -257,7 +242,7 @@ void lbTipControls() {
 }
 
 void lbMiddleTipControl() {
-	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
+	if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
 		currentState = 4;
 	}
 }
