@@ -3,10 +3,10 @@
 #include "pros/motors.h"
 
 int checkColour() {
-	if (colourSortingSensor.get_hue() > 150 && colourSortingSensor.get_hue() < 280 && colourSortingSensor.get_proximity() > 180) {
+	if (colourSortingSensor.get_hue() > 160 && colourSortingSensor.get_hue() < 320 && colourSortingSensor.get_proximity() > 160) {
 		return 2; //blue
 	}
-	else if (colourSortingSensor.get_hue() < 10 && colourSortingSensor.get_proximity() > 180){
+	else if (colourSortingSensor.get_hue() < 10 && colourSortingSensor.get_proximity() > 160){
 		return 1; //red
 	} else {
         return 0; //background
@@ -89,11 +89,11 @@ void intakeControl() {
         pros::delay(150);
     }
 
-    if(currentState == 1 && intakeJamCheck()) {
-        if(intake.get_actual_velocity() < 5) {
-            intake.move(0);
-        }
-    }
+    // if(currentState == 1 && intakeJamCheck()) {
+    //     if(intake.get_actual_velocity() < 5) {
+    //         intake.move(0);
+    //     }
+    // }
 }
 
 bool intakeJamCheck() {
@@ -102,7 +102,7 @@ bool intakeJamCheck() {
     }
 
     if (!intakeJustStarted) {
-        if(fabs(intake.get_actual_velocity()) < 10) {
+        if(fabs(intake.get_actual_velocity()) < 5) {
             intakeJamCounter++;
             if(doubleLBLoading) {
                 if(intakeJamCounter > 2) {
@@ -110,7 +110,7 @@ bool intakeJamCheck() {
                     return true;
                 }
             } else {
-               if(intakeJamCounter > 5) {
+               if(intakeJamCounter > 25) {
                     intakeJamCounter = 0;
                     return true;
                 } 
@@ -136,7 +136,7 @@ void colourSort() {
     }
     if (colourSortingEjectionState) {
         ejectCounter++;
-        intake.move(-30);
+        intake.move(-35);
         if (ejectCounter > 6) {
             colourSortingEjectionState = false;
             ejectCounter = 0;

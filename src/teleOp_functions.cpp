@@ -96,7 +96,7 @@ void intakeControls() {
 		doubleLBLoading = true;
 	} else if (controller.get_digital(DIGITAL_L1)) {
 		doubleLBLoading = false;
-		std::cout <<ringColour << " " <<colourSortingSensor.get_hue()<<" "<< ejectCounter << " " << colourSortingSensor.get_proximity() << " " <<colourSortingEjectionState <<" " <<colourSortingSelector<<"\n";
+		// std::cout <<ringColour << " " <<colourSortingSensor.get_hue()<<" "<< ejectCounter << " " << colourSortingSensor.get_proximity() << " " <<colourSortingEjectionState <<" " <<colourSortingSelector<<"\n";
 		// if(colourSortingSelector == 0) {
 		// 	intake.move(127);
 		// } 

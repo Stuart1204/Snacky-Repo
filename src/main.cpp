@@ -47,7 +47,10 @@ void initialize()
 	// rightMotors.set_encoder_units_all(MOTOR_ENCODER_DEGREES);
 	// leftMotors.set_encoder_units_all(MOTOR_ENCODER_DEGREES);
 	leftMotors.set_zero_position_all(0);
-	colourSortingSelector = 2;
+	colourSortingSelector = 0;
+	colourSortingSensor.disable_gesture();
+	colourSortingSensor.set_integration_time(5);
+	colourSortingSensor.set_led_pwm(100);
 	// intializing the colour sorting. if colourSortingSelector = 0, No colour sorting
 	// If 1, colour sorting Red (ejecting red)
 	// If 2, colour sorting Blue (ejecting blue)
@@ -195,15 +198,16 @@ void initialize()
 	}
 	});
 
-	colourSortingSensor.set_led_pwm(99);
-	colourSortingSensor.set_integration_time(10);
+	colourSortingSensor.set_led_pwm(100);
 }
 void disabled() {}
 
 void competition_initialize() {}
 
-void autonomous() { 
-	mainPosBlue(); 
+void autonomous() {
+	enableColourSort = false;
+	colourSortingSelector = 2;
+	qualsPosRed(); 
 	pros::delay(3000);
 
 	lemlib::Pose pose = chassis.getPose();
