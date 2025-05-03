@@ -38,30 +38,32 @@ void descoreControls() {
 				currentState = 2;
 			}
 	}
-	if(descoreState == true) {
+	if(descoreState) {
 		if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)) {
 			descoreState = false;
 			descoreCounter = 0;
-			descorePuncher.set_value(true);
 		}
-	}
-	if(descoreState) {
+
 		descoreCounter++;
 
 		if(descoreCounter > 5) {
 			descoreLifter.set_value(HIGH);
 		}
-		if(descoreCounter > 50) {
-			//descorePuncher.set_value(HIGH);
-		}
+		intakeSpeed = -127;
 	} 
 	else {
 		descoreLifter.set_value(false);
 		descoreCounter++;
-		if (descoreCounter == 30) {
+		if(descoreCounter == 27)  {
+			descorePuncher.set_value(true);
 			currentState = 0;
+		}
+		if (descoreCounter == 60) {
 			descorePuncher.set_value(LOW);
-		} 
+		}
+		if(descoreCounter < 60) {
+			intakeSpeed = -127;
+		}
 	}
 }
 
@@ -122,7 +124,7 @@ void intakeControls() {
 		doubleLBLoading = false;
 		intakeSpeed = -127;
 	} 
-	else if (wallStakeLoad || climbState || firstTimeSwitch || mogoMechCounter < 5){
+	else if (wallStakeLoad || climbState || firstTimeSwitch || mogoMechCounter < 5 || descoreState || descoreCounter < 60){
 		doubleLBLoading = false;
 	} else {
 		doubleLBLoading = false;

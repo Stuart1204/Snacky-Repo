@@ -110,7 +110,7 @@ bool intakeJamCheck() {
                     return true;
                 }
             } else {
-               if(intakeJamCounter > 25) {
+               if(intakeJamCounter > 18) {
                     intakeJamCounter = 0;
                     return true;
                 } 

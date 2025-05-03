@@ -205,10 +205,17 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
-	enableColourSort = false;
-	colourSortingSelector = 2;
-	qualsPosRed(); 
-	pros::delay(3000);
+
+	chassis.setPose(0,0,90);
+	driveToAxisPos('x', 24, true, 45);
+	
+
+
+	// enableColourSort = false;
+	// colourSortingSelector = 2;
+	// //qualsPosRed(); 
+	// skillsAuton();
+	// pros::delay(3000);
 
 	lemlib::Pose pose = chassis.getPose();
 		pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);

@@ -8,7 +8,7 @@ inline bool climbState = false;
 inline bool allianceState = false;
 inline bool transportState = false;
 
-inline int descoreCounter = 0;
+inline int descoreCounter = 100;
 inline int mogoMechCounter = 20;
 
 inline int currentHeading = 0;
