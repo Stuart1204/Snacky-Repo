@@ -127,30 +127,50 @@ void driveToDistance(double distance, int maxSpeed, bool resetPos) {
 void driveToAxisPos(char axis, int destinationValue, bool direction) {
     leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
     rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-    double currentValue, startingTheta;
+    double currentValue, startingTheta, thetaCorrection, thetaCorrectSpeedLimit = 30;
+
     lemlib::Pose currentPose = chassis.getPose();
     startingTheta = currentPose.theta;
 
-    double error, thetaDeviation, kP = 3, kT = 2;
-    //kP refers to linear motion, kT refers to robot drift correction
+    double error, thetaDeviation, kP = 5, kT = 2;
+    double kD = 0.6; // Derivative gain
+    // kP refers to linear motion, kT refers to robot drift correction, kD is derivative
     double leftMotorsPower, rightMotorsPower;
+    double lastError = 0; // For derivative calculation
+    double derivative = 0;
+
+    int timeoutCounter = 0, timeoutThreshold = 200;
 
     if(direction) {
         if(axis == 'x') {
             currentPose = chassis.getPose();
-            while(fabs(destinationValue - currentPose.x) > 1) {
+            lastError = fabs(destinationValue - currentPose.x);
+            while(fabs(destinationValue - currentPose.x) > 1 && timeoutCounter < timeoutThreshold) {
+                timeoutCounter++;
                 currentPose = chassis.getPose();
+                double currentTheta = (int)currentPose.theta % 360;
+                if(currentTheta > 180) {
+                    currentTheta -= 360;
+                }
 
-                // linear P code
+                // linear PD code
                 error = fabs(destinationValue - currentPose.x);
-                leftMotorsPower = error * kP + 20;
-                rightMotorsPower = error * kP + 20;
+                derivative = (error - lastError) / 0.02; // 20ms loop
+                lastError = error;
+                double pdTerm = error * kP + kD * derivative;
+                leftMotorsPower = pdTerm + 20;
+                rightMotorsPower = pdTerm + 20;
                 
                 // drift correction code
-                thetaDeviation = currentPose.theta - startingTheta;
+                thetaDeviation = currentTheta - startingTheta;
+                thetaCorrection = thetaDeviation * kT;
+                if(fabs(thetaCorrection) > thetaCorrectSpeedLimit) {
+                    if(thetaCorrection > 0) thetaCorrection = thetaCorrectSpeedLimit;
+                    else thetaCorrection = -thetaCorrectSpeedLimit;
+                }
 
-                leftMotorsPower -= thetaDeviation * kT;
-                rightMotorsPower += thetaDeviation * kT;
+                leftMotorsPower -= thetaCorrection;
+                rightMotorsPower += thetaCorrection;
 
                 leftMotors.move(leftMotorsPower);
                 rightMotors.move(rightMotorsPower);
@@ -159,16 +179,25 @@ void driveToAxisPos(char axis, int destinationValue, bool direction) {
             }
         } else if (axis == 'y'){
             currentPose = chassis.getPose();
-            while(fabs(destinationValue - currentPose.y) > 1) {
+            lastError = fabs(destinationValue - currentPose.y);
+            while(fabs(destinationValue - currentPose.y) > 1 && timeoutCounter < timeoutThreshold) {
+                timeoutCounter++;
                 currentPose = chassis.getPose();
+                double currentTheta = (int)currentPose.theta % 360;
+                if(currentTheta > 180) {
+                    currentTheta -= 360;
+                }
 
-                // linear P code
+                // linear PD code
                 error = fabs(destinationValue - currentPose.y);
-                leftMotorsPower = error * kP + 20;
-                rightMotorsPower = error * kP + 20;
+                derivative = (error - lastError) / 0.02;
+                lastError = error;
+                double pdTerm = error * kP + kD * derivative;
+                leftMotorsPower = pdTerm + 20;
+                rightMotorsPower = pdTerm + 20;
                 
                 // drift correction code
-                thetaDeviation = currentPose.theta - startingTheta;
+                thetaDeviation = currentTheta - startingTheta;
 
                 leftMotorsPower -= thetaDeviation * kT;
                 rightMotorsPower += thetaDeviation * kT;
@@ -184,19 +213,33 @@ void driveToAxisPos(char axis, int destinationValue, bool direction) {
     } else {
         if(axis == 'x') {
             currentPose = chassis.getPose();
-            while(fabs(destinationValue - currentPose.x) > 1) {
+            lastError = -1 * fabs(destinationValue - currentPose.x);
+            while(fabs(destinationValue - currentPose.x) > 1 && timeoutCounter < timeoutThreshold) {
+                timeoutCounter++;
                 currentPose = chassis.getPose();
+                double currentTheta = (int)currentPose.theta % 360;
+                if(currentTheta > 180) {
+                    currentTheta -= 360;
+                }
 
-                // linear P code
+                // linear PD code
                 error = -1 * fabs(destinationValue - currentPose.x);
-                leftMotorsPower = error * kP - 20;
-                rightMotorsPower = error * kP - 20;
+                derivative = (error - lastError) / 0.02;
+                lastError = error;
+                double pdTerm = error * kP + kD * derivative;
+                leftMotorsPower = pdTerm - 20;
+                rightMotorsPower = pdTerm - 20;
                 
                 // drift correction code
-                thetaDeviation = currentPose.theta - startingTheta;
+                thetaDeviation = currentTheta - startingTheta;
+                thetaCorrection = thetaDeviation * kT;
+                if(fabs(thetaCorrection) > 15) {
+                    if(thetaCorrection > 0) thetaCorrection = 15;
+                    else thetaCorrection = -15;
+                }
 
-                leftMotorsPower -= thetaDeviation * kT;
-                rightMotorsPower += thetaDeviation * kT;
+                leftMotorsPower -= thetaCorrection;
+                rightMotorsPower += thetaCorrection;
 
                 leftMotors.move(leftMotorsPower);
                 rightMotors.move(rightMotorsPower);
@@ -205,16 +248,25 @@ void driveToAxisPos(char axis, int destinationValue, bool direction) {
             }
         } else if (axis == 'y'){
             currentPose = chassis.getPose();
-            while(fabs(destinationValue - currentPose.y) > 1) {
+            lastError = -1 * fabs(destinationValue - currentPose.y);
+            while(fabs(destinationValue - currentPose.y) > 1 && timeoutCounter < timeoutThreshold) {
+                timeoutCounter++;
                 currentPose = chassis.getPose();
+                double currentTheta = (int)currentPose.theta % 360;
+                if(currentTheta > 180) {
+                    currentTheta -= 360;
+                }
 
-                // linear P code
+                // linear PD code
                 error = -1 * fabs(destinationValue - currentPose.y);
-                leftMotorsPower = error * kP - 20;
-                rightMotorsPower = error * kP - 20;
+                derivative = (error - lastError) / 0.02;
+                lastError = error;
+                double pdTerm = error * kP + kD * derivative;
+                leftMotorsPower = pdTerm - 20;
+                rightMotorsPower = pdTerm - 20;
                 
                 // drift correction code
-                thetaDeviation = currentPose.theta - startingTheta;
+                thetaDeviation = currentTheta - startingTheta;
 
                 leftMotorsPower -= thetaDeviation * kT;
                 rightMotorsPower += thetaDeviation * kT;
@@ -242,23 +294,37 @@ void driveToAxisPos(char axis, int destinationValue, bool direction, int intente
     lemlib::Pose currentPose = chassis.getPose();
     startingTheta = intentedAngle;
 
-    double error, thetaDeviation, kP = 3, kT = 2;
-    //kP refers to linear motion, kT refers to robot drift correction
+    double error, thetaDeviation, kP = 5, kT = 2;
+    double kD = 0.6; // Derivative gain
+    // kP refers to linear motion, kT refers to robot drift correction, kD is derivative
     double leftMotorsPower, rightMotorsPower;
+    double lastError = 0; // For derivative calculation
+    double derivative = 0;
+
+    int timeoutCounter = 0, timeoutThreshold = 200;
 
     if(direction) {
         if(axis == 'x') {
             currentPose = chassis.getPose();
-            while(fabs(destinationValue - currentPose.x) > 1) {
+            lastError = fabs(destinationValue - currentPose.x);
+            while(fabs(destinationValue - currentPose.x) > 1 && timeoutCounter < timeoutThreshold) {
+                timeoutCounter++;
                 currentPose = chassis.getPose();
+                double currentTheta = (int)currentPose.theta % 360;
+                if(currentTheta > 180) {
+                    currentTheta -= 360;
+                }
 
-                // linear P code
+                // linear PD code
                 error = fabs(destinationValue - currentPose.x);
-                leftMotorsPower = error * kP + 20;
-                rightMotorsPower = error * kP + 20;
+                derivative = (error - lastError) / 0.02; // 20ms loop
+                lastError = error;
+                double pdTerm = error * kP + kD * derivative;
+                leftMotorsPower = pdTerm + 20;
+                rightMotorsPower = pdTerm + 20;
                 
                 // drift correction code
-                thetaDeviation = currentPose.theta - startingTheta;
+                thetaDeviation = currentTheta - startingTheta;
                 thetaCorrection = thetaDeviation * kT;
                 if(fabs(thetaCorrection) > thetaCorrectSpeedLimit) {
                     if(thetaCorrection > 0) thetaCorrection = thetaCorrectSpeedLimit;
@@ -275,16 +341,25 @@ void driveToAxisPos(char axis, int destinationValue, bool direction, int intente
             }
         } else if (axis == 'y'){
             currentPose = chassis.getPose();
-            while(fabs(destinationValue - currentPose.y) > 1) {
+            lastError = fabs(destinationValue - currentPose.y);
+            while(fabs(destinationValue - currentPose.y) > 1 && timeoutCounter < timeoutThreshold) {
+                timeoutCounter++;
                 currentPose = chassis.getPose();
+                double currentTheta = (int)currentPose.theta % 360;
+                if(currentTheta > 180) {
+                    currentTheta -= 360;
+                }
 
-                // linear P code
+                // linear PD code
                 error = fabs(destinationValue - currentPose.y);
-                leftMotorsPower = error * kP + 20;
-                rightMotorsPower = error * kP + 20;
+                derivative = (error - lastError) / 0.02;
+                lastError = error;
+                double pdTerm = error * kP + kD * derivative;
+                leftMotorsPower = pdTerm + 20;
+                rightMotorsPower = pdTerm + 20;
                 
                 // drift correction code
-                thetaDeviation = currentPose.theta - startingTheta;
+                thetaDeviation = currentTheta - startingTheta;
 
                 leftMotorsPower -= thetaDeviation * kT;
                 rightMotorsPower += thetaDeviation * kT;
@@ -300,16 +375,25 @@ void driveToAxisPos(char axis, int destinationValue, bool direction, int intente
     } else {
         if(axis == 'x') {
             currentPose = chassis.getPose();
-            while(fabs(destinationValue - currentPose.x) > 1) {
+            lastError = -1 * fabs(destinationValue - currentPose.x);
+            while(fabs(destinationValue - currentPose.x) > 1 && timeoutCounter < timeoutThreshold) {
+                timeoutCounter++;
                 currentPose = chassis.getPose();
+                double currentTheta = (int)currentPose.theta % 360;
+                if(currentTheta > 180) {
+                    currentTheta -= 360;
+                }
 
-                // linear P code
+                // linear PD code
                 error = -1 * fabs(destinationValue - currentPose.x);
-                leftMotorsPower = error * kP - 20;
-                rightMotorsPower = error * kP - 20;
+                derivative = (error - lastError) / 0.02;
+                lastError = error;
+                double pdTerm = error * kP + kD * derivative;
+                leftMotorsPower = pdTerm - 20;
+                rightMotorsPower = pdTerm - 20;
                 
                 // drift correction code
-                thetaDeviation = currentPose.theta - startingTheta;
+                thetaDeviation = currentTheta - startingTheta;
                 thetaCorrection = thetaDeviation * kT;
                 if(fabs(thetaCorrection) > 15) {
                     if(thetaCorrection > 0) thetaCorrection = 15;
@@ -326,16 +410,25 @@ void driveToAxisPos(char axis, int destinationValue, bool direction, int intente
             }
         } else if (axis == 'y'){
             currentPose = chassis.getPose();
-            while(fabs(destinationValue - currentPose.y) > 1) {
+            lastError = -1 * fabs(destinationValue - currentPose.y);
+            while(fabs(destinationValue - currentPose.y) > 1 && timeoutCounter < timeoutThreshold) {
+                timeoutCounter++;
                 currentPose = chassis.getPose();
+                double currentTheta = (int)currentPose.theta % 360;
+                if(currentTheta > 180) {
+                    currentTheta -= 360;
+                }
 
-                // linear P code
+                // linear PD code
                 error = -1 * fabs(destinationValue - currentPose.y);
-                leftMotorsPower = error * kP - 20;
-                rightMotorsPower = error * kP - 20;
+                derivative = (error - lastError) / 0.02;
+                lastError = error;
+                double pdTerm = error * kP + kD * derivative;
+                leftMotorsPower = pdTerm - 20;
+                rightMotorsPower = pdTerm - 20;
                 
                 // drift correction code
-                thetaDeviation = currentPose.theta - startingTheta;
+                thetaDeviation = currentTheta - startingTheta;
 
                 leftMotorsPower -= thetaDeviation * kT;
                 rightMotorsPower += thetaDeviation * kT;
@@ -572,57 +665,49 @@ void checkJam() {
 void skillsAuton() {
     chassis.setPose(-62, 0, 90); 
     intakeSpeed = 127;
-	pros::delay(300);   
-    leftMotors.move(60);
-    rightMotors.move(60);
-    pros::delay(250);
+	pros::delay(300);
     intakeSpeed = 0;
-	chassis.turnToHeading(-30, 1200, {.minSpeed = 30, .earlyExitRange = 5});
-	chassis.moveToPoint(-49, -22, 1500, {.forwards = false, .maxSpeed = 60});
-	chassis.waitUntil(27);
+    driveToAxisPos('x', -48, true, 90);
+	chassis.turnToHeading(0, 600, {.minSpeed = 10, .earlyExitRange = 1});
+    driveToAxisPos('y', -22, false, 0);
 	mogoMech.set_value(true);
     pros::delay(300);
-    chassis.moveToPoint(-24, -26, 1500, {.minSpeed = 50, .earlyExitRange = 10});
-    chassis.waitUntil(6);
     intakeSpeed = 127;
-    chassis.moveToPoint(-9, -38, 1500, {.minSpeed = 60, .earlyExitRange = 5});
-    chassis.moveToPoint(22, -49, 1500);
+    chassis.turnToHeading(90, 600, {.minSpeed = 10, .earlyExitRange = 1});
+    driveToAxisPos('x', -26, true, 90);
+    chassis.turnToPoint(24, -48, 600, {.minSpeed = 10, .earlyExitRange = 1});
+    driveToAxisPos('x', 24, true);
+    doubleLBLoading = true;
+    driveToAxisPos('x', 0, false, 110);
+    chassis.turnToHeading(180, 600, {.minSpeed = 10, .earlyExitRange = 1});
     chassis.waitUntilDone();
-    chassis.turnToPoint(5, -55, 700, {.minSpeed = 10});
-    chassis.moveToPoint(5, -55, 1000, {.minSpeed = 30, .earlyExitRange = 5});
-    chassis.moveToPoint(1, -61, 1000);
-    chassis.waitUntilDone();
-    currentState = 1;
-    // chassis.moveToPoint(2, -57, 1000, {.forwards = false, .minSpeed = 50, .earlyExitRange =3});
-    chassis.turnToHeading(180, 1000, {.minSpeed = 20});
-    chassis.waitUntilDone();
+
+    // resetting position before scoring first wall stake
     resetPos();
     leftMotors.move(60);
     rightMotors.move(60);
-    pros::delay(600);
-    leftMotors.move(-5);
-    rightMotors.move(-5);
-    autoScoreLB();
-    intakeSpeed = -127;
-    //SCORED THE FIRST WALLSTAKE!! and scored the first two rings on mogooo
-    chassis.moveToPoint(0, -46, 1500, {.forwards = false, .minSpeed = 5, .earlyExitRange = 1});
-    chassis.waitUntilDone();
+    pros::delay(500);
+    leftMotors.move(0);
+    rightMotors.move(0);
+    currentState = 2;
+    doubleLBLoading = false;
+
+    //SCORED THE FIRST WALLSTAKE!!
+
+    driveToAxisPos('y', -48, false, 180);
     currentState = 0;
-    chassis.turnToHeading(-90, 1500, {.minSpeed = 20, .earlyExitRange = 5});
+    chassis.turnToHeading(-90, 600, {.minSpeed = 10, .earlyExitRange = 1});
+    chassis.waitUntilDone();
     intakeSpeed = 127;
-    chassis.moveToPoint(-24, -46, 1500, {.minSpeed = 40, .earlyExitRange = 5});
-    chassis.turnToHeading(-90, 1500);
-    driveToDistance(8, 60, true);
-    leftMotors.move(-70);
-    rightMotors.move(-70);
+    driveToAxisPos('x', -60, true, -90);
+    resetPos();
+    chassis.turnToPoint(-48, -60, 600, {.minSpeed = 10, .earlyExitRange = 1});
+    driveToAxisPos('x', -50, true);
+    chassis.turnToHeading(70, 600, {.minSpeed = 10, .earlyExitRange = 1});
+    chassis.waitUntilDone();
+    leftMotors.move(-60);
+    rightMotors.move(-60);
     pros::delay(400);
-    chassis.turnToHeading(180,1500);
-    chassis.waitUntilDone();
-    driveToDistance(10, 60, true);
-    chassis.turnToPoint(-59, -62, 800, {.forwards=false, .minSpeed=30});
-    chassis.moveToPoint(-59, -62, 500, {.forwards=false, .minSpeed=30});
-    chassis.waitUntilDone();
-    pros::delay(300);
     mogoMech.set_value(false);
     intakeSpeed = -127;
     pros::delay(150);
@@ -630,7 +715,7 @@ void skillsAuton() {
     chassis.setPose(currentPose.x, currentPose.y, currentPose.theta);
     chassis.follow(skillsPath4_txt, 18, 2000);
     chassis.turnToHeading(-90, 1500, {.minSpeed = 30, .earlyExitRange = 5});
-    driveToDistance(18, 80, true);
+    driveToDistance(20, 80, true);
     pros::delay(100);
     chassis.turnToHeading(180, 1500, {.minSpeed = 40, .earlyExitRange = 10});
     chassis.moveToPoint(-48, 24, 2000, {.forwards = false, .maxSpeed = 80});

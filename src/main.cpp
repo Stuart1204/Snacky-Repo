@@ -206,16 +206,11 @@ void competition_initialize() {}
 
 void autonomous() {
 
-	chassis.setPose(0,0,90);
-	driveToAxisPos('x', 24, true, 45);
-	
-
-
-	// enableColourSort = false;
-	// colourSortingSelector = 2;
-	// //qualsPosRed(); 
-	// skillsAuton();
-	// pros::delay(3000);
+	enableColourSort = false;
+	colourSortingSelector = 2;
+	//qualsPosRed(); 
+	skillsAuton();
+	pros::delay(3000);
 
 	lemlib::Pose pose = chassis.getPose();
 		pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
@@ -274,11 +269,11 @@ void opcontrol()
 		lbTipControls();
 		allianceAutoScore();
 		lbMogoScoreControl();
-		// lemlib::Pose pose = chassis.getPose();
-		// pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
-		// pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
-		// pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
+		lemlib::Pose pose = chassis.getPose();
+		pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
+		pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
+		pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
 
-		pros::screen::print(TEXT_LARGE_CENTER, 7, "pos: %f", wallStake.get_position());
+		//pros::screen::print(TEXT_LARGE_CENTER, 7, "pos: %f", wallStake.get_position());
     }
 }
