@@ -12,8 +12,7 @@ inline bool exitLoop = false;
 inline void driveDistance(double distance, double maxSpeed);
 inline void driveD(double distance);
 inline void driveToDistance(double distance, int maxSpeed, bool resetPos);
-inline void driveToAxisPos(char axis, int value, bool direction);
-inline void driveToAxisPos(char axis, int value, bool direction, int intendedAngle);
+inline void driveToAxisPos(char axis, int value, bool direction, int intendedAngle, int maxSpeed);
 
 inline void resetPos();
 
@@ -26,6 +25,8 @@ inline void checkJam();
 inline void skillsAuton();
 inline void skillsAutonSecondHalf();
 inline void autoScoreAlliance();
+
+inline void sawp();
 
 inline void scorePosBlue();
 inline void disruptPosBlue();

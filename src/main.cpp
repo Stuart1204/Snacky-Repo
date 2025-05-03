@@ -209,7 +209,8 @@ void autonomous() {
 	enableColourSort = false;
 	colourSortingSelector = 2;
 	//qualsPosRed(); 
-	skillsAuton();
+	// skillsAuton();
+	sawp();
 	pros::delay(3000);
 
 	lemlib::Pose pose = chassis.getPose();
