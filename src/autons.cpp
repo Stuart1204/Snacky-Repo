@@ -323,6 +323,9 @@ void resetPos() {
         if(absoluteTheta > 180) {
             absoluteTheta -= 360;
         }
+        if(absoluteTheta < -180) {
+            absoluteTheta += 360;
+        }
         std::cout <<absoluteTheta <<"\n";
         if(fabs(absoluteTheta - 0) < 10) {
             chassis.setPose(currentPose.x, 65 - disToWall, currentPose.theta);
@@ -332,6 +335,8 @@ void resetPos() {
             chassis.setPose(currentPose.x, -65 + disToWall, currentPose.theta);
         } else if(fabs(absoluteTheta + 90) < 10) {
             chassis.setPose(-65 + disToWall, currentPose.y, currentPose.theta);
+        } else {
+            controller.rumble("--");
         }
 }
 
@@ -581,10 +586,10 @@ void skillsAuton() {
     chassis.follow(skillsPath4_txt, 18, 2000);
     chassis.turnToHeading(-90, 1500, {.minSpeed = 30, .earlyExitRange = 5});
     chassis.waitUntilDone();
-    driveToDistance(19, 60, true);
+    driveToDistance(20, 60, true);
     pros::delay(100);
     chassis.turnToHeading(180, 1500, {.minSpeed = 40, .earlyExitRange = 10});
-    driveToAxisPos('y', 22, false, 180, -70);
+    driveToAxisPos('y', 25, false, 180, -60);
     intakeSpeed = 0;
     mogoMech.set_value(true);
     currentPose = chassis.getPose();
@@ -660,15 +665,16 @@ void skillsAutonSecondHalf() {
     driveToAxisPos('y', 47, true, -0, 80);
     resetPos();
     doubleLBLoading = false;
+    intakeSpeed = 0;
     chassis.turnToHeading(-140, 1500, {.minSpeed = 15, .earlyExitRange = 1});
     chassis.waitUntilDone();
-    intakeSpeed = 0;
     mogoMech.set_value(false);
     leftMotors.move(-60);
     rightMotors.move(-60);
     pros::delay(500);
     chassis.moveToPoint(51, 22, 1500, {.minSpeed = 10, .earlyExitRange = 1});
     chassis.turnToHeading(0, 1500);
+    chassis.waitUntilDone();
     driveToAxisPos('y', -1, false, 0, -60);
     mogoMech.set_value(true);
     chassis.turnToHeading(90, 1500, {.minSpeed = 10});
@@ -682,7 +688,7 @@ void skillsAutonSecondHalf() {
     currentState = 4;
     pros::delay(800);
     currentState = 3;
-    driveToAxisPos('x', 48, false, -0, -80);
+    driveToAxisPos('x', 47, false, -0, -80);
     currentState = 0;
     chassis.turnToHeading(0, 800, {.minSpeed = 10, .earlyExitRange = 1});
     chassis.waitUntilDone();
@@ -700,8 +706,10 @@ void skillsAutonSecondHalf() {
     chassis.waitUntilDone();
     driveToAxisPos('x', 60, true, 90, 127);
     chassis.waitUntilDone();
+    chassis.waitUntilDone();
     driveToDistance(16, 80, true);
     driveToDistance(16, 80, true);
+    resetPos();
     resetPos();
     driveToAxisPos('x', 49, false, 90, -50);
     chassis.turnToHeading(180, 700, {.minSpeed = 10, .earlyExitRange = 1});
@@ -730,8 +738,8 @@ void skillsAutonSecondHalf() {
         } 
         pros::delay(20);
     }
-    leftMotors.move(30);
-    rightMotors.move(30);
+    leftMotors.move(5);
+    rightMotors.move(5);
 }
 
 void scorePosBlue() {

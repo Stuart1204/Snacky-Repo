@@ -105,7 +105,7 @@ bool intakeJamCheck() {
         if(fabs(intake.get_actual_velocity()) < 5) {
             intakeJamCounter++;
             if(doubleLBLoading) {
-                if(intakeJamCounter > 2) {
+                if(intakeJamCounter > 5) {
                     intakeJamCounter = 0;
                     return true;
                 }

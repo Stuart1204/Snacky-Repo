@@ -173,12 +173,12 @@ void initialize()
 			break;
 		}
 	}
+
 	pros::Task LBTask([]{
         while (true) {
             liftControl();
 			updateHookForLB();
 			//std::cout <<ringColour << " " <<colourSortingSensor.get_hue()<<" "<< ejectCounter << " " << colourSortingSensor.get_proximity() << " " <<colourSortingEjectionState <<" "<<colourSortingSelector<<"\n";
-			pros::delay(20);
         }
     });
 
@@ -209,8 +209,8 @@ void autonomous() {
 	enableColourSort = false;
 	colourSortingSelector = 2;
 	//qualsPosRed(); 
-	// skillsAuton();
-	sawp();
+	skillsAuton();
+	//sawp();
 	pros::delay(3000);
 
 	lemlib::Pose pose = chassis.getPose();
