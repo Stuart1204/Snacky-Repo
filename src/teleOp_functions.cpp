@@ -31,13 +31,13 @@ void doinkerControls() {
 }
 
 void descoreControls() {
-	if(controller.get_digital_new_press(DIGITAL_Y)) {
-			descoreState = !descoreState;
-			descoreCounter = 0;
-			if(descoreState) {
-				currentState = 2;
-			}
-	}
+	// if(controller.get_digital_new_press(DIGITAL_Y)) {
+	// 		descoreState = !descoreState;
+	// 		descoreCounter = 0;
+	// 		if(descoreState) {
+	// 			currentState = 2;
+	// 		}
+	// }
 	if(descoreState) {
 		if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)) {
 			descoreState = false;
