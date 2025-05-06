@@ -894,10 +894,11 @@ void mainPosBlue() {
     chassis.moveToPoint(29, -28, 1500, {.maxSpeed = 50, .minSpeed = 30});
     chassis.moveToPoint(26, -45, 1500, {.maxSpeed = 50, .minSpeed = 30});
     
-    chassis.moveToPoint(60, -50, 1500, {.minSpeed = 30, .earlyExitRange = 5});
-    chassis.turnToHeading(90, 1500, {.minSpeed = 30});
+    chassis.moveToPoint(60, -50, 1500, {.minSpeed = 35, .earlyExitRange = 5});
+    chassis.turnToHeading(90, 1500, {.minSpeed = 35, .earlyExitRange = 5});
+    chassis.waitUntilDone();
     driveToDistance(6, 100, true);
-    chassis.turnToHeading(160, 500);
+    chassis.turnToHeading(160, 450, {.minSpeed = 30, .earlyExitRange = 5});
     chassis.waitUntilDone();
     intakeSpeed = 127;
     leftMotors.move(50);

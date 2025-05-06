@@ -61,7 +61,7 @@ void initialize()
 	//wallStake.set_brake_mode(MOTOR_BRAKE_HOLD);
 	pros::screen::set_eraser(0x00000000); 
 	while (true){
-		break; // remove 
+		//break; // remove 
 		pros::delay(30);
 		pros::screen::set_pen(0x00FFD700);
 		pros::screen::fill_rect(0,70,130,170);
@@ -207,16 +207,6 @@ void competition_initialize() {}
 void autonomous() {
 
 	enableColourSort = false;
-	colourSortingSelector = 2;
-	//qualsPosRed(); 
-	skillsAuton();
-	//sawp();
-	pros::delay(3000);
-
-	lemlib::Pose pose = chassis.getPose();
-		pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
-		pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
-		pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
 	if (autonSelection == 1) {
 		qualsPosRed();
 	}
