@@ -207,7 +207,7 @@ void competition_initialize() {}
 void autonomous() {
 
 	enableColourSort = false;
-	skillsAuton();
+	qualsPosRed();
 	if (autonSelection == 1) {
 		qualsPosRed();
 	}
