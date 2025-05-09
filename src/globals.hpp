@@ -39,7 +39,7 @@
 #define ringDescorePuncherPort 'C'
 #define descoreLifterPort 'D'
 #define verticalEncoderPort -5
-#define LB_rotationPort 8
+#define LB_rotationPort 14
 
 
 //drivetrain specs

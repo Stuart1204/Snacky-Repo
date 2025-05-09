@@ -179,6 +179,7 @@ void initialize()
             liftControl();
 			updateHookForLB();
 			//std::cout <<ringColour << " " <<colourSortingSensor.get_hue()<<" "<< ejectCounter << " " << colourSortingSensor.get_proximity() << " " <<colourSortingEjectionState <<" "<<colourSortingSelector<<"\n";
+			pros::delay(20);
         }
     });
 
@@ -207,7 +208,7 @@ void competition_initialize() {}
 void autonomous() {
 
 	enableColourSort = false;
-	qualsPosRed();
+	elimsPosBlue();
 	if (autonSelection == 1) {
 		qualsPosRed();
 	}
@@ -262,9 +263,9 @@ void opcontrol()
 		allianceAutoScore();
 		lbMogoScoreControl();
 		lemlib::Pose pose = chassis.getPose();
-		pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
-		pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
-		pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
+		pros::screen::print(TEXT_LARGE_CENTER, 1, "pos: %f", LB_rotation.get_position());
+		// pros::screen::print(TEXT_LARGE_CENTER, 4, "y: %f", pose.y);
+		// pros::screen::print(TEXT_LARGE_CENTER, 7, "theta: %f", pose.theta);
 
 		//pros::screen::print(TEXT_LARGE_CENTER, 7, "pos: %f", wallStake.get_position());
     }

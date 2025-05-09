@@ -15,7 +15,7 @@ int checkColour() {
 
 void nextState() {
     currentState += 1;
-    if (currentState == 3 || currentState == 4 || currentState == 5 || currentState == 6) {
+    if (currentState == 3 || currentState == 4 || currentState == 5 || currentState == 6 || currentState == 8) {
         currentState = 0;
     }
     if (currentState == 7) {
@@ -53,7 +53,7 @@ void liftControl() {
     }
     if(firstTimeSwitch) {
         if(intake.get_position() > intakeTarget) {
-            intake.move(-60);
+            intake.move(-75);
         } else {
             firstTimeSwitch = false;
         }
