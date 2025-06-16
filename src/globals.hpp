@@ -3,6 +3,7 @@
 #include "pros/abstract_motor.hpp"
 #include "pros/adi.h"
 #include "pros/adi.hpp"
+#include "pros/misc.h"
 #include "pros/motors.h"
 #include "pros/motors.hpp"
 #include "pros/optical.hpp"
@@ -14,19 +15,19 @@
 #define CONFIG_HPP
 
 //motor ports
-#define lBPort -9
-#define lMPort -10
-#define lFPort -20
+#define lBPort -3
+#define lMPort -2
+#define lFPort -1
 
 
-#define rBPort 12
-#define rMPort 3
-#define rFPort 4
+#define rBPort 11
+#define rMPort 14
+#define rFPort 15
 
 
-#define intakePort 19
-#define wallStakePort 6
-
+#define lowIntakePort 12
+#define highIntakePort -13
+#define scoringWheelPort 10
 
 //sensor ports
 #define imuPort 2
@@ -45,7 +46,7 @@
 //drivetrain specs
 #define driveTrackWidth 11.375
 #define driveWheelType lemlib::Omniwheel::NEW_325
-#define driveRPM 480
+#define driveRPM 450
 
 //global variables
 inline int colourSortingSelector;
@@ -71,13 +72,17 @@ inline bool doubleLBLoading = false;
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+namespace buttons {
+    constexpr auto R1 = pros::E_CONTROLLER_DIGITAL_R1;
+}
+
 // controller
 inline pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 // motors
-inline pros::Motor wallStake(wallStakePort, pros::v5::MotorGears::rpm_200);
-inline pros::Motor intake(intakePort, pros::v5::MotorGears::rpm_600);
-inline pros::Motor lBDriveMotor(lBPort, pros::v5::MotorGears::rpm_600, pros::v5::MotorEncoderUnits::degrees);
+inline pros::Motor lowIntake(lowIntakePort, pros::v5::MotorGears::rpm_600);
+inline pros::Motor highIntake(highIntakePort, pros::v5::MotorGears::rpm_600);
+inline pros::Motor scoringWheel(scoringWheelPort, pros::v5::MotorGears::rpm_600);
 
 // drive motor groups
 inline pros::MotorGroup leftMotors({lBPort, lMPort, lFPort}, pros::v5::MotorGears::rpm_600);	// left motor group
