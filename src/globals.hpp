@@ -14,34 +14,31 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
+// -- Defined Ports -- //
+
 //motor ports
-#define lBPort -3
+#define lBPort 3
 #define lMPort -2
 #define lFPort -1
 
-
 #define rBPort 11
-#define rMPort 14
+#define rMPort -14
 #define rFPort 15
 
-
 #define lowIntakePort 12
-#define highIntakePort -13
-#define scoringWheelPort 10
+#define upperIntakePort -13
+#define scoringRollerPort 10
 
 //sensor ports
 #define imuPort 2
-#define colourSortingSensorPort 13
-#define lineSensorPort 'F'
-#define distanceToWallPort 7
-//solenoids
-#define mogoMechPort 'B'
-#define doinkerPort 'A'
-#define ringDescorePuncherPort 'C'
-#define descoreLifterPort 'D'
-#define verticalEncoderPort -5
-#define LB_rotationPort 14
+#define intakeCountSensorPort 8
+#define intakeHandOffPort 17
 
+//solenoids
+#define leftWingPort 'E'
+#define rightWingPort 'D'
+#define intakeStopperPort 'C'
+// #define verticalEncoderPort -5
 
 //drivetrain specs
 #define driveTrackWidth 11.375
@@ -49,65 +46,59 @@
 #define driveRPM 450
 
 //global variables
-inline int colourSortingSelector;
-inline int ringColour;
-inline bool mogoState = false;
 
-inline bool exitLoadWallStake = false;
-inline int autonSelection = 0;
+// -- Namespace Configurations -- //
 
-inline bool enableColourSort = true;
-
-inline bool scoreAllianceState = false;
-
-inline bool descoreState = false;
-
-inline bool lbTip = false;
-
-inline int currentState = 0;
-inline int intakeSpeed = 0;
-
-inline bool doubleLBLoading = false;
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-
-namespace buttons {
+namespace Buttons {
     constexpr auto R1 = pros::E_CONTROLLER_DIGITAL_R1;
+    constexpr auto R2 = pros::E_CONTROLLER_DIGITAL_R2;
+    constexpr auto L1 = pros::E_CONTROLLER_DIGITAL_L1;
+    constexpr auto L2 = pros::E_CONTROLLER_DIGITAL_L2;
+    constexpr auto A = pros::E_CONTROLLER_DIGITAL_A;
+    constexpr auto B = pros::E_CONTROLLER_DIGITAL_B;
+    constexpr auto Y = pros::E_CONTROLLER_DIGITAL_Y;
+    constexpr auto X = pros::E_CONTROLLER_DIGITAL_X;
+    constexpr auto UP = pros::E_CONTROLLER_DIGITAL_UP;
+    constexpr auto DOWN = pros::E_CONTROLLER_DIGITAL_DOWN;
+    constexpr auto LEFT = pros::E_CONTROLLER_DIGITAL_LEFT;
+    constexpr auto RIGHT = pros::E_CONTROLLER_DIGITAL_RIGHT;
 }
+
+namespace MotorConfigs {
+    constexpr auto BRAKE = pros::E_MOTOR_BRAKE_BRAKE;
+    constexpr auto COAST = pros::E_MOTOR_BRAKE_COAST;
+    constexpr auto HOLD = pros::E_MOTOR_BRAKE_HOLD;
+    constexpr auto RED = pros::E_MOTOR_GEAR_RED;
+    constexpr auto GREEN = pros::E_MOTOR_GEAR_GREEN;
+    constexpr auto BLUE = pros::E_MOTOR_GEAR_BLUE;
+    constexpr auto DEGREES = pros::E_MOTOR_ENCODER_DEGREES;
+}
+
+
 
 // controller
 inline pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 // motors
-inline pros::Motor lowIntake(lowIntakePort, pros::v5::MotorGears::rpm_600);
-inline pros::Motor highIntake(highIntakePort, pros::v5::MotorGears::rpm_600);
-inline pros::Motor scoringWheel(scoringWheelPort, pros::v5::MotorGears::rpm_600);
+inline pros::Motor lowerIntake(lowIntakePort, pros::v5::MotorGears::rpm_600);
+inline pros::Motor upperIntake(upperIntakePort, pros::v5::MotorGears::rpm_600);
+inline pros::Motor scoringRoller(scoringRollerPort, pros::v5::MotorGears::rpm_600);
 
-// drive motor groups
-inline pros::MotorGroup leftMotors({lBPort, lMPort, lFPort}, pros::v5::MotorGears::rpm_600);	// left motor group
-inline pros::MotorGroup rightMotors({rBPort, rMPort, rFPort}, pros::v5::MotorGears::rpm_600); // right motor group
+inline pros::MotorGroup leftMotors({lBPort, lMPort, lFPort}, pros::v5::MotorGears::rpm_600);
+inline pros::MotorGroup rightMotors({rBPort, rMPort, rFPort}, pros::v5::MotorGears::rpm_600);
 
-//solenoids
-inline pros::adi::DigitalOut mogoMech(mogoMechPort, LOW);
-inline pros::adi::DigitalOut doinker(doinkerPort, LOW);
-inline pros::adi::DigitalOut descorePuncher(ringDescorePuncherPort, LOW);
-inline pros::adi::DigitalOut descoreLifter(descoreLifterPort, LOW);
+// pneumatics
+inline pros::adi::DigitalOut leftWingPiston(leftWingPort, LOW);
+inline pros::adi::DigitalOut rightWingPiston(rightWingPort, LOW);
+inline pros::adi::DigitalOut intakeStopperPiston(intakeStopperPort, LOW);
 
 // Inertial Sensor on port
 inline pros::Imu inertial_sensor(imuPort);
-inline pros::Optical colourSortingSensor(colourSortingSensorPort);
-inline pros::adi::AnalogIn lineTracker(lineSensorPort);
-inline pros::Distance distanceToWall(distanceToWallPort);
-
+inline pros::Distance intakeCountSensor(intakeCountSensorPort);
+inline pros::Optical intakeHandOffSensor(intakeHandOffPort);
 // back tracking wheel encoder
-//inline pros::Rotation horizontal_rotation(horizontalEncoderPort); 
-inline pros::Rotation vertical_rotation(verticalEncoderPort); 
-inline pros::Rotation LB_rotation(LB_rotationPort);
-// back tracking wheel
-//inline lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_rotation, 2.125, 2.3); // 2.75" wheel diameter, - offset from tracking center
-inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_rotation, 2.125, 1.4); // 2.75" wheel diameter, - offset from tracking center
-
+//inline pros::Rotation vertical_rotation(verticalEncoderPort); 
+//inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_rotation, 2.125, 1.4);
 
 // drivetrain settings
 inline lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
@@ -120,7 +111,7 @@ inline lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
 
 // Odometry sensors struct
 inline lemlib::OdomSensors sensors{
-	&vertical_tracking_wheel, 
+	nullptr, 
 	nullptr,			  
 	nullptr, 
 	nullptr,			  
@@ -151,32 +142,7 @@ inline lemlib::ControllerSettings angularController(1.6, // proportional gain (k
                                              40 // maximum acceleration (slew)
 );
 
-// lateral motion controller
-inline lemlib::ControllerSettings mogoLinearController(10, // proportional gain (kP)
-                                            0, // integral gain (kI)
-                                            40, // derivative gain (kD)
-                                            3, // anti windup
-                                            1, // small error range, in inches
-                                            100, // small error range timeout, in milliseconds
-                                            3, // large error range, in inches
-                                            200, // large error range timeout, in milliseconds
-                                            30 // maximum acceleration (slew)
-);
-
-// angular motion controller
-inline lemlib::ControllerSettings mogoAngularController(1.7, // proportional gain (kP)
-                                             0, // integral gain (kI)
-                                             13, // derivative gain (kD)
-                                             3, // anti windup
-                                             1, // small error range, in degrees
-                                             100, // small error range timeout, in milliseconds
-                                             5, // large error range, in degrees
-                                             200, // large error range timeout, in milliseconds
-                                             40 // maximum acceleration (slew)
-);
-
 // Creating chassis object
 inline lemlib::Chassis chassis(drivetrain, linearController, angularController, sensors);
-inline lemlib::Chassis mogoChassis(drivetrain, mogoLinearController, mogoAngularController, sensors);
 
 #endif

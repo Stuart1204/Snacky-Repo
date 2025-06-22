@@ -1,4 +1,4 @@
-bin/main.cpp.o: src/main.cpp include/main.h include/api.h \
+bin/main.cpp.o: src/main.cpp src/globals.hpp include/main.h include/api.h \
  include/pros/adi.h include/pros/colors.h include/pros/device.h \
  include/pros/distance.h include/pros/error.h include/pros/ext_adi.h \
  include/pros/adi.h include/pros/adi.h include/pros/gps.h \
@@ -140,10 +140,10 @@ bin/main.cpp.o: src/main.cpp include/main.h include/api.h \
  include/fmt/format-inl.h include/lemlib/logger/baseSink.hpp \
  include/fmt/args.h include/lemlib/logger/message.hpp \
  include/lemlib/logger/infoSink.hpp \
- include/lemlib/logger/telemetrySink.hpp include/pros/screen.hpp \
- src/globals.hpp include/pros/optical.hpp src/teleOp_functions.cpp \
- src/teleOp_functions.hpp src/motor_functions.cpp src/motor_functions.hpp \
- src/autons.cpp src/autons.hpp
+ include/lemlib/logger/telemetrySink.hpp include/pros/optical.hpp \
+ include/pros/screen.hpp src/autons.cpp src/intake.cpp src/controls.cpp \
+ src/motor_functions.cpp src/piston.cpp
+src/globals.hpp:
 include/main.h:
 include/api.h:
 include/pros/adi.h:
@@ -381,12 +381,10 @@ include/fmt/args.h:
 include/lemlib/logger/message.hpp:
 include/lemlib/logger/infoSink.hpp:
 include/lemlib/logger/telemetrySink.hpp:
-include/pros/screen.hpp:
-src/globals.hpp:
 include/pros/optical.hpp:
-src/teleOp_functions.cpp:
-src/teleOp_functions.hpp:
-src/motor_functions.cpp:
-src/motor_functions.hpp:
+include/pros/screen.hpp:
 src/autons.cpp:
-src/autons.hpp:
+src/intake.cpp:
+src/controls.cpp:
+src/motor_functions.cpp:
+src/piston.cpp:
