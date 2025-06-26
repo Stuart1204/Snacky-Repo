@@ -28,3 +28,4 @@ class Piston {
 // pistons
 inline Piston leftWing(leftWingPiston);
 inline Piston rightWing(rightWingPiston);
+inline Piston tongue(tonguePiston);

@@ -17,27 +17,28 @@
 // -- Defined Ports -- //
 
 //motor ports
-#define lBPort 3
-#define lMPort -2
-#define lFPort -1
+#define lBPort -1
+#define lMPort 2
+#define lFPort -3
 
-#define rBPort 11
-#define rMPort -14
+#define rBPort 14
+#define rMPort -13
 #define rFPort 15
 
 #define lowIntakePort 12
-#define upperIntakePort -13
-#define scoringRollerPort 10
+#define upperIntakePort -11
+#define scoringRollerPort 21
 
 //sensor ports
 #define imuPort 2
 #define intakeCountSensorPort 8
 #define intakeHandOffPort 17
+#define colourSortPort 5
 
 //solenoids
-#define leftWingPort 'E'
-#define rightWingPort 'D'
-#define intakeStopperPort 'C'
+#define leftWingPort 'C'
+#define rightWingPort 'H'
+#define tonguePort 'G'
 // #define verticalEncoderPort -5
 
 //drivetrain specs
@@ -45,7 +46,15 @@
 #define driveWheelType lemlib::Omniwheel::NEW_325
 #define driveRPM 450
 
+
+
+
 //global variables
+inline int allianceColour = 1; //1 for red, 2 for blue
+inline int scoreHeight; //1 for long goal, 2 for middle goal
+inline int ejectCounter;
+inline int ejectSpeed;
+inline bool ejectState = false;
 
 // -- Namespace Configurations -- //
 
@@ -90,12 +99,12 @@ inline pros::MotorGroup rightMotors({rBPort, rMPort, rFPort}, pros::v5::MotorGea
 // pneumatics
 inline pros::adi::DigitalOut leftWingPiston(leftWingPort, LOW);
 inline pros::adi::DigitalOut rightWingPiston(rightWingPort, LOW);
-inline pros::adi::DigitalOut intakeStopperPiston(intakeStopperPort, LOW);
+inline pros::adi::DigitalOut tonguePiston(tonguePort, LOW);
 
 // Inertial Sensor on port
 inline pros::Imu inertial_sensor(imuPort);
 inline pros::Distance intakeCountSensor(intakeCountSensorPort);
-inline pros::Optical intakeHandOffSensor(intakeHandOffPort);
+inline pros::Optical colourSortSensor(colourSortPort);
 // back tracking wheel encoder
 //inline pros::Rotation vertical_rotation(verticalEncoderPort); 
 //inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_rotation, 2.125, 1.4);

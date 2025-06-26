@@ -57,5 +57,6 @@
         "sstream": "cpp",
         "cinttypes": "cpp",
         "variant": "cpp"
-    }
+    },
+    "C_Cpp.errorSquiggles": "enabledIfIncludesResolve"
 }
