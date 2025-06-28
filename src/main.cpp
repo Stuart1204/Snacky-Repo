@@ -4,7 +4,7 @@
 #include "controls.cpp"
 
 void initialize() {
-
+	colourSortSensor.set_integration_time(10);
 }
 void disabled() {}
 

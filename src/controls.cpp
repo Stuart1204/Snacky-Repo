@@ -57,7 +57,7 @@ inline void intakeControls() {
     if (ejectState) {
         ejectCounter++;
         intake.rollerPower = ejectSpeed;
-        if (ejectCounter > 6) {
+        if (ejectCounter > 30) {
             ejectCounter = 0;
             ejectState = false;
         }
