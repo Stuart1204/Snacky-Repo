@@ -4,7 +4,13 @@
 #include "controls.cpp"
 
 void initialize() {
-	colourSortSensor.set_integration_time(10);
+	chassis.calibrate();
+	pros::Task intakeTask([]{
+		while (true) {
+			intake.run();
+			pros::delay(20);
+		}
+	});
 }
 void disabled() {}
 
@@ -18,8 +24,11 @@ void opcontrol() {
 	leftMotors.set_brake_mode(MotorConfigs::BRAKE);
 	rightMotors.set_brake_mode(MotorConfigs::BRAKE);
     while (true) {
-		pros::delay(20);
+		// intake has its own thread
 		drivetrainControls();
 		subsystemControls();
+		displayData();
+		pros::delay(20);
+
     }
 }

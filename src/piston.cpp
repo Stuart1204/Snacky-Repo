@@ -29,3 +29,5 @@ class Piston {
 inline Piston leftWing(leftWingPiston);
 inline Piston rightWing(rightWingPiston);
 inline Piston tongue(tonguePiston);
+inline Piston park(parkPiston);
+inline Piston intakeLift(intakeLiftPiston);

@@ -30,24 +30,26 @@
 #define scoringRollerPort 21
 
 //sensor ports
-#define imuPort 2
-#define intakeCountSensorPort 8
-#define intakeHandOffPort 17
-#define colourSortPort 5
+#define imuPort 16
+#define colourSortPort 9
+#define parkSensorPort 5
+#define leftDistPort 4
+#define frontDistPort 6
+
+#define verticalEncoderPort -17
 
 //solenoids
 #define leftWingPort 'C'
-#define rightWingPort 'H'
+#define rightWingPort 'F'
 #define tonguePort 'G'
-// #define verticalEncoderPort -5
+#define parkPort 'B'
+#define intakeLiftPort 'H'
+#define odomLift 'D'
 
 //drivetrain specs
 #define driveTrackWidth 11.375
 #define driveWheelType lemlib::Omniwheel::NEW_325
 #define driveRPM 450
-
-
-
 
 //global variables
 inline int allianceColour = 1; //1 for red, 2 for blue
@@ -55,6 +57,17 @@ inline int scoreHeight; //1 for long goal, 2 for middle goal
 inline int ejectCounter;
 inline int ejectSpeed;
 inline bool ejectState = false;
+
+// intake states enum
+enum IntakeState {
+    IDLE = 0,
+    INTAKE = 1,
+    OUTTAKE = 2,
+    SCOREHIGH = 3,
+    SCOREMID = 4,
+    SCORELOW = 5,
+    PARK = 6
+};
 
 // -- Namespace Configurations -- //
 
@@ -71,6 +84,12 @@ namespace Buttons {
     constexpr auto DOWN = pros::E_CONTROLLER_DIGITAL_DOWN;
     constexpr auto LEFT = pros::E_CONTROLLER_DIGITAL_LEFT;
     constexpr auto RIGHT = pros::E_CONTROLLER_DIGITAL_RIGHT;
+
+    // controller buttons specific
+    constexpr auto wing = Buttons::X;
+    constexpr auto park = Buttons::B;
+    constexpr auto tongue = Buttons::A;
+    constexpr auto intakeLift = Buttons::Y;
 }
 
 namespace MotorConfigs {
@@ -100,14 +119,18 @@ inline pros::MotorGroup rightMotors({rBPort, rMPort, rFPort}, pros::v5::MotorGea
 inline pros::adi::DigitalOut leftWingPiston(leftWingPort, LOW);
 inline pros::adi::DigitalOut rightWingPiston(rightWingPort, LOW);
 inline pros::adi::DigitalOut tonguePiston(tonguePort, LOW);
+inline pros::adi::DigitalOut parkPiston(parkPort, LOW);
+inline pros::adi::DigitalOut intakeLiftPiston(intakeLiftPort, LOW);
 
 // Inertial Sensor on port
 inline pros::Imu inertial_sensor(imuPort);
-inline pros::Distance intakeCountSensor(intakeCountSensorPort);
 inline pros::Optical colourSortSensor(colourSortPort);
-// back tracking wheel encoder
-//inline pros::Rotation vertical_rotation(verticalEncoderPort); 
-//inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_rotation, 2.125, 1.4);
+inline pros::Optical parkSensor(parkSensorPort);
+inline pros::Distance leftDistSensor(leftDistPort);
+inline pros::Distance frontDistSensor(frontDistPort);
+
+inline pros::Rotation vertical_rotation(verticalEncoderPort); 
+inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_rotation, 2.05, 0);
 
 // drivetrain settings
 inline lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
@@ -120,7 +143,7 @@ inline lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
 
 // Odometry sensors struct
 inline lemlib::OdomSensors sensors{
-	nullptr, 
+	&vertical_tracking_wheel, 
 	nullptr,			  
 	nullptr, 
 	nullptr,			  
