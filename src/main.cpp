@@ -23,12 +23,12 @@ void autonomous() {
 void opcontrol() {
 	leftMotors.set_brake_mode(MotorConfigs::BRAKE);
 	rightMotors.set_brake_mode(MotorConfigs::BRAKE);
+	odomLift.setState(true);
     while (true) {
 		// intake has its own thread
 		drivetrainControls();
 		subsystemControls();
 		displayData();
 		pros::delay(20);
-
     }
 }

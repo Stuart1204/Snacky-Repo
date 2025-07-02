@@ -31,3 +31,4 @@ inline Piston rightWing(rightWingPiston);
 inline Piston tongue(tonguePiston);
 inline Piston park(parkPiston);
 inline Piston intakeLift(intakeLiftPiston);
+inline Piston odomLift(odomLiftPiston);

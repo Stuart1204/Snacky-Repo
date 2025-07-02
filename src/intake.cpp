@@ -46,7 +46,7 @@ class Intake {
       moveLower(127);
 
       int UPPER_STALL_SPEED_THRESHOLD = 50;
-      int SCORING_STALL_SPEED_THRESHOLD = 120;
+      double SCORING_STALL_CURRENT_THRESHOLD = 600;
       int STALL_TIME__THRESHOLD = 10;
       
       // Check if upper motor is stalled
@@ -62,7 +62,7 @@ class Intake {
       }
       
       // Check if scoring roller is stalled
-      if (abs(scoringRoller.get_actual_velocity()) < SCORING_STALL_SPEED_THRESHOLD) {
+      if (abs(scoringRoller.get_current_draw()) > SCORING_STALL_CURRENT_THRESHOLD) {
          scoreStallCounter++;
          if (scoreStallCounter > STALL_TIME__THRESHOLD) {
             moveScore(0); // Stop scoring motor if stalled
@@ -92,6 +92,8 @@ class Intake {
             return;
          }
       }
+      // activating park piston
+      activatePark = true;
    }
 
    void run() {

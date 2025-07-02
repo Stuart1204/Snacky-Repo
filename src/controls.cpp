@@ -35,8 +35,13 @@ inline void intakeControls() {
         intake.setState(IntakeState::IDLE);
     }
 
-    if(controller.get_digital(Buttons::DOWN)) {
-        intake.setState(IntakeState::PARK);
+    // uses the same park button to exit off park
+    if(controller.get_digital_new_press(Buttons::park)) {
+        if(park.getState() == true) {
+            park.setState(false);
+        } else {
+            intake.setState(IntakeState::PARK);
+        }
     }
 }
 
@@ -60,7 +65,12 @@ inline void activatePistons() {
     if (controller.get_digital_new_press(Buttons::tongue)) {
         tongue.toggle();
     }
-    if (controller.get_digital_new_press(Buttons::park)) {
+    // backup park button if the other doesn't work
+    if(activatePark) {
+        park.setState(true);
+        activatePark = false;
+    }
+    if (controller.get_digital_new_press(Buttons::DOWN)) {
         park.toggle();
     }
     if (controller.get_digital_new_press(Buttons::intakeLift)) {
@@ -89,7 +99,7 @@ inline void displayData() {
     // pros::screen::print(TEXT_LARGE_CENTER, 5, "heading: %f", pose.theta);
 
     pros::screen::print(TEXT_LARGE_CENTER, 1, "state: %i", intake.returnState());
-    pros::screen::print(TEXT_LARGE_CENTER, 3, "scoringSpeed: %f", scoringRoller.get_actual_velocity());
+    pros::screen::print(TEXT_LARGE_CENTER, 3, "scoringCurent: %i", scoringRoller.get_current_draw());
     pros::screen::print(TEXT_LARGE_CENTER, 5, "upperSpeed: %f", upperIntake.get_actual_velocity());
 }
 

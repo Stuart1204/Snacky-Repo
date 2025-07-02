@@ -44,7 +44,7 @@
 #define tonguePort 'G'
 #define parkPort 'B'
 #define intakeLiftPort 'H'
-#define odomLift 'D'
+#define odomLiftPort 'D'
 
 //drivetrain specs
 #define driveTrackWidth 11.375
@@ -57,6 +57,9 @@ inline int scoreHeight; //1 for long goal, 2 for middle goal
 inline int ejectCounter;
 inline int ejectSpeed;
 inline bool ejectState = false;
+
+// used for communicating between intake and park piston
+inline bool activatePark = false;
 
 // intake states enum
 enum IntakeState {
@@ -121,6 +124,7 @@ inline pros::adi::DigitalOut rightWingPiston(rightWingPort, LOW);
 inline pros::adi::DigitalOut tonguePiston(tonguePort, LOW);
 inline pros::adi::DigitalOut parkPiston(parkPort, LOW);
 inline pros::adi::DigitalOut intakeLiftPiston(intakeLiftPort, LOW);
+inline pros::adi::DigitalOut odomLiftPiston(odomLiftPort, LOW);
 
 // Inertial Sensor on port
 inline pros::Imu inertial_sensor(imuPort);
