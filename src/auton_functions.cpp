@@ -102,8 +102,8 @@ inline void moveToPoint(float targetX, float targetY, bool direction, bool turnB
     }
 
     float TARGET_THRESHOLD = 2; // inches
-    int TIME_BEFORE_EXIT = 200; // in milliseconds
-    int TIMEOUT = 2000; // milliseconds
+    int TIME_BEFORE_EXIT = 350; // in milliseconds
+    int TIMEOUT = 2500; // milliseconds
 
     lemlib::Pose currentPose = chassis.getPose();
     // measuring point-to-point distance of destinationPose and currentPose
@@ -156,9 +156,12 @@ inline void moveToPoint(float targetX, float targetY, bool direction, bool turnB
         float angleCorrect = angularPID.update(angularError);
 
         // makes the angle correct not trigger when close to the target
-        if(linearError < 9) {
-            float reductionFactor = (linearError / 9.0) * (linearError / 9.0); // quadratic curve
+        if(linearError < 12) {
+            float reductionFactor = (linearError / 12.0) * (linearError / 12.0); // quadratic curve
             angleCorrect *= reductionFactor;
+        }
+        if(linearError < 3) {
+            angleCorrect = 0;
         }
 
         if(direction == false) { // false = reverse
@@ -194,6 +197,9 @@ inline void moveToPoint(float targetX, float targetY, bool direction, bool turnB
     rightMotors.move(0);
 }
 
+inline void driveToDistance() {
+    
+}
 #endif
 
 

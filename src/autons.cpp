@@ -1,6 +1,3 @@
-#ifndef autons_cpp
-#define autons_cpp
-
 #include "lemlib/chassis/chassis.hpp"
 #include "lemlib/pose.hpp"
 #include "pros/adi.h"
@@ -12,11 +9,9 @@
 #include "pros/screen.hpp"
 #include <future>
 #include "auton_functions.cpp"
+#include "intake.cpp"
+#include "piston.cpp"
 
 inline void SAWP() {
-    
 }
-
-#endif
-
 
