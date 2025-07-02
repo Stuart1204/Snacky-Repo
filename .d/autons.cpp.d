@@ -10,18 +10,18 @@ bin/autons.cpp.o: src/autons.cpp include/lemlib/chassis/chassis.hpp \
  include/lemlib/pose.hpp include/lemlib/pid.hpp \
  include/lemlib/exitcondition.hpp include/lemlib/driveCurve.hpp \
  include/pros/screen.h include/pros/colors.h include/pros/screen.hpp \
- src/auton_functions.cpp src/globals.hpp include/main.h include/api.h \
- include/pros/adi.h include/pros/colors.h include/pros/device.h \
- include/pros/distance.h include/pros/error.h include/pros/ext_adi.h \
- include/pros/adi.h include/pros/gps.h include/pros/imu.h \
- include/pros/link.h include/pros/llemu.h include/liblvgl/llemu.h \
- include/liblvgl/lvgl.h include/liblvgl/misc/lv_log.h \
- include/liblvgl/lv_conf_internal.h include/liblvgl/lv_conf_kconfig.h \
- include/liblvgl/lv_conf.h include/liblvgl/misc/lv_types.h \
- include/liblvgl/misc/lv_timer.h include/liblvgl/hal/lv_hal_tick.h \
- include/liblvgl/misc/lv_math.h include/liblvgl/misc/lv_mem.h \
- include/liblvgl/misc/lv_async.h include/liblvgl/misc/lv_anim_timeline.h \
- include/liblvgl/misc/lv_anim.h include/liblvgl/misc/lv_printf.h \
+ src/globals.hpp include/main.h include/api.h include/pros/adi.h \
+ include/pros/colors.h include/pros/device.h include/pros/distance.h \
+ include/pros/error.h include/pros/ext_adi.h include/pros/adi.h \
+ include/pros/gps.h include/pros/imu.h include/pros/link.h \
+ include/pros/llemu.h include/liblvgl/llemu.h include/liblvgl/lvgl.h \
+ include/liblvgl/misc/lv_log.h include/liblvgl/lv_conf_internal.h \
+ include/liblvgl/lv_conf_kconfig.h include/liblvgl/lv_conf.h \
+ include/liblvgl/misc/lv_types.h include/liblvgl/misc/lv_timer.h \
+ include/liblvgl/hal/lv_hal_tick.h include/liblvgl/misc/lv_math.h \
+ include/liblvgl/misc/lv_mem.h include/liblvgl/misc/lv_async.h \
+ include/liblvgl/misc/lv_anim_timeline.h include/liblvgl/misc/lv_anim.h \
+ include/liblvgl/misc/lv_printf.h \
  include/liblvgl/misc/../lv_conf_internal.h include/liblvgl/hal/lv_hal.h \
  include/liblvgl/hal/lv_hal_disp.h include/liblvgl/hal/lv_hal.h \
  include/liblvgl/draw/lv_draw.h include/liblvgl/misc/lv_style.h \
@@ -142,7 +142,7 @@ bin/autons.cpp.o: src/autons.cpp include/lemlib/chassis/chassis.hpp \
  include/fmt/args.h include/lemlib/logger/message.hpp \
  include/lemlib/logger/infoSink.hpp \
  include/lemlib/logger/telemetrySink.hpp include/pros/optical.hpp \
- include/lemlib/timer.hpp src/intake.cpp src/piston.cpp
+ src/intake.cpp src/piston.cpp
 include/lemlib/chassis/chassis.hpp:
 include/pros/rtos.hpp:
 include/pros/rtos.h:
@@ -170,7 +170,6 @@ include/lemlib/driveCurve.hpp:
 include/pros/screen.h:
 include/pros/colors.h:
 include/pros/screen.hpp:
-src/auton_functions.cpp:
 src/globals.hpp:
 include/main.h:
 include/api.h:
@@ -384,6 +383,5 @@ include/lemlib/logger/message.hpp:
 include/lemlib/logger/infoSink.hpp:
 include/lemlib/logger/telemetrySink.hpp:
 include/pros/optical.hpp:
-include/lemlib/timer.hpp:
 src/intake.cpp:
 src/piston.cpp:

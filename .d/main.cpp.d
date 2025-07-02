@@ -141,9 +141,8 @@ bin/main.cpp.o: src/main.cpp src/globals.hpp include/main.h include/api.h \
  include/fmt/args.h include/lemlib/logger/message.hpp \
  include/lemlib/logger/infoSink.hpp \
  include/lemlib/logger/telemetrySink.hpp include/pros/optical.hpp \
- include/pros/screen.hpp src/autons.cpp src/auton_functions.cpp \
- include/lemlib/timer.hpp src/intake.cpp src/controls.cpp \
- src/motor_functions.cpp src/piston.cpp
+ include/pros/screen.hpp src/autons.cpp src/intake.cpp src/piston.cpp \
+ src/controls.cpp src/motor_functions.cpp
 src/globals.hpp:
 include/main.h:
 include/api.h:
@@ -385,9 +384,7 @@ include/lemlib/logger/telemetrySink.hpp:
 include/pros/optical.hpp:
 include/pros/screen.hpp:
 src/autons.cpp:
-src/auton_functions.cpp:
-include/lemlib/timer.hpp:
 src/intake.cpp:
+src/piston.cpp:
 src/controls.cpp:
 src/motor_functions.cpp:
-src/piston.cpp:

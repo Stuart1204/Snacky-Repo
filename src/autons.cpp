@@ -8,7 +8,7 @@
 #include "pros/screen.h"
 #include "pros/screen.hpp"
 #include <future>
-#include "auton_functions.cpp"
+#include "globals.hpp"
 #include "intake.cpp"
 #include "piston.cpp"
 

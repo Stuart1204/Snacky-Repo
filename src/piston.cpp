@@ -1,3 +1,6 @@
+#ifndef PISTON_CPP
+#define PISTON_CPP
+
 #include "globals.hpp"
 #include "pros/adi.hpp"
 
@@ -32,3 +35,5 @@ inline Piston tongue(tonguePiston);
 inline Piston park(parkPiston);
 inline Piston intakeLift(intakeLiftPiston);
 inline Piston odomLift(odomLiftPiston);
+
+#endif
