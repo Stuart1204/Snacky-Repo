@@ -2,6 +2,7 @@
 #include "autons.cpp"
 #include "intake.cpp"
 #include "controls.cpp"
+#include "autons.cpp"
 
 void initialize() {
 	chassis.calibrate();

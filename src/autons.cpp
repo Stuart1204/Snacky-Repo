@@ -11,8 +11,11 @@
 #include "pros/screen.h"
 #include "pros/screen.hpp"
 #include <future>
+#include "auton_functions.cpp"
 
-
+inline void SAWP() {
+    moveToPoint();
+}
 
 #endif
 
