@@ -14,7 +14,7 @@
 #include "auton_functions.cpp"
 
 inline void SAWP() {
-    moveToPoint();
+    
 }
 
 #endif
