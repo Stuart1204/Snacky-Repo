@@ -261,6 +261,8 @@ inline void driveToDistance(float targetDistance, bool doResetPosition) {
         float targetSpeed = linearPID.update(error);
         leftMotors.move(targetSpeed);
         rightMotors.move(targetSpeed);
+
+        pros::delay(20);
     }
     linearPID.reset();
     leftMotors.move(0);
@@ -271,7 +273,11 @@ inline void driveToDistance(float targetDistance, bool doResetPosition) {
     }
 }
 
-inline void driveDistance(float targetDist, int maxSpeed, bool direction) {
+inline void driveToDistance(float targetDistance) {
+    driveToDistance(targetDistance, true);
+}
+
+inline void driveDistance(float targetDist, int maxSpeed) {
     float TARGET_THRESHOLD = 2; // inches
     int TIME_BEFORE_EXIT = 350; // in milliseconds
     int TIMEOUT = 2500; // milliseconds
@@ -280,8 +286,10 @@ inline void driveDistance(float targetDist, int maxSpeed, bool direction) {
     uint32_t settleStartTime;
     uint32_t startTime = pros::millis();
 
+    int offsetDegrees = vertical_rotation.get_position();
+
     while(true) {
-        float currentDist = vertical_rotation.get_position() * CENTIDEG_TO_INCHES;
+        float currentDist = (vertical_rotation.get_position() - offsetDegrees) * CENTIDEG_TO_INCHES;
         float error = targetDist - currentDist;
 
         // check to see if in settle zone
@@ -304,12 +312,23 @@ inline void driveDistance(float targetDist, int maxSpeed, bool direction) {
         }
 
         float targetSpeed = linearPID.update(error);
+
+        if(targetSpeed > maxSpeed) targetSpeed = maxSpeed;
+        if(targetSpeed < -maxSpeed) targetSpeed = -maxSpeed;
+        
+
         leftMotors.move(targetSpeed);
         rightMotors.move(targetSpeed);
+
+        pros::delay(20);
     }
     linearPID.reset();
     leftMotors.move(0);
     rightMotors.move(0);
+}
+
+inline void driveDistance(float targetDist) {
+    driveDistance(targetDist, 127);
 }
 
 #endif

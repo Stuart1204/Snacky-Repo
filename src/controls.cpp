@@ -2,7 +2,7 @@
 #define controls_cpp
 
 #include "globals.hpp"
-#include "motor_functions.cpp"
+#include "other_functions.cpp"
 #include "intake.cpp"
 #include "piston.cpp"
 

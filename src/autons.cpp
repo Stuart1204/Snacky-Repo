@@ -11,13 +11,14 @@
 #include "globals.hpp"
 #include "intake.cpp"
 #include "piston.cpp"
+#include "other_functions.cpp"
 
 inline void leftSideAuto() {
-
+    chassis.setPose(0,0,0);
 }
 
 inline void rightSideAuto() {
-    
+
 }
 
 inline void SAWP() {
