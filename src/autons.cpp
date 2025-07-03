@@ -12,6 +12,15 @@
 #include "intake.cpp"
 #include "piston.cpp"
 
+inline void leftSideAuto() {
+
+}
+
+inline void rightSideAuto() {
+    
+}
+
 inline void SAWP() {
+
 }
 

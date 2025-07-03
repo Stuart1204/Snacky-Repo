@@ -59,8 +59,10 @@ inline int ejectSpeed;
 inline bool ejectState = false;
 
 // global constants
-inline float FRONT_DIST_OFFSET = 5;
-inline float LEFT_DIST_OFFSET = 5;
+const inline float FRONT_DIST_OFFSET = 5;
+const inline float LEFT_DIST_OFFSET = 5;
+const inline float MM_TO_INCHES = 0.03937007874;
+const inline float CENTIDEG_TO_INCHES = 0.00017889624;
 
 // used for communicating between intake and park piston
 inline bool activatePark = false;

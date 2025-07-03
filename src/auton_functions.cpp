@@ -197,9 +197,121 @@ inline void moveToPoint(float targetX, float targetY, bool direction, bool turnB
     rightMotors.move(0);
 }
 
-inline void driveToDistance() {
+inline void resetPos() {
+    const float FIELD_WALL = 70.0; // inches
+    const float ANGLE_TOLERANCE = 8.0; // degrees
     
+    lemlib::Pose currentPose = chassis.getPose();
+    
+    // Normalize angle to -180 to 180 range
+    float normalizedAngle = fmod(currentPose.theta + 180.0, 360.0) - 180.0;
+
+    float currentDistance = frontDistSensor.get_distance() * MM_TO_INCHES + FRONT_DIST_OFFSET;
+    
+    // Determine which wall we're facing based on angle
+    if (fabs(normalizedAngle) < ANGLE_TOLERANCE) {
+        // Facing forward (0°)
+        chassis.setPose(currentPose.x, FIELD_WALL - currentDistance, currentPose.theta);
+    } else if (fabs(normalizedAngle - 90) < ANGLE_TOLERANCE) {
+        // Facing right (90°)
+        chassis.setPose(FIELD_WALL - currentDistance, currentPose.y, currentPose.theta);
+    } else if (fabs(normalizedAngle + 90) < ANGLE_TOLERANCE) {
+        // Facing left (-90°)
+        chassis.setPose(-FIELD_WALL + currentDistance, currentPose.y, currentPose.theta);
+    } else if (fabs(fabs(normalizedAngle) - 180) < ANGLE_TOLERANCE) {
+        // Facing backward (180° or -180°)
+        chassis.setPose(currentPose.x, -FIELD_WALL + currentDistance, currentPose.theta);
+    }
 }
+
+inline void driveToDistance(float targetDistance, bool doResetPosition) {
+    float TARGET_THRESHOLD = 2; // inches
+    int TIME_BEFORE_EXIT = 350; // in milliseconds
+    int TIMEOUT = 2500; // milliseconds
+
+    float currentDist = frontDistSensor.get_distance() * MM_TO_INCHES + FRONT_DIST_OFFSET; // convert mm to inches
+
+    bool inSettleZone = false;
+    uint32_t settleStartTime;
+    uint32_t startTime = pros::millis();
+
+    while(true) {
+        currentDist = frontDistSensor.get_distance() * MM_TO_INCHES + FRONT_DIST_OFFSET;
+        float error = currentDist - targetDistance;
+
+        // check to see if in settle zone
+        if (fabs(error) <= TARGET_THRESHOLD) {
+            if (!inSettleZone) {
+                settleStartTime = pros::millis();
+                inSettleZone = true;
+            }
+            
+            // wait in the settle zone
+            if (pros::millis() - settleStartTime >= TIME_BEFORE_EXIT) {
+                break; // exit loop
+            }
+        } else {
+            inSettleZone = false; // reset the timer if we leave the settle zone
+        }
+
+        if (pros::millis() - startTime > TIMEOUT) {
+            break;
+        }
+        
+        float targetSpeed = linearPID.update(error);
+        leftMotors.move(targetSpeed);
+        rightMotors.move(targetSpeed);
+    }
+    linearPID.reset();
+    leftMotors.move(0);
+    rightMotors.move(0);
+
+    if(doResetPosition == true) {
+        resetPos();
+    }
+}
+
+inline void driveDistance(float targetDist, int maxSpeed, bool direction) {
+    float TARGET_THRESHOLD = 2; // inches
+    int TIME_BEFORE_EXIT = 350; // in milliseconds
+    int TIMEOUT = 2500; // milliseconds
+
+    bool inSettleZone = false;
+    uint32_t settleStartTime;
+    uint32_t startTime = pros::millis();
+
+    while(true) {
+        float currentDist = vertical_rotation.get_position() * CENTIDEG_TO_INCHES;
+        float error = targetDist - currentDist;
+
+        // check to see if in settle zone
+        if (fabs(error) <= TARGET_THRESHOLD) {
+            if (!inSettleZone) {
+                settleStartTime = pros::millis();
+                inSettleZone = true;
+            }
+            
+            // wait in the settle zone
+            if (pros::millis() - settleStartTime >= TIME_BEFORE_EXIT) {
+                break; // exit loop
+            }
+        } else {
+            inSettleZone = false; // reset the timer if we leave the settle zone
+        }
+
+        if (pros::millis() - startTime > TIMEOUT) {
+            break;
+        }
+
+        float targetSpeed = linearPID.update(error);
+        leftMotors.move(targetSpeed);
+        rightMotors.move(targetSpeed);
+    }
+    linearPID.reset();
+    leftMotors.move(0);
+    rightMotors.move(0);
+}
+
 #endif
 
 
