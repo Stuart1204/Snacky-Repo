@@ -4,6 +4,7 @@
 #include "globals.hpp"
 #include "pros/adi.hpp"
 #include "pros/optical.h"
+#include "other_functions.cpp"
 
 class Intake {
    private:
@@ -23,10 +24,29 @@ class Intake {
       lastState = currentState;
       currentState = intakeState;
 
-      // resetting jam counters if the robot starts intaking
-      if(currentState == IntakeState::INTAKE && lastState != currentState) {
-         scoreStallCounter = 0;
-         upperStallCounter = 0;
+      // switch case if any states need specific actions done when called
+      switch(currentState) {
+         case IntakeState::IDLE: 
+            break;
+         case IntakeState::INTAKE:
+            if(lastState != currentState) {
+               scoreStallCounter = 0;
+               upperStallCounter = 0;
+            }
+            break;
+         case IntakeState::OUTTAKE:
+            break;
+         case IntakeState::SCOREHIGH:
+            setWings(true);
+            break;
+         case IntakeState::SCOREMID:
+            break;
+         case IntakeState::SCORELOW:
+            break;
+         case IntakeState::PARK:
+            loadPark();
+            currentState = IntakeState::IDLE;
+            break;
       }
    }
 

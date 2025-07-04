@@ -2,6 +2,7 @@
 #define auton_functions_cpp
 
 #include "globals.hpp"
+#include "other_functions.cpp"
 #include "lemlib/pid.hpp"
 #include "lemlib/pose.hpp"
 #include "lemlib/timer.hpp"
@@ -329,6 +330,63 @@ inline void driveDistance(float targetDist, int maxSpeed) {
 
 inline void driveDistance(float targetDist) {
     driveDistance(targetDist, 127);
+}
+
+inline void driveToGoal(bool direction) {
+    const float SPEED_THRESHOLD = 2;
+    const int MOTOR_SPEED = 50;
+
+    bool reachedTargetSpeed = false;
+    while(true) {
+        float currentSpeed = vertical_rotation.get_velocity() / 36000;
+        // currentSpeed is rotations per second
+
+        if(fabs(currentSpeed) > SPEED_THRESHOLD) {
+            reachedTargetSpeed = true;
+        }
+
+        if(fabs(currentSpeed) < SPEED_THRESHOLD && reachedTargetSpeed == true) {
+            break;
+        }
+
+        if(direction) {
+            leftMotors.move(MOTOR_SPEED);
+            rightMotors.move(MOTOR_SPEED);
+        } else {
+            leftMotors.move(-MOTOR_SPEED);
+            rightMotors.move(-MOTOR_SPEED);
+        }
+    }
+    leftMotors.move(0);
+    rightMotors.move(0);
+}
+
+// this function waits until the wrong colour at the matchload station for auton
+inline void waitUntilWrongColour(int allianceColour) {
+    const int TIMEOUT = 2500;
+
+    uint32_t startTime = pros::millis();
+
+    while(true) {
+        bool detectedRed = checkColour(parkSensor) == AllianceColour::RED;
+        bool detectedBlue = checkColour(parkSensor) == AllianceColour::BLUE;
+
+        if(allianceColour == AllianceColour::RED) {
+            // wait until detected blue to leave station
+            if(detectedBlue) {
+                break;
+            }
+        } else {
+            // wait until detected red to leave station
+            if(detectedRed) {
+                break;
+            }
+        }
+
+        if (pros::millis() - startTime > TIMEOUT) {
+            break;
+        }
+    }
 }
 
 #endif

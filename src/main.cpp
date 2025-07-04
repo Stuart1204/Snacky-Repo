@@ -17,7 +17,7 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
-	
+	allianceColour = AllianceColour::RED;
 }
 
 void opcontrol() {

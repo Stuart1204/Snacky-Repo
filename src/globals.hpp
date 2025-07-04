@@ -52,7 +52,7 @@
 #define driveRPM 450
 
 //global variables
-inline int allianceColour = 1; //1 for red, 2 for blue
+inline int allianceColour;
 inline int scoreHeight; //1 for long goal, 2 for middle goal
 inline int ejectCounter;
 inline int ejectSpeed;
@@ -76,6 +76,12 @@ enum IntakeState {
     SCOREMID = 4,
     SCORELOW = 5,
     PARK = 6
+};
+
+// aliance colour
+enum AllianceColour {
+    RED = 1,
+    BLUE = 2
 };
 
 // -- Namespace Configurations -- //

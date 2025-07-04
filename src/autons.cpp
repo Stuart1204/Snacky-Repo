@@ -11,6 +11,7 @@
 #include "globals.hpp"
 #include "intake.cpp"
 #include "piston.cpp"
+#include "auton_functions.cpp"
 #include "other_functions.cpp"
 
 inline void leftSideAuto() {
@@ -22,6 +23,26 @@ inline void rightSideAuto() {
 }
 
 inline void SAWP() {
+    chassis.setPose(0,0,0);
+    moveToPoint(-35, 10, true, false);
+    turnToHeading(55);
+    setWings(true);
+    intake.setState(IntakeState::INTAKE);
+    driveDistance(15, 50); // picking up the three clump of balls
+    moveToPoint(-40, 40, true, true);
+    turnToHeading(0);
+    driveToDistance(22);
+    turnToHeading(-90);
+    driveToGoal(false); // driving to the long goal
+    intake.setState(IntakeState::SCOREHIGH); // scoring balls onto long goal
+    pros::delay(3000);
+    tongue.setState(true);
+    intake.setState(IntakeState::INTAKE);
+    setWings(true);
+    moveToPoint(-56, 48, true, true);
+    leftMotors.move(30);
+    rightMotors.move(30); // collecting matchloads
+    waitUntilWrongColour(allianceColour);
 
 }
 

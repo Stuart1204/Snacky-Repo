@@ -6,17 +6,6 @@
 #include "intake.cpp"
 #include "piston.cpp"
 
-inline int checkColour() {
-	if (colourSortSensor.get_hue() > 160 && colourSortSensor.get_hue() < 320 && colourSortSensor.get_proximity() > 160) {
-		return 2; //blue
-	}
-	else if (colourSortSensor.get_hue() < 10 && colourSortSensor.get_proximity() > 160){
-		return 1; //red
-	} else {
-        return 0; //background
-    }
-}
-
 inline void intakeControls() {
     if(controller.get_digital(Buttons::L1)) {
         intake.setState(IntakeState::INTAKE);
@@ -81,8 +70,6 @@ inline void activatePistons() {
 inline void subsystemControls() {
     intakeControls(); 
     activatePistons();
-    checkColour();
-    int a = checkColour();
 }
 
 inline void drivetrainControls() {
