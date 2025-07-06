@@ -14,6 +14,11 @@
 #include "auton_functions.cpp"
 #include "other_functions.cpp"
 
+inline void testingAuto() {
+    chassis.setPose(0,0,0);
+    moveToPoint(24, 24, true, false);
+}
+
 inline void leftSideAuto() {
     chassis.setPose(0,0,0);
 }
@@ -42,7 +47,6 @@ inline void SAWP() {
     moveToPoint(-56, 48, true, true);
     leftMotors.move(30);
     rightMotors.move(30); // collecting matchloads
-    waitUntilWrongColour(allianceColour);
-
+    waitAtMatchload(allianceColour);
 }
 

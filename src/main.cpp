@@ -18,6 +18,8 @@ void competition_initialize() {}
 
 void autonomous() {
 	allianceColour = AllianceColour::RED;
+	testingAuto();
+	controller.rumble(".");
 }
 
 void opcontrol() {

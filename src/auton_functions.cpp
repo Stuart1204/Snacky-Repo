@@ -9,13 +9,13 @@
 #include "liblvgl/misc/lv_math.h"
 #include <cmath>
 
-inline lemlib::PID angularPID(1.6, 0.0, 12.0, 0, false);
-inline lemlib::PID linearPID(3.5, 0.0, 12.0, 0, false);
+inline lemlib::PID angularPID(4.2, 0.0, 16, 0, false);
+inline lemlib::PID linearPID(7.5, 0.0, 26.0, 0, false);
 
 // turns to a desired heading
 inline void turnToHeading(float targetHeading) {
-    float TARGET_THRESHOLD = 2; // degrees
-    int TIME_BEFORE_EXIT = 200; // in milliseconds
+    float TARGET_THRESHOLD = 3; // degrees
+    int TIME_BEFORE_EXIT = 100; // in milliseconds
     int TIMEOUT = 2000; // milliseconds
 
     // Normalize target heading to [0, 360)
@@ -102,13 +102,15 @@ inline void moveToPoint(float targetX, float targetY, bool direction, bool turnB
         turnToPoint(targetX, targetY, direction);
     }
 
-    float TARGET_THRESHOLD = 2; // inches
-    int TIME_BEFORE_EXIT = 350; // in milliseconds
+    float TARGET_THRESHOLD = 3; // inches
+    int TIME_BEFORE_EXIT = 200; // in milliseconds
     int TIMEOUT = 2500; // milliseconds
 
     lemlib::Pose currentPose = chassis.getPose();
     // measuring point-to-point distance of destinationPose and currentPose
-    float linearError = sqrt(pow(targetX - currentPose.x, 2) + pow(targetY - currentPose.y, 2));
+    float dx = targetX - currentPose.x;
+    float dy = targetY - currentPose.y;
+    float distance = sqrt(dx * dx + dy * dy);
 
     bool inSettleZone = false;
     uint32_t settleStartTime;
@@ -116,7 +118,9 @@ inline void moveToPoint(float targetX, float targetY, bool direction, bool turnB
 
     while (true) {
         currentPose = chassis.getPose();
-        linearError = sqrt(pow(targetX - currentPose.x, 2) + pow(targetY - currentPose.y, 2));
+        dx = targetX - currentPose.x;
+        dy = targetY - currentPose.y;
+        distance = sqrt(dx * dx + dy * dy);
 
         float currentHeading = inertial_sensor.get_heading();
         // find the heading from the atan function (returns trig-angle type style)
@@ -132,6 +136,17 @@ inline void moveToPoint(float targetX, float targetY, bool direction, bool turnB
         if (angularError > 180.0) angularError -= 360.0;
         else if (angularError < -180.0) angularError += 360.0;
         
+        // Calculate signed linear error based on whether we've passed the target
+        float linearError = distance;
+
+        if(fabs(angularError) > 90) {
+            linearError = -distance;
+            angularError = angularError + 180;
+        }
+        
+        if (angularError > 180.0) angularError -= 360.0;
+        else if (angularError < -180.0) angularError += 360.0;
+
         // check to see if in settle zone
         if (fabs(linearError) <= TARGET_THRESHOLD) {
             if (!inSettleZone) {
@@ -157,11 +172,11 @@ inline void moveToPoint(float targetX, float targetY, bool direction, bool turnB
         float angleCorrect = angularPID.update(angularError);
 
         // makes the angle correct not trigger when close to the target
-        if(linearError < 12) {
-            float reductionFactor = (linearError / 12.0) * (linearError / 12.0); // quadratic curve
+        if(linearError < 20) {
+            float reductionFactor = (linearError / 20.0) * (linearError / 20.0); // quadratic curve
             angleCorrect *= reductionFactor;
         }
-        if(linearError < 3) {
+        if(linearError < 10) {
             angleCorrect = 0;
         }
 
@@ -172,8 +187,8 @@ inline void moveToPoint(float targetX, float targetY, bool direction, bool turnB
         if(targetSpeed > 127) targetSpeed = 127;
         if(targetSpeed < -127) targetSpeed = -127;
 
-        float leftMotorPower = targetSpeed + angleCorrect;
-        float rightMotorPower = targetSpeed - angleCorrect;
+        float leftMotorPower = targetSpeed + (targetSpeed + angleCorrect) / 2;
+        float rightMotorPower = targetSpeed - (targetSpeed + angleCorrect) / 2;
 
         // Find the maximum absolute power
         float maxPower = fmax(fabs(leftMotorPower), fabs(rightMotorPower));
@@ -362,7 +377,7 @@ inline void driveToGoal(bool direction) {
 }
 
 // this function waits until the wrong colour at the matchload station for auton
-inline void waitUntilWrongColour(int allianceColour) {
+inline void waitAtMatchload(int allianceColour) {
     const int TIMEOUT = 2500;
 
     uint32_t startTime = pros::millis();
@@ -376,7 +391,7 @@ inline void waitUntilWrongColour(int allianceColour) {
             if(detectedBlue) {
                 break;
             }
-        } else {
+        } else if (allianceColour == AllianceColour::BLUE) {
             // wait until detected red to leave station
             if(detectedRed) {
                 break;
