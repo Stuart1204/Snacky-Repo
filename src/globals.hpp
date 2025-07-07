@@ -59,7 +59,7 @@ inline int ejectSpeed;
 inline bool ejectState = false;
 
 // global constants
-const inline float FRONT_DIST_OFFSET = 5;
+const inline float FRONT_DIST_OFFSET = 4.5;
 const inline float LEFT_DIST_OFFSET = 5;
 const inline float MM_TO_INCHES = 0.03937007874;
 const inline float CENTIDEG_TO_INCHES = 0.00017889624;
@@ -167,27 +167,27 @@ inline lemlib::OdomSensors sensors{
 };
 
 // lateral motion controller
-inline lemlib::ControllerSettings linearController(6, // proportional gain (kP)
+inline lemlib::ControllerSettings linearController(9, // proportional gain (kP)
                                             0, // integral gain (kI)
-                                            30, // derivative gain (kD)
+                                            18, // derivative gain (kD)
                                             3, // anti windup
                                             1, // small error range, in inches
                                             100, // small error range timeout, in milliseconds
                                             3, // large error range, in inches
                                             200, // large error range timeout, in milliseconds
-                                            30 // maximum acceleration (slew)
+                                            0 // maximum acceleration (slew)
 );
 
 // angular motion controller
-inline lemlib::ControllerSettings angularController(1.6, // proportional gain (kP)
+inline lemlib::ControllerSettings angularController(2.5, // proportional gain (kP)
                                              0, // integral gain (kI)
-                                             12, // derivative gain (kD)
+                                             16, // derivative gain (kD)
                                              3, // anti windup
                                              1, // small error range, in degrees
                                              100, // small error range timeout, in milliseconds
                                              5, // large error range, in degrees
                                              200, // large error range timeout, in milliseconds
-                                             40 // maximum acceleration (slew)
+                                             0 // maximum acceleration (slew)
 );
 
 // Creating chassis object

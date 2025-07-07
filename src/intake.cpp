@@ -37,7 +37,7 @@ class Intake {
          case IntakeState::OUTTAKE:
             break;
          case IntakeState::SCOREHIGH:
-            setWings(true);
+            setWings(false);
             break;
          case IntakeState::SCOREMID:
             break;

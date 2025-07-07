@@ -6,8 +6,9 @@
 #include "lemlib/pid.hpp"
 #include "lemlib/pose.hpp"
 #include "lemlib/timer.hpp"
-#include "liblvgl/misc/lv_math.h"
+#include "pros/screen.h"
 #include <cmath>
+#include <iostream>
 
 inline lemlib::PID angularPID(4.2, 0.0, 16, 0, false);
 inline lemlib::PID linearPID(7.5, 0.0, 26.0, 0, false);
@@ -19,9 +20,14 @@ inline void turnToHeading(float targetHeading) {
     int TIMEOUT = 2000; // milliseconds
 
     // Normalize target heading to [0, 360)
+    if (targetHeading < 0) targetHeading += 360.0;
     targetHeading = fmod(targetHeading + 360.0, 360.0);
 
-    float currentHeading = inertial_sensor.get_heading();
+    float currentHeading = chassis.getPose().theta;
+    if (currentHeading < 0) currentHeading += 360.0;
+
+    //printf("target: %f, current: %f\n", targetHeading, currentHeading);
+    
     float error = targetHeading - currentHeading;
 
     // Shortest path
@@ -34,7 +40,7 @@ inline void turnToHeading(float targetHeading) {
 
     // while the robot is not at target heading and while the timer has time left on the clock
     while (true) {
-        currentHeading = inertial_sensor.get_heading();
+        currentHeading = chassis.getPose().theta;
         error = targetHeading - currentHeading;
         
         // calculate shortest path
@@ -82,135 +88,37 @@ inline void turnToPoint(float targetX, float targetY, bool direction) {
     lemlib::Pose currentPose = chassis.getPose();
 
     // find the heading from the atan function (returns trig-angle type style)
-    float targetHeading = lv_atan2(targetX - currentPose.x, targetY - currentPose.y);
+    float targetHeading = lv_atan2(targetY - currentPose.y, targetX - currentPose.x);
+    printf("lv_atan2 result: %f\n", targetHeading);
 
     //converting to navigation angle style
     targetHeading = fmod((450 - targetHeading), 360);
+    printf("After conversion: %f\n", targetHeading);
 
     // adjust heading for reverse situation
     if(direction == false) { // false = reverse
         targetHeading = fmod(targetHeading + 180.0, 360.0);
     }
 
+    printf("Final target heading: %f\n", targetHeading);
     // use turnToHeading to turn the robot
     turnToHeading(targetHeading);
 }
 
-// moves to a desired point. may run turnToPoint before the robot starts moving
-inline void moveToPoint(float targetX, float targetY, bool direction, bool turnBeforeMoving) {
+inline void moveToPoint(float targetX, float targetY, bool direction, bool turnBeforeMoving, bool blendMovements) {
     if(turnBeforeMoving == true) {
         turnToPoint(targetX, targetY, direction);
     }
-
-    float TARGET_THRESHOLD = 3; // inches
-    int TIME_BEFORE_EXIT = 200; // in milliseconds
-    int TIMEOUT = 2500; // milliseconds
-
-    lemlib::Pose currentPose = chassis.getPose();
-    // measuring point-to-point distance of destinationPose and currentPose
-    float dx = targetX - currentPose.x;
-    float dy = targetY - currentPose.y;
-    float distance = sqrt(dx * dx + dy * dy);
-
-    bool inSettleZone = false;
-    uint32_t settleStartTime;
-    uint32_t startTime = pros::millis();
-
-    while (true) {
-        currentPose = chassis.getPose();
-        dx = targetX - currentPose.x;
-        dy = targetY - currentPose.y;
-        distance = sqrt(dx * dx + dy * dy);
-
-        float currentHeading = inertial_sensor.get_heading();
-        // find the heading from the atan function (returns trig-angle type style)
-        float targetHeading = lv_atan2(targetX - currentPose.x, targetY - currentPose.y);
-        //converting to navigation angle style
-        targetHeading = fmod((450 - targetHeading), 360);
-        
-        if(direction == false) { // false = reverse
-            targetHeading = fmod(targetHeading + 180.0, 360.0);
-        }
-
-        float angularError = targetHeading - currentHeading;
-        if (angularError > 180.0) angularError -= 360.0;
-        else if (angularError < -180.0) angularError += 360.0;
-        
-        // Calculate signed linear error based on whether we've passed the target
-        float linearError = distance;
-
-        if(fabs(angularError) > 90) {
-            linearError = -distance;
-            angularError = angularError + 180;
-        }
-        
-        if (angularError > 180.0) angularError -= 360.0;
-        else if (angularError < -180.0) angularError += 360.0;
-
-        // check to see if in settle zone
-        if (fabs(linearError) <= TARGET_THRESHOLD) {
-            if (!inSettleZone) {
-                settleStartTime = pros::millis();
-                inSettleZone = true;
-            }
-            
-            // wait in the settle zone
-            if (pros::millis() - settleStartTime >= TIME_BEFORE_EXIT) {
-                break; // exit loop
-            }
-        } else {
-            inSettleZone = false; // reset the timer if we leave the settle zone
-        }
-        
-        // timeout (2 seconds)
-        if (pros::millis() - startTime > TIMEOUT) {
-            break;
-        }
-        
-        // calculating motor power using PID
-        float targetSpeed = linearPID.update(linearError);
-        float angleCorrect = angularPID.update(angularError);
-
-        // makes the angle correct not trigger when close to the target
-        if(linearError < 20) {
-            float reductionFactor = (linearError / 20.0) * (linearError / 20.0); // quadratic curve
-            angleCorrect *= reductionFactor;
-        }
-        if(linearError < 10) {
-            angleCorrect = 0;
-        }
-
-        if(direction == false) { // false = reverse
-            targetSpeed = -targetSpeed;
-        }
-
-        if(targetSpeed > 127) targetSpeed = 127;
-        if(targetSpeed < -127) targetSpeed = -127;
-
-        float leftMotorPower = targetSpeed + (targetSpeed + angleCorrect) / 2;
-        float rightMotorPower = targetSpeed - (targetSpeed + angleCorrect) / 2;
-
-        // Find the maximum absolute power
-        float maxPower = fmax(fabs(leftMotorPower), fabs(rightMotorPower));
-
-        // scale down if needed
-        if(maxPower > 127) {
-            float scale = 127.0 / maxPower;
-            leftMotorPower *= scale;
-            rightMotorPower *= scale;
-        }
-
-        leftMotors.move(leftMotorPower);
-        rightMotors.move(rightMotorPower);
-        
-        pros::delay(20);
+    if(blendMovements) {
+        chassis.moveToPoint(targetX, targetY, 2500, {.forwards = direction, .minSpeed = 30, .earlyExitRange = 5});
+    } else {
+        chassis.moveToPoint(targetX, targetY, 2500, {.forwards = direction});
     }
-    
-    // resetting things
-    linearPID.reset();
-    angularPID.reset();
-    leftMotors.move(0);
-    rightMotors.move(0);
+    chassis.waitUntilDone();
+}
+
+inline void moveToPoint(float targetX, float targetY, bool direction, bool turnBeforeMoving) {
+    moveToPoint(targetX, targetY, direction, turnBeforeMoving, false);
 }
 
 inline void resetPos() {
@@ -222,27 +130,30 @@ inline void resetPos() {
     // Normalize angle to -180 to 180 range
     float normalizedAngle = fmod(currentPose.theta + 180.0, 360.0) - 180.0;
 
-    float currentDistance = frontDistSensor.get_distance() * MM_TO_INCHES + FRONT_DIST_OFFSET;
-    
-    // Determine which wall we're facing based on angle
-    if (fabs(normalizedAngle) < ANGLE_TOLERANCE) {
-        // Facing forward (0°)
-        chassis.setPose(currentPose.x, FIELD_WALL - currentDistance, currentPose.theta);
-    } else if (fabs(normalizedAngle - 90) < ANGLE_TOLERANCE) {
-        // Facing right (90°)
-        chassis.setPose(FIELD_WALL - currentDistance, currentPose.y, currentPose.theta);
-    } else if (fabs(normalizedAngle + 90) < ANGLE_TOLERANCE) {
-        // Facing left (-90°)
-        chassis.setPose(-FIELD_WALL + currentDistance, currentPose.y, currentPose.theta);
-    } else if (fabs(fabs(normalizedAngle) - 180) < ANGLE_TOLERANCE) {
-        // Facing backward (180° or -180°)
-        chassis.setPose(currentPose.x, -FIELD_WALL + currentDistance, currentPose.theta);
+    float currentDistance;
+    if(frontDistSensor.get() != 9999) {
+       currentDistance = (frontDistSensor.get_distance() * MM_TO_INCHES) + FRONT_DIST_OFFSET; 
+
+        // Determine which wall we're facing based on angle
+        if (fabs(normalizedAngle) < ANGLE_TOLERANCE) {
+            // Facing forward (0°)
+            chassis.setPose(currentPose.x, FIELD_WALL - currentDistance, currentPose.theta);
+        } else if (fabs(normalizedAngle - 90) < ANGLE_TOLERANCE) {
+            // Facing right (90°)
+            chassis.setPose(FIELD_WALL - currentDistance, currentPose.y, currentPose.theta);
+        } else if (fabs(normalizedAngle + 90) < ANGLE_TOLERANCE) {
+            // Facing left (-90°)
+            chassis.setPose(-FIELD_WALL + currentDistance, currentPose.y, currentPose.theta);
+        } else if (fabs(fabs(normalizedAngle) - 180) < ANGLE_TOLERANCE) {
+            // Facing backward (180° or -180°)
+            chassis.setPose(currentPose.x, -FIELD_WALL + currentDistance, currentPose.theta);
+        }
     }
 }
 
 inline void driveToDistance(float targetDistance, bool doResetPosition) {
     float TARGET_THRESHOLD = 2; // inches
-    int TIME_BEFORE_EXIT = 350; // in milliseconds
+    int TIME_BEFORE_EXIT = 150; // in milliseconds
     int TIMEOUT = 2500; // milliseconds
 
     float currentDist = frontDistSensor.get_distance() * MM_TO_INCHES + FRONT_DIST_OFFSET; // convert mm to inches
@@ -290,12 +201,12 @@ inline void driveToDistance(float targetDistance, bool doResetPosition) {
 }
 
 inline void driveToDistance(float targetDistance) {
-    driveToDistance(targetDistance, true);
+    driveToDistance(targetDistance, false);
 }
 
 inline void driveDistance(float targetDist, int maxSpeed) {
     float TARGET_THRESHOLD = 2; // inches
-    int TIME_BEFORE_EXIT = 350; // in milliseconds
+    int TIME_BEFORE_EXIT = 150; // in milliseconds
     int TIMEOUT = 2500; // milliseconds
 
     bool inSettleZone = false;
@@ -348,13 +259,12 @@ inline void driveDistance(float targetDist) {
 }
 
 inline void driveToGoal(bool direction) {
-    const float SPEED_THRESHOLD = 2;
+    const float SPEED_THRESHOLD = 50;
     const int MOTOR_SPEED = 50;
 
     bool reachedTargetSpeed = false;
     while(true) {
-        float currentSpeed = vertical_rotation.get_velocity() / 36000;
-        // currentSpeed is rotations per second
+        float currentSpeed = fmin(leftMotors.get_actual_velocity(), rightMotors.get_actual_velocity());
 
         if(fabs(currentSpeed) > SPEED_THRESHOLD) {
             reachedTargetSpeed = true;
@@ -371,6 +281,7 @@ inline void driveToGoal(bool direction) {
             leftMotors.move(-MOTOR_SPEED);
             rightMotors.move(-MOTOR_SPEED);
         }
+        pros::delay(20);
     }
     leftMotors.move(0);
     rightMotors.move(0);
@@ -381,6 +292,10 @@ inline void waitAtMatchload(int allianceColour) {
     const int TIMEOUT = 2500;
 
     uint32_t startTime = pros::millis();
+    int counter = 0;
+    bool direction = true;
+
+    parkSensor.set_led_pwm(100);
 
     while(true) {
         bool detectedRed = checkColour(parkSensor) == AllianceColour::RED;
@@ -401,7 +316,31 @@ inline void waitAtMatchload(int allianceColour) {
         if (pros::millis() - startTime > TIMEOUT) {
             break;
         }
+
+        counter++;
+        if(direction == true) {
+            if(counter < 8) {
+                leftMotors.move(50);
+                rightMotors.move(50);
+            } else {
+                counter = 0;
+                direction = false;
+            }
+        } else {
+            if(counter < 5) {
+                leftMotors.move(-30);
+                rightMotors.move(-30);
+            } else {
+                counter = 0;
+                direction = true;
+            }
+        }
+
+        pros::delay(20);
     }
+    parkSensor.set_led_pwm(0);
+    leftMotors.move(0);
+    rightMotors.move(0);
 }
 
 #endif

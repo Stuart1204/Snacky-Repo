@@ -5,6 +5,7 @@
 #include "other_functions.cpp"
 #include "intake.cpp"
 #include "piston.cpp"
+#include <iostream>
 
 inline void intakeControls() {
     if(controller.get_digital(Buttons::L1)) {
@@ -79,15 +80,15 @@ inline void drivetrainControls() {
 }
 
 inline void displayData() {
+    double distance = leftDistSensor.get_distance();
     // display lemlib pose
-    // lemlib::Pose pose = chassis.getPose();
-    // pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
-    // pros::screen::print(TEXT_LARGE_CENTER, 3, "y: %f", pose.y);
-    // pros::screen::print(TEXT_LARGE_CENTER, 5, "heading: %f", pose.theta);
+    lemlib::Pose pose = chassis.getPose();
+    pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
+    pros::screen::print(TEXT_LARGE_CENTER, 3, "y: %f", pose.y);
+    pros::screen::print(TEXT_LARGE_CENTER, 5, "heading: %f", pose.theta);
+    pros::screen::print(TEXT_LARGE_CENTER, 7, "distance: %f", distance);
 
-    pros::screen::print(TEXT_LARGE_CENTER, 1, "state: %i", intake.returnState());
-    pros::screen::print(TEXT_LARGE_CENTER, 3, "scoringCurent: %i", scoringRoller.get_current_draw());
-    pros::screen::print(TEXT_LARGE_CENTER, 5, "upperSpeed: %f", upperIntake.get_actual_velocity());
+    //printf("current: %f\n", leftMotors.get_actual_velocity());
 }
 
 #endif

@@ -17,9 +17,8 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
-	allianceColour = AllianceColour::RED;
-	testingAuto();
-	controller.rumble(".");
+	allianceColour = AllianceColour::BLUE;
+	SAWP();
 }
 
 void opcontrol() {

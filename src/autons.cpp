@@ -16,7 +16,7 @@
 
 inline void testingAuto() {
     chassis.setPose(0,0,0);
-    moveToPoint(24, 24, true, false);
+    moveToPoint(24, 24, true, true);
 }
 
 inline void leftSideAuto() {
@@ -28,25 +28,36 @@ inline void rightSideAuto() {
 }
 
 inline void SAWP() {
-    chassis.setPose(0,0,0);
-    moveToPoint(-35, 10, true, false);
+    chassis.setPose(-48, 24 - 6.75 - .5 ,90);
+    intake.setState(IntakeState::IDLE);
+    moveToPoint(-35, 18, true, false);
     turnToHeading(55);
     setWings(true);
     intake.setState(IntakeState::INTAKE);
-    driveDistance(15, 50); // picking up the three clump of balls
-    moveToPoint(-40, 40, true, true);
-    turnToHeading(0);
-    driveToDistance(22);
+    driveDistance(17, 30); // picking up the three clump of balls
+    moveToPoint(-37, 48, false, true);
     turnToHeading(-90);
+    intake.setState(IntakeState::IDLE);
+    setWings(false);
     driveToGoal(false); // driving to the long goal
     intake.setState(IntakeState::SCOREHIGH); // scoring balls onto long goal
-    pros::delay(3000);
+    pros::delay(1000);
+    std::cout << "afterDelay";    
     tongue.setState(true);
+    std::cout << "afterTongue";    
     intake.setState(IntakeState::INTAKE);
+    std::cout << "afterIntake";    
     setWings(true);
-    moveToPoint(-56, 48, true, true);
-    leftMotors.move(30);
-    rightMotors.move(30); // collecting matchloads
+    std::cout << "afterWings";    
+    moveToPoint(-57, 48, true, true);
+    leftMotors.move(80);
+    rightMotors.move(80); // collecting matchloads
+    pros::delay(300);
     waitAtMatchload(allianceColour);
+    intake.setState(IntakeState::IDLE);
+    driveDistance(-10);
+    tongue.setState(false);
+    moveToPoint(-14, 14, false, true);
+
 }
 
