@@ -17,7 +17,7 @@ inline lemlib::PID linearPID(7.5, 0.0, 26.0, 0, false);
 inline void turnToHeading(float targetHeading) {
     float TARGET_THRESHOLD = 3; // degrees
     int TIME_BEFORE_EXIT = 100; // in milliseconds
-    int TIMEOUT = 2000; // milliseconds
+    int TIMEOUT = 1000; // milliseconds
 
     // Normalize target heading to [0, 360)
     if (targetHeading < 0) targetHeading += 360.0;
@@ -105,16 +105,20 @@ inline void turnToPoint(float targetX, float targetY, bool direction) {
     turnToHeading(targetHeading);
 }
 
-inline void moveToPoint(float targetX, float targetY, bool direction, bool turnBeforeMoving, bool blendMovements) {
+inline void moveToPoint(float targetX, float targetY, bool direction, bool turnBeforeMoving, bool blendMovements, float maxSpeed) {
     if(turnBeforeMoving == true) {
         turnToPoint(targetX, targetY, direction);
     }
     if(blendMovements) {
-        chassis.moveToPoint(targetX, targetY, 2500, {.forwards = direction, .minSpeed = 30, .earlyExitRange = 5});
+        chassis.moveToPoint(targetX, targetY, 2500, {.forwards = direction, .maxSpeed = maxSpeed, .minSpeed = 30, .earlyExitRange = 5});
     } else {
-        chassis.moveToPoint(targetX, targetY, 2500, {.forwards = direction});
+        chassis.moveToPoint(targetX, targetY, 2500, {.forwards = direction, .maxSpeed = maxSpeed,});
     }
     chassis.waitUntilDone();
+}
+
+inline void moveToPoint(float targetX, float targetY, bool direction, bool turnBeforeMoving, bool blendMovements) {
+    moveToPoint(targetX, targetY, direction, turnBeforeMoving, blendMovements, 127);
 }
 
 inline void moveToPoint(float targetX, float targetY, bool direction, bool turnBeforeMoving) {
@@ -138,15 +142,53 @@ inline void resetPos() {
         if (fabs(normalizedAngle) < ANGLE_TOLERANCE) {
             // Facing forward (0°)
             chassis.setPose(currentPose.x, FIELD_WALL - currentDistance, currentPose.theta);
+            controller.rumble("-");
         } else if (fabs(normalizedAngle - 90) < ANGLE_TOLERANCE) {
             // Facing right (90°)
             chassis.setPose(FIELD_WALL - currentDistance, currentPose.y, currentPose.theta);
+            controller.rumble("-");
         } else if (fabs(normalizedAngle + 90) < ANGLE_TOLERANCE) {
             // Facing left (-90°)
             chassis.setPose(-FIELD_WALL + currentDistance, currentPose.y, currentPose.theta);
+            controller.rumble("-");
         } else if (fabs(fabs(normalizedAngle) - 180) < ANGLE_TOLERANCE) {
             // Facing backward (180° or -180°)
             chassis.setPose(currentPose.x, -FIELD_WALL + currentDistance, currentPose.theta);
+            controller.rumble("-");
+        }
+    }
+}
+
+inline void leftResetPos() {
+    const float FIELD_WALL = 70.0; // inches
+    const float ANGLE_TOLERANCE = 8.0; // degrees
+    
+    lemlib::Pose currentPose = chassis.getPose();
+    
+    // Normalize angle to -180 to 180 range
+    float normalizedAngle = fmod(currentPose.theta + 180.0, 360.0) - 180.0;
+
+    float currentDistance;
+    if(leftDistSensor.get() != 9999) {
+       currentDistance = (leftDistSensor.get_distance() * MM_TO_INCHES) + LEFT_DIST_OFFSET; 
+
+        // Determine which wall we're facing based on angle
+        if (fabs(normalizedAngle - 90) < ANGLE_TOLERANCE) {
+            // Facing right (90°)
+            chassis.setPose(currentPose.x, FIELD_WALL - currentDistance, currentPose.theta);
+            controller.rumble("-");
+        } else if (fabs(fabs(normalizedAngle) - 180) < ANGLE_TOLERANCE) {
+            // Facing right (90°)
+            chassis.setPose(FIELD_WALL - currentDistance, currentPose.y, currentPose.theta);
+            controller.rumble("-");
+        } else if (fabs(normalizedAngle) < ANGLE_TOLERANCE) {
+            // Facing left (-90°)
+            chassis.setPose(-FIELD_WALL + currentDistance, currentPose.y, currentPose.theta);
+            controller.rumble("-");
+        } else if (fabs(normalizedAngle + 90) < ANGLE_TOLERANCE) {
+            // Facing backward (180° or -180°)
+            chassis.setPose(currentPose.x, -FIELD_WALL + currentDistance, currentPose.theta);
+            controller.rumble("-");
         }
     }
 }
@@ -259,14 +301,17 @@ inline void driveDistance(float targetDist) {
 }
 
 inline void driveToGoal(bool direction) {
-    const float SPEED_THRESHOLD = 50;
-    const int MOTOR_SPEED = 50;
+    const float SPEED_THRESHOLD = 100; // out if 600
+    const int MOTOR_SPEED = 60; // out of 127
+    const int TIMEOUT = 1000;
 
     bool reachedTargetSpeed = false;
+    uint32_t startTime = pros::millis();
+
     while(true) {
         float currentSpeed = fmin(leftMotors.get_actual_velocity(), rightMotors.get_actual_velocity());
 
-        if(fabs(currentSpeed) > SPEED_THRESHOLD) {
+        if(pros::millis() - startTime > 300) {
             reachedTargetSpeed = true;
         }
 
@@ -281,38 +326,25 @@ inline void driveToGoal(bool direction) {
             leftMotors.move(-MOTOR_SPEED);
             rightMotors.move(-MOTOR_SPEED);
         }
+
+        if (pros::millis() - startTime > TIMEOUT) {
+            break;
+        }
+
         pros::delay(20);
     }
-    leftMotors.move(0);
-    rightMotors.move(0);
+    leftMotors.move(-12);
+    rightMotors.move(-12);
 }
 
-// this function waits until the wrong colour at the matchload station for auton
-inline void waitAtMatchload(int allianceColour) {
-    const int TIMEOUT = 2500;
+inline void waitAtMatchload(int timeout) {
+    const int TIMEOUT = timeout;
 
     uint32_t startTime = pros::millis();
     int counter = 0;
     bool direction = true;
 
-    parkSensor.set_led_pwm(100);
-
     while(true) {
-        bool detectedRed = checkColour(parkSensor) == AllianceColour::RED;
-        bool detectedBlue = checkColour(parkSensor) == AllianceColour::BLUE;
-
-        if(allianceColour == AllianceColour::RED) {
-            // wait until detected blue to leave station
-            if(detectedBlue) {
-                break;
-            }
-        } else if (allianceColour == AllianceColour::BLUE) {
-            // wait until detected red to leave station
-            if(detectedRed) {
-                break;
-            }
-        }
-
         if (pros::millis() - startTime > TIMEOUT) {
             break;
         }
@@ -320,8 +352,8 @@ inline void waitAtMatchload(int allianceColour) {
         counter++;
         if(direction == true) {
             if(counter < 8) {
-                leftMotors.move(50);
-                rightMotors.move(50);
+                leftMotors.move(70);
+                rightMotors.move(70);
             } else {
                 counter = 0;
                 direction = false;
@@ -338,9 +370,16 @@ inline void waitAtMatchload(int allianceColour) {
 
         pros::delay(20);
     }
-    parkSensor.set_led_pwm(0);
     leftMotors.move(0);
     rightMotors.move(0);
+}
+
+inline void waitAtMatchload() {
+    waitAtMatchload(750);
+}
+
+inline void skillsWaitAtMatchload() {
+    waitAtMatchload(2200);
 }
 
 #endif

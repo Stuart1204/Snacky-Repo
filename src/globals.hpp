@@ -54,13 +54,11 @@
 //global variables
 inline int allianceColour;
 inline int scoreHeight; //1 for long goal, 2 for middle goal
-inline int ejectCounter;
-inline int ejectSpeed;
-inline bool ejectState = false;
+inline int blockCounter = 0;
 
 // global constants
-const inline float FRONT_DIST_OFFSET = 4.5;
-const inline float LEFT_DIST_OFFSET = 5;
+const inline float FRONT_DIST_OFFSET = 3.5;
+const inline float LEFT_DIST_OFFSET = 2.5;
 const inline float MM_TO_INCHES = 0.03937007874;
 const inline float CENTIDEG_TO_INCHES = 0.00017889624;
 
@@ -75,7 +73,9 @@ enum IntakeState {
     SCOREHIGH = 3,
     SCOREMID = 4,
     SCORELOW = 5,
-    PARK = 6
+    PARK = 6,
+    LOWINTAKE = 7,
+    INTAKEWITHEJECT = 8
 };
 
 // aliance colour
@@ -167,7 +167,7 @@ inline lemlib::OdomSensors sensors{
 };
 
 // lateral motion controller
-inline lemlib::ControllerSettings linearController(9, // proportional gain (kP)
+inline lemlib::ControllerSettings linearController(8, // proportional gain (kP)
                                             0, // integral gain (kI)
                                             18, // derivative gain (kD)
                                             3, // anti windup

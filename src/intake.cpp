@@ -16,6 +16,15 @@ class Intake {
 
       int scoreStallCounter = 0;
       int upperStallCounter = 0;
+
+      // for middle goal we need to reverse a little bit before scoring
+      int midOuttakeCounter = 0;
+      // same with the high goal
+      int highOuttakeCounter = 0;
+
+      int parkStageTracker = 0;
+
+      int intakeWithEjectCounter; // for intakeWithEject state
  
    public:
       Intake(){} // constructor
@@ -23,30 +32,33 @@ class Intake {
    void setState(int intakeState) {
       lastState = currentState;
       currentState = intakeState;
-
       // switch case if any states need specific actions done when called
-      switch(currentState) {
+      if(lastState != currentState) {
+         switch(currentState) {
          case IntakeState::IDLE: 
             break;
          case IntakeState::INTAKE:
-            if(lastState != currentState) {
-               scoreStallCounter = 0;
-               upperStallCounter = 0;
-            }
+            scoreStallCounter = 0;
+            upperStallCounter = 0;
+            setWings(true);
             break;
          case IntakeState::OUTTAKE:
             break;
          case IntakeState::SCOREHIGH:
             setWings(false);
+            highOuttakeCounter = 0;
             break;
          case IntakeState::SCOREMID:
+            midOuttakeCounter = 0;
             break;
          case IntakeState::SCORELOW:
             break;
          case IntakeState::PARK:
-            loadPark();
-            currentState = IntakeState::IDLE;
+            parkStageTracker = 0;
             break;
+         case IntakeState::INTAKEWITHEJECT:
+            intakeWithEjectCounter = 50;
+      }
       }
    }
 
@@ -96,24 +108,24 @@ class Intake {
 
 
    void loadPark() {
-      while (parkSensor.get_proximity() < 200) {
+      if(parkStageTracker == 0) {
          moveLower(-80);
          moveUpper(-127);
-         pros::delay(20);
-         if(currentState != IntakeState::PARK && currentState != IntakeState::IDLE) {
-            return;
+         if(parkSensor.get_proximity() > 200) {
+            parkStageTracker++;
          }
       }
-      while (parkSensor.get_proximity() > 200) {
+      if(parkStageTracker == 1) {
          moveLower(-35);
          moveUpper(-127);
-         pros::delay(20);
-         if(currentState != IntakeState::PARK && currentState != IntakeState::IDLE) {
-            return;
+         if(parkSensor.get_proximity() < 200) {
+            parkStageTracker++;
          }
       }
-      // activating park piston
-      activatePark = true;
+      if(parkStageTracker == 2) {
+         activatePark = true;
+         setState(IntakeState::IDLE);
+      }
    }
 
    void run() {
@@ -133,28 +145,63 @@ class Intake {
             moveScore(-127);
             break;
          case IntakeState::SCOREHIGH:
-            moveLower(127);
-            moveUpper(127);
-            moveScore(127);
+            highOuttakeCounter++;
+            if(highOuttakeCounter < 7) {
+               moveLower(-60);
+               moveUpper(-100);
+               moveScore(-127);
+            } else {
+               moveLower(127);
+               moveUpper(127);
+               moveScore(127);
+            }
             break;
          case IntakeState::SCOREMID:
-            moveLower(127);
-            moveUpper(127);
-            moveScore(-127);
+            midOuttakeCounter++;
+            if(midOuttakeCounter < 10) {
+               moveLower(-60);
+               moveUpper(-127);
+               moveScore(-127);
+            } else {
+               moveLower(127);
+               moveUpper(127);
+               moveScore(-100);
+            }
             break;
-         case IntakeState::SCORELOW:
+         case IntakeState::SCORELOW: // meaning the robot is tryna score 7 on low 
             moveLower(-60);
             moveUpper(-127);
             moveScore(-127);
             break;
          case IntakeState::PARK:
             loadPark();
-            currentState = IntakeState::IDLE;
             break;
+         case IntakeState::LOWINTAKE:
+            moveLower(127);
+         case IntakeState::INTAKEWITHEJECT:
+            moveLower(127);
+            moveUpper(127);
+            moveScore(127);
+            if(allianceColour == AllianceColour::BLUE) {
+               if(checkColour(parkSensor) == AllianceColour::RED) {
+                  moveLower(-127);
+                  intakeWithEjectCounter = 0;
+               }
+            }
+            if(allianceColour == AllianceColour::RED) {
+               if(checkColour(parkSensor) == AllianceColour::BLUE) {
+                  moveLower(-127);
+                  intakeWithEjectCounter = 0;
+               }
+            }
+            if(intakeWithEjectCounter < 10) {
+               moveLower(-127);
+            }
+            intakeWithEjectCounter++;
       }
    }
 
-   int returnState() {
+   int getState() {
       return currentState;
    }
 };

@@ -22,7 +22,9 @@ inline void intakeControls() {
     } else if(controller.get_digital(Buttons::R2)) {
         intake.setState(IntakeState::SCOREMID);
     } else {
-        intake.setState(IntakeState::IDLE);
+        if(intake.getState() != IntakeState::PARK) {
+            intake.setState(IntakeState::IDLE);
+        }
     }
 
     // uses the same park button to exit off park
@@ -71,6 +73,7 @@ inline void activatePistons() {
 inline void subsystemControls() {
     intakeControls(); 
     activatePistons();
+    countBlocks(parkSensor);
 }
 
 inline void drivetrainControls() {
@@ -80,13 +83,15 @@ inline void drivetrainControls() {
 }
 
 inline void displayData() {
-    double distance = leftDistSensor.get_distance();
+    float frontCurrentDistance = (frontDistSensor.get_distance() * MM_TO_INCHES) + FRONT_DIST_OFFSET;
+    float leftCurrentDistance = (leftDistSensor.get_distance() * MM_TO_INCHES) + LEFT_DIST_OFFSET; 
     // display lemlib pose
     lemlib::Pose pose = chassis.getPose();
     pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
     pros::screen::print(TEXT_LARGE_CENTER, 3, "y: %f", pose.y);
     pros::screen::print(TEXT_LARGE_CENTER, 5, "heading: %f", pose.theta);
-    pros::screen::print(TEXT_LARGE_CENTER, 7, "distance: %f", distance);
+    pros::screen::print(TEXT_LARGE_CENTER, 7, "left: %f", 70 - leftCurrentDistance);
+    pros::screen::print(TEXT_LARGE_CENTER, 9, "front: %f", 70 - frontCurrentDistance);
 
     //printf("current: %f\n", leftMotors.get_actual_velocity());
 }
