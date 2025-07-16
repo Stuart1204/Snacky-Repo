@@ -51,6 +51,10 @@
 #define driveWheelType lemlib::Omniwheel::NEW_325
 #define driveRPM 450
 
+// auton selection variable
+inline int autonSelectionEnum;
+inline int startingSide;
+
 //global variables
 inline int allianceColour;
 inline int scoreHeight; //1 for long goal, 2 for middle goal
@@ -64,6 +68,9 @@ const inline float CENTIDEG_TO_INCHES = 0.00017889624;
 
 // used for communicating between intake and park piston
 inline bool activatePark = false;
+
+// used for communicating between drivetrain and buttons
+inline bool matchloadShake = false;
 
 // intake states enum
 enum IntakeState {
@@ -82,6 +89,18 @@ enum IntakeState {
 enum AllianceColour {
     RED = 1,
     BLUE = 2
+};
+
+// auton selector enum
+enum Selection {
+    SKILLS = 1,
+    MATCH = 2,
+    LEFT = 3,
+    RIGHT = 4,
+    LONG_CONTROL = 5,
+    LONG_AND_CENTER = 6,
+    SOLO_AWP = 7,
+    NOTHING = 8
 };
 
 // -- Namespace Configurations -- //
@@ -167,7 +186,7 @@ inline lemlib::OdomSensors sensors{
 };
 
 // lateral motion controller
-inline lemlib::ControllerSettings linearController(8, // proportional gain (kP)
+inline lemlib::ControllerSettings linearController(7.8, // proportional gain (kP)
                                             0, // integral gain (kI)
                                             18, // derivative gain (kD)
                                             3, // anti windup

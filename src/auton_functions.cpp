@@ -3,6 +3,7 @@
 
 #include "globals.hpp"
 #include "other_functions.cpp"
+#include "intake.cpp"
 #include "lemlib/pid.hpp"
 #include "lemlib/pose.hpp"
 #include "lemlib/timer.hpp"
@@ -15,24 +16,30 @@ inline lemlib::PID linearPID(7.5, 0.0, 26.0, 0, false);
 
 // turns to a desired heading
 inline void turnToHeading(float targetHeading) {
-    float TARGET_THRESHOLD = 3; // degrees
+    float TARGET_THRESHOLD = 2; // degrees
     int TIME_BEFORE_EXIT = 100; // in milliseconds
     int TIMEOUT = 1000; // milliseconds
 
     // Normalize target heading to [0, 360)
-    if (targetHeading < 0) targetHeading += 360.0;
-    targetHeading = fmod(targetHeading + 360.0, 360.0);
+    targetHeading = fmod(fmod(targetHeading, 360.0) + 360.0, 360.0);
 
     float currentHeading = chassis.getPose().theta;
-    if (currentHeading < 0) currentHeading += 360.0;
-
-    //printf("target: %f, current: %f\n", targetHeading, currentHeading);
+    currentHeading = fmod(fmod(currentHeading, 360.0) + 360.0, 360.0);
+    
+    printf("targetHeading: %f \n", targetHeading);
+    printf("currentHeading: %f \n", currentHeading);
+    
     
     float error = targetHeading - currentHeading;
 
     // Shortest path
     if (error > 180.0) error -= 360.0;
     else if (error < -180.0) error += 360.0;
+    printf("error: %f \n", error);
+
+    if(fabs(error) < 3) {
+        TARGET_THRESHOLD = 1;
+    } // more precise if robot is already close to error
 
     bool inSettleZone = false;
     uint32_t settleStartTime;
@@ -41,6 +48,7 @@ inline void turnToHeading(float targetHeading) {
     // while the robot is not at target heading and while the timer has time left on the clock
     while (true) {
         currentHeading = chassis.getPose().theta;
+        currentHeading = fmod(fmod(currentHeading, 360.0) + 360.0, 360.0);
         error = targetHeading - currentHeading;
         
         // calculate shortest path
@@ -89,18 +97,18 @@ inline void turnToPoint(float targetX, float targetY, bool direction) {
 
     // find the heading from the atan function (returns trig-angle type style)
     float targetHeading = lv_atan2(targetY - currentPose.y, targetX - currentPose.x);
-    printf("lv_atan2 result: %f\n", targetHeading);
+    //printf("lv_atan2 result: %f\n", targetHeading);
 
     //converting to navigation angle style
     targetHeading = fmod((450 - targetHeading), 360);
-    printf("After conversion: %f\n", targetHeading);
+    //printf("After conversion: %f\n", targetHeading);
 
     // adjust heading for reverse situation
     if(direction == false) { // false = reverse
         targetHeading = fmod(targetHeading + 180.0, 360.0);
     }
 
-    printf("Final target heading: %f\n", targetHeading);
+    //printf("Final target heading: %f\n", targetHeading);
     // use turnToHeading to turn the robot
     turnToHeading(targetHeading);
 }
@@ -302,7 +310,7 @@ inline void driveDistance(float targetDist) {
 
 inline void driveToGoal(bool direction) {
     const float SPEED_THRESHOLD = 100; // out if 600
-    const int MOTOR_SPEED = 60; // out of 127
+    const int MOTOR_SPEED = 50; // out of 127
     const int TIMEOUT = 1000;
 
     bool reachedTargetSpeed = false;
@@ -380,6 +388,36 @@ inline void waitAtMatchload() {
 
 inline void skillsWaitAtMatchload() {
     waitAtMatchload(2200);
+}
+
+inline void driveInParkZone() {
+    const int MOTOR_SPEED = 60; // out of 127
+    const int TIMEOUT = 2000;
+    const float FIRST_ROLL_THRESHOLD = -1;
+    const float SECOND_ROLL_THRESHOLD = 0.25;
+
+    uint32_t startTime = pros::millis();
+    intake.setState(IntakeState::OUTTAKE);
+
+    while(true) {
+        if(inertial_sensor.get_roll() < FIRST_ROLL_THRESHOLD) {
+            break;
+        }
+
+        leftMotors.move(MOTOR_SPEED);
+        rightMotors.move(MOTOR_SPEED);
+    }
+    tongue.setState(false);
+    while(true) {
+        if(inertial_sensor.get_roll() > SECOND_ROLL_THRESHOLD) {
+            break;
+        }
+
+        leftMotors.move(30);
+        rightMotors.move(30);
+    }
+    leftMotors.move(0);
+    rightMotors.move(0);
 }
 
 #endif
