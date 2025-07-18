@@ -25,20 +25,15 @@ inline void turnToHeading(float targetHeading) {
 
     float currentHeading = chassis.getPose().theta;
     currentHeading = fmod(fmod(currentHeading, 360.0) + 360.0, 360.0);
-    
-    printf("targetHeading: %f \n", targetHeading);
-    printf("currentHeading: %f \n", currentHeading);
-    
-    
+
     float error = targetHeading - currentHeading;
 
     // Shortest path
     if (error > 180.0) error -= 360.0;
     else if (error < -180.0) error += 360.0;
-    printf("error: %f \n", error);
 
     if(fabs(error) < 3) {
-        TARGET_THRESHOLD = 1;
+        TARGET_THRESHOLD = 2;
     } // more precise if robot is already close to error
 
     bool inSettleZone = false;

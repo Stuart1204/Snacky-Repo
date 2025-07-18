@@ -21,6 +21,10 @@ class Intake {
       int midOuttakeCounter = 0;
       // same with the high goal
       int highOuttakeCounter = 0;
+      // colour sort counter
+      int colourSortCounter = 0;
+      bool currentlyColourSorting = false;
+      const int COLOUR_SORT_EJECT_TIME = 20;
 
       int parkStageTracker = 0;
 
@@ -47,6 +51,7 @@ class Intake {
          case IntakeState::SCOREHIGH:
             setWings(false);
             highOuttakeCounter = 0;
+            colourSortCounter = 0;
             break;
          case IntakeState::SCOREMID:
             midOuttakeCounter = 0;
@@ -106,6 +111,40 @@ class Intake {
       }
    }
 
+   void ejectBlock() {
+      colourSortCounter++;
+      if(colourSortCounter < COLOUR_SORT_EJECT_TIME) {
+         moveUpper(50);
+         moveScore(-127);
+      } else {
+         colourSortCounter = 0;
+         currentlyColourSorting = false;
+      }
+   }
+
+   void colourSort() {
+      if(allianceColour == AllianceColour::RED) {
+         if(checkColour(colourSortSensor) == AllianceColour::BLUE) {
+            currentlyColourSorting = true;
+         }
+         if(checkColour(colourSortSensor) == AllianceColour::RED) {
+            currentlyColourSorting = false;
+            colourSortCounter = 0;
+         }
+      }
+      if(allianceColour == AllianceColour::BLUE) {
+         if(checkColour(colourSortSensor) == AllianceColour::RED) {
+            currentlyColourSorting = true;
+         }
+         if(checkColour(colourSortSensor) == AllianceColour::BLUE) {
+            currentlyColourSorting = false;
+            colourSortCounter = 0;
+         }
+      }
+      if(currentlyColourSorting) {
+         ejectBlock();
+      }
+   }
 
    void loadPark() {
       if(parkStageTracker == 0) {
@@ -154,6 +193,12 @@ class Intake {
                moveLower(127);
                moveUpper(127);
                moveScore(127);
+               if(enableColourSort) {
+                  colourSort();
+                  colourSortSensor.set_led_pwm(100);
+               } else {
+                  colourSortSensor.set_led_pwm(0);
+               }
             }
             break;
          case IntakeState::SCOREMID:
@@ -165,7 +210,7 @@ class Intake {
             } else {
                moveLower(127);
                moveUpper(127);
-               moveScore(-100);
+               moveScore(-90);
             }
             break;
          case IntakeState::SCORELOW: // meaning the robot is tryna score 7 on low 
@@ -178,6 +223,9 @@ class Intake {
             break;
          case IntakeState::LOWINTAKE:
             moveLower(127);
+            moveUpper(0);
+            moveScore(0);
+            break;
          case IntakeState::INTAKEWITHEJECT:
             moveLower(127);
             moveUpper(127);
@@ -198,6 +246,7 @@ class Intake {
                moveLower(-127);
             }
             intakeWithEjectCounter++;
+            break;
       }
    }
 

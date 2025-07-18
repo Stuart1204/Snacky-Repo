@@ -13,20 +13,20 @@ void initialize() {
 		}
 	});
 
-	allianceColour = 0; // nothing
-	autonSelection();
+	allianceColour = AllianceColour::BLUE;
+	startingSide = Selection::RIGHT;
+	autonSelectionEnum = Selection::SOLO_AWP;
+	//autonSelection();
 }
 void disabled() {}
 
 void competition_initialize() {}
 
 void autonomous() {
-	rightLongGoalAndCenterAuton();
+	runSelectedAuton();
 }
 
 void opcontrol() {
-	leftMotors.set_brake_mode(MotorConfigs::BRAKE);
-	rightMotors.set_brake_mode(MotorConfigs::BRAKE);
 	odomLift.setState(true);
     while (true) {
 		// intake has its own thread

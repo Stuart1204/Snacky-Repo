@@ -39,6 +39,15 @@ inline void intakeControls() {
             intake.setState(IntakeState::PARK);
         }
     }
+
+    if(controller.get_digital_new_press(Buttons::colourSort)) {
+        enableColourSort = !enableColourSort;
+        if(enableColourSort) {
+            controller.rumble("...");
+        } else {
+            controller.rumble(".");
+        }
+    }
 }
 
 
@@ -118,6 +127,8 @@ inline void subsystemControls() {
 }
 
 inline void drivetrainControls() {
+    leftMotors.set_brake_mode(MotorConfigs::BRAKE);
+	rightMotors.set_brake_mode(MotorConfigs::BRAKE);
     int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
     int rightX = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
     if(!matchloadShake) {
@@ -156,6 +167,8 @@ public:
         
         pros::screen::set_pen(colour);
 	    pros::screen::fill_rect(x,y,x2,y2);
+        pros::screen::set_pen(pros::Color::black);
+        pros::screen::draw_rect(x, y, x2, y2);
         textOffset = std::strlen(text) * characterToOffset;
         pros::screen::set_pen(pros::Color::white);
         pros::screen::print(pros::E_TEXT_LARGE, (x + x2) / 2 - textOffset, (y + y2) / 2, text);

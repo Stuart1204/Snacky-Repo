@@ -70,8 +70,9 @@ inline void SAWP() {
     moveToPoint(-48, -48, true, false);
     //resetPos();
     turnToHeading(-90);
-    intake.setState(IntakeState::INTAKE);
-    setWings(true);
+    leftResetPos();
+    intake.setState(IntakeState::LOWINTAKE);
+    //setWings(true);
     leftMotors.move(70);
     rightMotors.move(70);
     pros::delay(300);
@@ -86,20 +87,24 @@ inline void SAWP() {
     setWings(false);
     driveToGoal(false);
     intake.setState(IntakeState::SCOREHIGH);
-    pros::delay(1000); // 2000 if wanted to score all balls
+    pros::delay(600); // 2000 if wanted to score all balls
     intake.setState(IntakeState::IDLE);
     driveDistance(7);
+    turnToHeading(-90);
+    leftResetPos();
     intake.setState(IntakeState::LOWINTAKE);
     setWings(true);
-    moveToPoint(-30, -31, true, true, false, 70);
-    moveToPoint(-12, -12, true, true, false, 35);
-    chassis.turnToHeading(47, 500);
+    moveToPoint(-27, -31, true, true, false, 70);
+    //moveToPoint(-12, -14, true, true, false, 35);
+    turnToHeading(45);
+    driveDistance(23, 35);
     intake.setState(IntakeState::OUTTAKE);
-    pros::delay(1200);
+    pros::delay(800);
     intake.setState(IntakeState::INTAKE);
-    driveDistance(-6);
+    driveDistance(-10);
     setWings(true);
-    moveToPoint(-23, 21, true, true, false, 70);
+    moveToPoint(-20, 15, true, true, true, 70);
+    moveToPoint(-22, 22, true, false, false, 35);
     turnToPoint(0, 0, false);
     intake.setState(IntakeState::SCOREMID);
     driveToGoal(false);
@@ -198,7 +203,7 @@ inline void leftLongGoalAndCenterAuton() {
     setWings(true);
     moveToPoint(-39, 26, true, true);
     moveToPoint(-18, 22, true, true, false, 35);
-    moveToPoint(-19, 14, false, false, true);
+    moveToPoint(-19, 15, false, false, true);
     turnToHeading(-45);
     driveToGoal(false);
     intake.setState(IntakeState::SCOREMID);
@@ -340,4 +345,32 @@ inline void skillsAuton() {
     turnToHeading(-20);
     odomLift.setState(true);
     driveInParkZone();
+}
+
+inline void runSelectedAuton() {
+    if(startingSide == Selection::LEFT) {
+        if(autonSelectionEnum == Selection::LONG_CONTROL) {
+            leftLongGoalControlAuton();
+        }
+        if(autonSelectionEnum == Selection::LONG_AND_CENTER) {
+            leftLongGoalAndCenterAuton();
+        }
+        if(autonSelectionEnum == Selection::NOTHING) {
+            return;
+        }
+    }
+    if(startingSide == Selection::RIGHT) {
+        if(autonSelectionEnum == Selection::LONG_CONTROL) {
+            rightLongGoalControlAuton();
+        }
+        if(autonSelectionEnum == Selection::LONG_AND_CENTER) {
+            rightLongGoalAndCenterAuton();
+        }
+        if(autonSelectionEnum == Selection::SOLO_AWP) {
+            SAWP();
+        }
+        if(autonSelectionEnum == Selection::NOTHING) {
+            return;
+        }
+    }
 }

@@ -59,6 +59,7 @@ inline int startingSide;
 inline int allianceColour;
 inline int scoreHeight; //1 for long goal, 2 for middle goal
 inline int blockCounter = 0;
+inline bool enableColourSort = false;
 
 // global constants
 const inline float FRONT_DIST_OFFSET = 3.5;
@@ -82,7 +83,7 @@ enum IntakeState {
     SCORELOW = 5,
     PARK = 6,
     LOWINTAKE = 7,
-    INTAKEWITHEJECT = 8
+    INTAKEWITHEJECT = 8,
 };
 
 // aliance colour
@@ -124,6 +125,7 @@ namespace Buttons {
     constexpr auto park = Buttons::B;
     constexpr auto tongue = Buttons::A;
     constexpr auto intakeLift = Buttons::Y;
+    constexpr auto colourSort = Buttons::RIGHT;
 }
 
 namespace MotorConfigs {
