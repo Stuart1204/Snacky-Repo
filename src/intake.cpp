@@ -57,6 +57,7 @@ class Intake {
             midOuttakeCounter = 0;
             break;
          case IntakeState::SCORELOW:
+            blockCounter = 0;
             break;
          case IntakeState::PARK:
             parkStageTracker = 0;
@@ -214,9 +215,13 @@ class Intake {
             }
             break;
          case IntakeState::SCORELOW: // meaning the robot is tryna score 7 on low 
-            moveLower(-60);
+            moveLower(-65);
             moveUpper(-127);
             moveScore(-127);
+            countBlocks(parkSensor);
+            if(blockCounter >= 6 || slowLowGoal) {
+               moveLower(-45);
+            }
             break;
          case IntakeState::PARK:
             loadPark();

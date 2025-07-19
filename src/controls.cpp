@@ -48,6 +48,10 @@ inline void intakeControls() {
             controller.rumble(".");
         }
     }
+
+    if(controller.get_digital_new_press(Buttons::LEFT)) {
+        slowLowGoal = !slowLowGoal;
+    }
 }
 
 
@@ -145,7 +149,7 @@ inline void displayData() {
     // pros::screen::print(TEXT_LARGE_CENTER, 3, "y: %f", pose.y);
     // pros::screen::print(TEXT_LARGE_CENTER, 5, "heading: %f", pose.theta);
     // pros::screen::print(TEXT_LARGE_CENTER, 7, "yaw: %f", inertial_sensor.get_yaw());
-    // pros::screen::print(TEXT_LARGE_CENTER, 9, "roll: %f", inertial_sensor.get_roll());
+    pros::screen::print(TEXT_LARGE_CENTER, 9, "blocks: %i", blockCounter);
 
     //printf("current: %f\n", leftMotors.get_actual_velocity());
 }

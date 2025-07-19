@@ -24,11 +24,11 @@ inline void setWings(bool state) {
 inline bool detectedState = false;
 inline void countBlocks(pros::Optical sensor) {
 
-	if(sensor.get_proximity() > 150 && !detectedState) {
+	if(sensor.get_proximity() > 250 && !detectedState) {
 		detectedState = true;
 		blockCounter++;
 	}
-	if(sensor.get_proximity() < 150) {
+	if(sensor.get_proximity() < 250) {
 		detectedState = false;
 	}
 }

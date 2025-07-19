@@ -7,6 +7,7 @@
 #include "lemlib/pid.hpp"
 #include "lemlib/pose.hpp"
 #include "lemlib/timer.hpp"
+#include "pros/rtos.hpp"
 #include "pros/screen.h"
 #include <cmath>
 #include <iostream>
@@ -413,6 +414,12 @@ inline void driveInParkZone() {
     }
     leftMotors.move(0);
     rightMotors.move(0);
+}
+
+inline void moveDrive(int speed, int timeout) {
+    leftMotors.move(speed);
+    rightMotors.move(speed);
+    pros::delay(timeout);
 }
 
 #endif

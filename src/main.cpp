@@ -13,15 +13,15 @@ void initialize() {
 		}
 	});
 
-	allianceColour = AllianceColour::BLUE;
-	startingSide = Selection::RIGHT;
-	autonSelectionEnum = Selection::SOLO_AWP;
-	//autonSelection();
+	// allianceColour = AllianceColour::BLUE;
+	// startingSide = Selection::RIGHT;
+	// autonSelectionEnum = Selection::SOLO_AWP;
+	autonSelection();
+	// pros::delay(5000);
 }
 void disabled() {}
 
 void competition_initialize() {}
-
 void autonomous() {
 	runSelectedAuton();
 }
