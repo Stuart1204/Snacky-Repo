@@ -67,6 +67,7 @@ const inline float FRONT_DIST_OFFSET = 3.5;
 const inline float LEFT_DIST_OFFSET = 2.5;
 const inline float MM_TO_INCHES = 0.03937007874;
 const inline float CENTIDEG_TO_INCHES = 0.00017889624;
+const inline float DEG_TO_RAD = (M_PI / 180.0);
 
 // used for communicating between intake and park piston
 inline bool activatePark = false;

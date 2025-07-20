@@ -12,7 +12,7 @@
 #include <cmath>
 #include <iostream>
 
-inline lemlib::PID angularPID(4.2, 0.0, 16, 0, false);
+inline lemlib::PID angularPID(5.8, 0.01, 27.0, 0, false);
 inline lemlib::PID linearPID(7.5, 0.0, 26.0, 0, false);
 
 // turns to a desired heading
@@ -131,7 +131,7 @@ inline void moveToPoint(float targetX, float targetY, bool direction, bool turnB
 
 inline void resetPos() {
     const float FIELD_WALL = 70.0; // inches
-    const float ANGLE_TOLERANCE = 8.0; // degrees
+    const float ANGLE_TOLERANCE = 15.0; // degrees
     
     lemlib::Pose currentPose = chassis.getPose();
     
@@ -140,25 +140,33 @@ inline void resetPos() {
 
     float currentDistance;
     if(frontDistSensor.get() != 9999) {
-       currentDistance = (frontDistSensor.get_distance() * MM_TO_INCHES) + FRONT_DIST_OFFSET; 
+        currentDistance = (frontDistSensor.get_distance() * MM_TO_INCHES) + FRONT_DIST_OFFSET; 
 
         // Determine which wall we're facing based on angle
         if (fabs(normalizedAngle) < ANGLE_TOLERANCE) {
             // Facing forward (0°)
+            float offsetAngle = fabs(normalizedAngle);
+            currentDistance *= cos(offsetAngle * DEG_TO_RAD);
             chassis.setPose(currentPose.x, FIELD_WALL - currentDistance, currentPose.theta);
-            controller.rumble("-");
+            // controller.rumble("-");
         } else if (fabs(normalizedAngle - 90) < ANGLE_TOLERANCE) {
             // Facing right (90°)
+            float offsetAngle = fabs(normalizedAngle - 90);
+            currentDistance *= cos(offsetAngle * DEG_TO_RAD);
             chassis.setPose(FIELD_WALL - currentDistance, currentPose.y, currentPose.theta);
-            controller.rumble("-");
+            // controller.rumble("-");
         } else if (fabs(normalizedAngle + 90) < ANGLE_TOLERANCE) {
             // Facing left (-90°)
+            float offsetAngle = fabs(normalizedAngle + 90);
+            currentDistance *= cos(offsetAngle * DEG_TO_RAD);
             chassis.setPose(-FIELD_WALL + currentDistance, currentPose.y, currentPose.theta);
-            controller.rumble("-");
+            //controller.rumble("-");
         } else if (fabs(fabs(normalizedAngle) - 180) < ANGLE_TOLERANCE) {
             // Facing backward (180° or -180°)
+            float offsetAngle = fabs(fabs(normalizedAngle) - 180);
+            currentDistance *= cos(offsetAngle * DEG_TO_RAD);
             chassis.setPose(currentPose.x, -FIELD_WALL + currentDistance, currentPose.theta);
-            controller.rumble("-");
+            //controller.rumble("-");
         }
     }
 }
@@ -179,18 +187,26 @@ inline void leftResetPos() {
         // Determine which wall we're facing based on angle
         if (fabs(normalizedAngle - 90) < ANGLE_TOLERANCE) {
             // Facing right (90°)
+            float offsetAngle = fabs(normalizedAngle - 90);
+            currentDistance *= cos(offsetAngle * DEG_TO_RAD);
             chassis.setPose(currentPose.x, FIELD_WALL - currentDistance, currentPose.theta);
             controller.rumble("-");
         } else if (fabs(fabs(normalizedAngle) - 180) < ANGLE_TOLERANCE) {
             // Facing right (90°)
+            float offsetAngle = fabs(fabs(normalizedAngle) - 180);
+            currentDistance *= cos(offsetAngle * DEG_TO_RAD);
             chassis.setPose(FIELD_WALL - currentDistance, currentPose.y, currentPose.theta);
             controller.rumble("-");
         } else if (fabs(normalizedAngle) < ANGLE_TOLERANCE) {
             // Facing left (-90°)
+            float offsetAngle = fabs(normalizedAngle);
+            currentDistance *= cos(offsetAngle * DEG_TO_RAD);
             chassis.setPose(-FIELD_WALL + currentDistance, currentPose.y, currentPose.theta);
             controller.rumble("-");
         } else if (fabs(normalizedAngle + 90) < ANGLE_TOLERANCE) {
             // Facing backward (180° or -180°)
+            float offsetAngle = fabs(normalizedAngle + 90);
+            currentDistance *= cos(offsetAngle * DEG_TO_RAD);
             chassis.setPose(currentPose.x, -FIELD_WALL + currentDistance, currentPose.theta);
             controller.rumble("-");
         }
