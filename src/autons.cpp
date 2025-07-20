@@ -215,6 +215,7 @@ inline void rightLongGoalAndCenterAuton() {
 }
 
 inline void skillsAuton() {
+    enableColourSort = false;
     chassis.setPose(-48, 17.5, 0);
     tongue.setState(true);
     moveToPoint(-48, 48, true, false);
