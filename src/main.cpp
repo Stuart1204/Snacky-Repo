@@ -13,12 +13,15 @@ void initialize() {
 		}
 	});
 
-	enableColourSort = false;
-
 	allianceColour = AllianceColour::RED;
 	startingSide = Selection::LEFT;
 	autonSelectionEnum = Selection::SKILLS;
 	//autonSelection();
+	if(autonSelectionEnum == Selection::SKILLS) {
+		enableColourSort = false;
+	} else {
+		enableColourSort = true;
+	}
 }
 void disabled() {}
 

@@ -214,12 +214,16 @@ class Intake {
                moveScore(-90);
             }
             break;
-         case IntakeState::SCORELOW: // meaning the robot is tryna score 7 on low 
-            moveLower(-65);
+         case IntakeState::SCORELOW: // meaning the robot is tryna score 7 on low
+            if(autonSelectionEnum == Selection::SKILLS) {
+               moveLower(-65);
+            } else {
+               moveLower(-120);
+            }
             moveUpper(-127);
             moveScore(-127);
             countBlocks(parkSensor);
-            if(blockCounter >= 6 || slowLowGoal) {
+            if((blockCounter >= 6 || slowLowGoal) && autonSelectionEnum == Selection::SKILLS) {
                moveLower(-45);
             }
             break;
