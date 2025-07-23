@@ -229,7 +229,7 @@ inline void skillsAuton() {
     pros::delay(800);
     skillsWaitAtMatchload();
     driveDistance(-8);
-    moveToPoint(-30, 59, false, true);
+    moveToPoint(-30, 58, false, true);
     tongue.setState(false);
     intake.setState(IntakeState::IDLE);
     moveToPoint(43, 58, false, true);
@@ -242,7 +242,7 @@ inline void skillsAuton() {
     intake.setState(IntakeState::SCOREHIGH);
     tongue.setState(true);
     pros::delay(2200);
-    moveToPoint(57, 47, true, true);
+    moveToPoint(57, 48, true, true);
     intake.setState(IntakeState::INTAKE);
     setWings(true);
     turnToHeading(90);

@@ -12,12 +12,13 @@
 #include <cmath>
 #include <iostream>
 
-inline lemlib::PID angularPID(5.8, 0.01, 27.0, 0, false);
+inline lemlib::PID angularPID(3.7, 0.0, 15.0, 0, false);
 inline lemlib::PID linearPID(7.5, 0.0, 26.0, 0, false);
 
 // turns to a desired heading
 inline void turnToHeading(float targetHeading) {
     float TARGET_THRESHOLD = 2; // degrees
+    int MIN_SPEED = 10;
     int TIME_BEFORE_EXIT = 100; // in milliseconds
     int TIMEOUT = 1000; // milliseconds
 
@@ -75,6 +76,9 @@ inline void turnToHeading(float targetHeading) {
         float targetSpeed = angularPID.update(error);
         
         // moving motors
+        if(fabs(targetSpeed) < MIN_SPEED) {
+            targetSpeed *= 1.1;
+        }
         leftMotors.move(targetSpeed);
         rightMotors.move(-targetSpeed);
         
@@ -213,58 +217,100 @@ inline void leftResetPos() {
     }
 }
 
-inline void driveToDistance(float targetDistance, bool doResetPosition) {
-    float TARGET_THRESHOLD = 2; // inches
-    int TIME_BEFORE_EXIT = 150; // in milliseconds
-    int TIMEOUT = 2500; // milliseconds
+inline void rightResetPos() {
+    const float FIELD_WALL = 70.0; // inches
+    const float ANGLE_TOLERANCE = 8.0; // degrees
+    
+    lemlib::Pose currentPose = chassis.getPose();
+    
+    // Normalize angle to -180 to 180 range
+    float normalizedAngle = fmod(currentPose.theta + 180.0, 360.0) - 180.0;
 
-    float currentDist = frontDistSensor.get_distance() * MM_TO_INCHES + FRONT_DIST_OFFSET; // convert mm to inches
+    float currentDistance;
+    if(rightDistSensor.get() != 9999) {
+       currentDistance = (rightDistSensor.get_distance() * MM_TO_INCHES) + RIGHT_DIST_OFFSET; 
 
-    bool inSettleZone = false;
-    uint32_t settleStartTime;
-    uint32_t startTime = pros::millis();
+        // Determine which wall we're facing based on angle
+        if (fabs(normalizedAngle + 90) < ANGLE_TOLERANCE) {
+            // Facing right (90°)
+            float offsetAngle = fabs(normalizedAngle + 90);
+            currentDistance *= cos(offsetAngle * DEG_TO_RAD);
+            chassis.setPose(currentPose.x, FIELD_WALL - currentDistance, currentPose.theta);
+            controller.rumble("-");
+        } else if (fabs(normalizedAngle) < ANGLE_TOLERANCE) {
+            // Facing right (90°)
+            float offsetAngle = fabs(normalizedAngle);
+            currentDistance *= cos(offsetAngle * DEG_TO_RAD);
+            chassis.setPose(FIELD_WALL - currentDistance, currentPose.y, currentPose.theta);
+            controller.rumble("-");
+        } else if (fabs(fabs(normalizedAngle) - 180) < ANGLE_TOLERANCE) {
+            // Facing left (-90°)
+            float offsetAngle = fabs(fabs(normalizedAngle) - 180);
+            currentDistance *= cos(offsetAngle * DEG_TO_RAD);
+            chassis.setPose(-FIELD_WALL + currentDistance, currentPose.y, currentPose.theta);
+            controller.rumble("-");
+        } else if (fabs(normalizedAngle - 90) < ANGLE_TOLERANCE) {
+            // Facing backward (180° or -180°)
+            float offsetAngle = fabs(normalizedAngle - 90);
+            currentDistance *= cos(offsetAngle * DEG_TO_RAD);
+            chassis.setPose(currentPose.x, -FIELD_WALL + currentDistance, currentPose.theta);
+            controller.rumble("-");
+        }
+    }
+}
 
-    while(true) {
-        currentDist = frontDistSensor.get_distance() * MM_TO_INCHES + FRONT_DIST_OFFSET;
-        float error = currentDist - targetDistance;
+// inline void driveToDistance(float targetDistance, bool doResetPosition) {
+//     float TARGET_THRESHOLD = 2; // inches
+//     int TIME_BEFORE_EXIT = 150; // in milliseconds
+//     int TIMEOUT = 2500; // milliseconds
 
-        // check to see if in settle zone
-        if (fabs(error) <= TARGET_THRESHOLD) {
-            if (!inSettleZone) {
-                settleStartTime = pros::millis();
-                inSettleZone = true;
-            }
+//     float currentDist = frontDistSensor.get_distance() * MM_TO_INCHES + FRONT_DIST_OFFSET; // convert mm to inches
+
+//     bool inSettleZone = false;
+//     uint32_t settleStartTime;
+//     uint32_t startTime = pros::millis();
+
+//     while(true) {
+//         currentDist = frontDistSensor.get_distance() * MM_TO_INCHES + FRONT_DIST_OFFSET;
+//         float error = currentDist - targetDistance;
+
+//         // check to see if in settle zone
+//         if (fabs(error) <= TARGET_THRESHOLD) {
+//             if (!inSettleZone) {
+//                 settleStartTime = pros::millis();
+//                 inSettleZone = true;
+//             }
             
-            // wait in the settle zone
-            if (pros::millis() - settleStartTime >= TIME_BEFORE_EXIT) {
-                break; // exit loop
-            }
-        } else {
-            inSettleZone = false; // reset the timer if we leave the settle zone
-        }
+//             // wait in the settle zone
+//             if (pros::millis() - settleStartTime >= TIME_BEFORE_EXIT) {
+//                 break; // exit loop
+//             }
+//         } else {
+//             inSettleZone = false; // reset the timer if we leave the settle zone
+//         }
 
-        if (pros::millis() - startTime > TIMEOUT) {
-            break;
-        }
+//         if (pros::millis() - startTime > TIMEOUT) {
+//             break;
+//         }
         
-        float targetSpeed = linearPID.update(error);
-        leftMotors.move(targetSpeed);
-        rightMotors.move(targetSpeed);
+//         float targetSpeed = linearPID.update(error);
+//         leftMotors.move(targetSpeed);
+//         rightMotors.move(targetSpeed);
 
-        pros::delay(20);
-    }
-    linearPID.reset();
-    leftMotors.move(0);
-    rightMotors.move(0);
+//         pros::delay(20);
+//     }
+//     linearPID.reset();
+//     leftMotors.move(0);
+//     rightMotors.move(0);
 
-    if(doResetPosition == true) {
-        resetPos();
-    }
-}
+//     if(doResetPosition == true) {
+//         resetPos();
+//     }
+// }
 
-inline void driveToDistance(float targetDistance) {
-    driveToDistance(targetDistance, false);
-}
+// inline void driveToDistance(float targetDistance) {
+//     driveToDistance(targetDistance, false);
+// }
 
 inline void driveDistance(float targetDist, int maxSpeed) {
     float TARGET_THRESHOLD = 2; // inches
@@ -353,8 +399,8 @@ inline void driveToGoal(bool direction) {
 
         pros::delay(20);
     }
-    leftMotors.move(-12);
-    rightMotors.move(-12);
+    leftMotors.move(-16);
+    rightMotors.move(-16);
 }
 
 inline void waitAtMatchload(int timeout) {
@@ -436,6 +482,62 @@ inline void moveDrive(int speed, int timeout) {
     leftMotors.move(speed);
     rightMotors.move(speed);
     pros::delay(timeout);
+}
+
+inline void driveToDistance(float distance) {
+    float TARGET_THRESHOLD = 1; // inches
+    int TIME_BEFORE_EXIT = 150; // in milliseconds
+    int TIMEOUT = 1000; // milliseconds
+    int maxSpeed = 60;
+
+    bool inSettleZone = false;
+    uint32_t settleStartTime;
+    uint32_t startTime = pros::millis();
+
+    int offsetDegrees = vertical_rotation.get_position();
+
+    while(true) {
+        float currentDistance = (frontDistSensor.get_distance() * MM_TO_INCHES) + FRONT_DIST_OFFSET; 
+        float error = currentDistance - distance;
+
+        // check to see if in settle zone
+        if (fabs(error) <= TARGET_THRESHOLD) {
+            if (!inSettleZone) {
+                settleStartTime = pros::millis();
+                inSettleZone = true;
+            }
+            
+            // wait in the settle zone
+            if (pros::millis() - settleStartTime >= TIME_BEFORE_EXIT) {
+                break; // exit loop
+            }
+        } else {
+            inSettleZone = false; // reset the timer if we leave the settle zone
+        }
+
+        if (pros::millis() - startTime > TIMEOUT) {
+            break;
+        }
+
+        float targetSpeed = linearPID.update(error);
+
+        if(targetSpeed > maxSpeed) targetSpeed = maxSpeed;
+        if(targetSpeed < -maxSpeed) targetSpeed = -maxSpeed;
+        
+
+        leftMotors.move(targetSpeed);
+        rightMotors.move(targetSpeed);
+
+        pros::delay(20);
+    }
+    linearPID.reset();
+    leftMotors.move(0);
+    rightMotors.move(0);
+}
+
+inline void driveToGoalDistance() {
+    driveToDistance(22);
+    resetPos();
 }
 
 #endif

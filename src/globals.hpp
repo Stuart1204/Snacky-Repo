@@ -23,7 +23,7 @@
 
 #define rBPort 14
 #define rMPort -13
-#define rFPort 15
+#define rFPort 18
 
 #define lowIntakePort 12
 #define upperIntakePort -11
@@ -34,6 +34,7 @@
 #define colourSortPort 9
 #define parkSensorPort 5
 #define leftDistPort 4
+#define rightDistPort 15
 #define frontDistPort 6
 
 #define verticalEncoderPort -17
@@ -65,6 +66,7 @@ inline bool slowLowGoal = false;
 // global constants
 const inline float FRONT_DIST_OFFSET = 3.5;
 const inline float LEFT_DIST_OFFSET = 2.5;
+const inline float RIGHT_DIST_OFFSET = 2.5;
 const inline float MM_TO_INCHES = 0.03937007874;
 const inline float CENTIDEG_TO_INCHES = 0.00017889624;
 const inline float DEG_TO_RAD = (M_PI / 180.0);
@@ -166,6 +168,7 @@ inline pros::Imu inertial_sensor(imuPort);
 inline pros::Optical colourSortSensor(colourSortPort);
 inline pros::Optical parkSensor(parkSensorPort);
 inline pros::Distance leftDistSensor(leftDistPort);
+inline pros::Distance rightDistSensor(rightDistPort);
 inline pros::Distance frontDistSensor(frontDistPort);
 
 inline pros::Rotation vertical_rotation(verticalEncoderPort); 
@@ -190,9 +193,9 @@ inline lemlib::OdomSensors sensors{
 };
 
 // lateral motion controller
-inline lemlib::ControllerSettings linearController(7.8, // proportional gain (kP)
+inline lemlib::ControllerSettings linearController(5.5, // proportional gain (kP)
                                             0, // integral gain (kI)
-                                            18, // derivative gain (kD)
+                                            29, // derivative gain (kD)
                                             3, // anti windup
                                             1, // small error range, in inches
                                             100, // small error range timeout, in milliseconds

@@ -2,6 +2,7 @@
 #include "autons.cpp"
 #include "intake.cpp"
 #include "controls.cpp"
+#include "lemlib/pose.hpp"
 
 void initialize() {
 	chassis.calibrate();
@@ -27,16 +28,17 @@ void disabled() {}
 
 void competition_initialize() {}
 void autonomous() {
-	// chassis.setPose(0,0,0);
-	// turnToHeading(5);
-	// turnToHeading(-83);
-	// resetPos();
-	// leftResetPos();
-	// lemlib::Pose pose = chassis.getPose();
-    // pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
-    // pros::screen::print(TEXT_LARGE_CENTER, 3, "y: %f", pose.y);
-    // pros::screen::print(TEXT_LARGE_CENTER, 5, "heading: %f", pose.theta);
-	runSelectedAuton();
+	//runSelectedAuton();
+	chassis.setPose(0,0,-90);
+	rightResetPos();
+	resetPos();
+	moveToPoint(-37, 48, false, true);
+	turnToHeading(-90);
+	driveToGoal(false);
+	lemlib::Pose pose = chassis.getPose();
+	pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
+	pros::screen::print(TEXT_LARGE_CENTER, 3, "y: %f", pose.y);
+	pros::screen::print(TEXT_LARGE_CENTER, 5, "heading: %f", pose.theta);
 }
 
 void opcontrol() {

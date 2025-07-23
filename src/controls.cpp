@@ -142,14 +142,15 @@ inline void drivetrainControls() {
 
 inline void displayData() {
     float frontCurrentDistance = (frontDistSensor.get_distance() * MM_TO_INCHES) + FRONT_DIST_OFFSET;
-    float leftCurrentDistance = (leftDistSensor.get_distance() * MM_TO_INCHES) + LEFT_DIST_OFFSET; 
+    float leftCurrentDistance = (leftDistSensor.get_distance() * MM_TO_INCHES) + LEFT_DIST_OFFSET;
+    float rightCurrentDistance = (rightDistSensor.get_distance() * MM_TO_INCHES) + RIGHT_DIST_OFFSET;
     // display lemlib pose
     lemlib::Pose pose = chassis.getPose();
     // pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
     // pros::screen::print(TEXT_LARGE_CENTER, 3, "y: %f", pose.y);
     // pros::screen::print(TEXT_LARGE_CENTER, 5, "heading: %f", pose.theta);
     // // pros::screen::print(TEXT_LARGE_CENTER, 7, "yaw: %f", inertial_sensor.get_yaw());
-    // pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %f", frontCurrentDistance);
+    pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %f", rightCurrentDistance);
 
     pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
     pros::screen::print(TEXT_LARGE_CENTER, 3, "y: %f", pose.y);
