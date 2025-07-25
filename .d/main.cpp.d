@@ -143,7 +143,7 @@ bin/main.cpp.o: src/main.cpp src/globals.hpp include/main.h include/api.h \
  include/lemlib/logger/telemetrySink.hpp include/pros/optical.hpp \
  include/pros/screen.hpp src/autons.cpp src/intake.cpp \
  src/other_functions.cpp src/piston.cpp src/auton_functions.cpp \
- include/lemlib/timer.hpp src/controls.cpp
+ include/lemlib/timer.hpp include/pros/distance.hpp src/controls.cpp
 src/globals.hpp:
 include/main.h:
 include/api.h:
@@ -390,4 +390,5 @@ src/other_functions.cpp:
 src/piston.cpp:
 src/auton_functions.cpp:
 include/lemlib/timer.hpp:
+include/pros/distance.hpp:
 src/controls.cpp:

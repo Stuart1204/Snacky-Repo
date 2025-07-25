@@ -7,17 +7,18 @@
 #include "lemlib/pid.hpp"
 #include "lemlib/pose.hpp"
 #include "lemlib/timer.hpp"
+#include "pros/distance.hpp"
 #include "pros/rtos.hpp"
 #include "pros/screen.h"
 #include <cmath>
 #include <iostream>
 
-inline lemlib::PID angularPID(3.7, 0.0, 15.0, 0, false);
+inline lemlib::PID angularPID(3.8, 0.0, 15.0, 0, false);
 inline lemlib::PID linearPID(7.5, 0.0, 26.0, 0, false);
 
 // turns to a desired heading
 inline void turnToHeading(float targetHeading) {
-    float TARGET_THRESHOLD = 2; // degrees
+    float TARGET_THRESHOLD = 2.5; // degrees
     int MIN_SPEED = 10;
     int TIME_BEFORE_EXIT = 100; // in milliseconds
     int TIMEOUT = 1000; // milliseconds
@@ -77,7 +78,7 @@ inline void turnToHeading(float targetHeading) {
         
         // moving motors
         if(fabs(targetSpeed) < MIN_SPEED) {
-            targetSpeed *= 1.1;
+            targetSpeed *= 1.6;
         }
         leftMotors.move(targetSpeed);
         rightMotors.move(-targetSpeed);
@@ -485,10 +486,11 @@ inline void moveDrive(int speed, int timeout) {
 }
 
 inline void driveToDistance(float distance) {
-    float TARGET_THRESHOLD = 1; // inches
-    int TIME_BEFORE_EXIT = 150; // in milliseconds
+    float TARGET_THRESHOLD = 0.25; // inches
+    int TIME_BEFORE_EXIT = 50; // in milliseconds
     int TIMEOUT = 1000; // milliseconds
     int maxSpeed = 60;
+    int minSpeed = 16;
 
     bool inSettleZone = false;
     uint32_t settleStartTime;
@@ -524,6 +526,8 @@ inline void driveToDistance(float distance) {
         if(targetSpeed > maxSpeed) targetSpeed = maxSpeed;
         if(targetSpeed < -maxSpeed) targetSpeed = -maxSpeed;
         
+        if(targetSpeed < minSpeed && targetSpeed > 0) targetSpeed = minSpeed;
+        if(targetSpeed > -minSpeed && targetSpeed < 0) targetSpeed = -minSpeed;
 
         leftMotors.move(targetSpeed);
         rightMotors.move(targetSpeed);

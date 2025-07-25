@@ -218,7 +218,7 @@ class Intake {
             if(autonSelectionEnum == Selection::SKILLS) {
                moveLower(-65);
             } else {
-               moveLower(-120);
+               moveLower(-127);
             }
             moveUpper(-127);
             moveScore(-127);

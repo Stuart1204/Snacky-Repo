@@ -28,21 +28,13 @@ void disabled() {}
 
 void competition_initialize() {}
 void autonomous() {
-	//runSelectedAuton();
-	chassis.setPose(0,0,-90);
-	rightResetPos();
-	resetPos();
-	moveToPoint(-37, 48, false, true);
-	turnToHeading(-90);
-	driveToGoal(false);
-	lemlib::Pose pose = chassis.getPose();
-	pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
-	pros::screen::print(TEXT_LARGE_CENTER, 3, "y: %f", pose.y);
-	pros::screen::print(TEXT_LARGE_CENTER, 5, "heading: %f", pose.theta);
+	runSelectedAuton();
 }
 
 void opcontrol() {
 	odomLift.setState(true);
+	chassis.setPose(0,0,-90);
+	rightResetPos();
 
     while (true) {
 		// intake has its own thread

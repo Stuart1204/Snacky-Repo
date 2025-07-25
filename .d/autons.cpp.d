@@ -143,7 +143,8 @@ bin/autons.cpp.o: src/autons.cpp include/lemlib/chassis/chassis.hpp \
  include/lemlib/logger/infoSink.hpp \
  include/lemlib/logger/telemetrySink.hpp include/pros/optical.hpp \
  src/intake.cpp src/other_functions.cpp src/piston.cpp \
- src/auton_functions.cpp include/lemlib/timer.hpp
+ src/auton_functions.cpp include/lemlib/timer.hpp \
+ include/pros/distance.hpp
 include/lemlib/chassis/chassis.hpp:
 include/pros/rtos.hpp:
 include/pros/rtos.h:
@@ -389,3 +390,4 @@ src/other_functions.cpp:
 src/piston.cpp:
 src/auton_functions.cpp:
 include/lemlib/timer.hpp:
+include/pros/distance.hpp:
