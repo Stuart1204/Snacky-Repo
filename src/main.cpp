@@ -15,7 +15,7 @@ void initialize() {
 	});
 
 	allianceColour = AllianceColour::RED;
-	startingSide = Selection::LEFT;
+	startingSide = Selection::RIGHT;
 	autonSelectionEnum = Selection::SKILLS;
 	//autonSelection();
 	if(autonSelectionEnum == Selection::SKILLS) {

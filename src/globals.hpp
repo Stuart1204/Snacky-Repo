@@ -30,7 +30,7 @@
 #define scoringRollerPort 21
 
 //sensor ports
-#define imuPort 16
+#define imuPort 7
 #define colourSortPort 9
 #define parkSensorPort 5
 #define leftDistPort 4
