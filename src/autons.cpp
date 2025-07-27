@@ -220,7 +220,7 @@ inline void rightLongGoalAndCenterAuton() {
 
 inline void skillsAuton() {
     enableColourSort = false;
-    chassis.setPose(-48, 17.5, 0);
+    chassis.setPose(-48, 18, 0);
     tongue.setState(true);
     moveToPoint(-48, 48, true, false);
     // turnToHeading(0);
@@ -240,11 +240,11 @@ inline void skillsAuton() {
     rightResetPos();
     tongue.setState(false);
     intake.setState(IntakeState::IDLE);
-    moveToPoint(38, 37, false, false);
-    turnToHeading(-130);
+    moveToPoint(37, 36, false, false);
+    turnToHeading(-135);
     intake.setState(IntakeState::INTAKE);
-    driveDistance(11);
-    moveToPoint(41, 43, false, false);
+    driveDistance(9);
+    moveToPoint(38, 43, false, false);
     turnToHeading(0);
     driveToGoalDistance();
     turnToHeading(90);
@@ -258,7 +258,7 @@ inline void skillsAuton() {
     intake.setState(IntakeState::INTAKE);
     setWings(true);
     turnToHeading(90);
-    //resetPos();
+    resetPos();
     leftMotors.move(50);
     rightMotors.move(50); // collecting matchloads
     pros::delay(800);
@@ -267,9 +267,9 @@ inline void skillsAuton() {
     driveDistance(-1);
     turnToHeading(90);
     leftResetPos();
-    moveToPoint(40, 48, false, false, true);
-    turnToHeading(0);
-    driveToGoalDistance();
+    moveToPoint(38, 48, false, false, true);
+    // turnToHeading(0);
+    // driveToGoalDistance();
     intake.setState(IntakeState::IDLE);
     setWings(false);
     turnToHeading(90);
@@ -277,16 +277,16 @@ inline void skillsAuton() {
     intake.setState(IntakeState::SCOREHIGH);
     pros::delay(3200);
     intake.setState(IntakeState::IDLE);
-    driveDistance(10);
-    turnToPoint(43, -37, true);
+    driveDistance(9);
+    turnToPoint(43, -36, true);
     tongue.setState(true);
-    moveToPoint(43, -37, true, false);
+    moveToPoint(43, -36, true, false);
     turnToHeading(180);
     resetPos();
     resetPos();
     leftResetPos();
     leftResetPos();
-    moveToPoint(47, -48, true, true);
+    moveToPoint(47, -47, true, true);
     turnToHeading(90);
     // going to clear matchload #3
 
@@ -299,13 +299,15 @@ inline void skillsAuton() {
     turnToHeading(90);
     rightResetPos();
     moveToPoint(34, -36, false, false, true);
+    turnToHeading(90);
+    rightResetPos();
     tongue.setState(false);
     intake.setState(IntakeState::IDLE);
-    moveToPoint(-38, -37, false, false);
-    turnToHeading(50);
+    moveToPoint(-37, -36, false, false);
+    turnToHeading(45);
     intake.setState(IntakeState::INTAKE);
-    driveDistance(11);
-    moveToPoint(-41,-43, false, false);
+    driveDistance(9);
+    moveToPoint(-38,-43, false, false);
     turnToHeading(180);
     driveToGoalDistance();
     turnToHeading(-90);
@@ -328,9 +330,9 @@ inline void skillsAuton() {
     driveDistance(-1);
     turnToHeading(-90);
     leftResetPos();
-    moveToPoint(-40,-48, false, false, true);
-    turnToHeading(180);
-    driveToGoalDistance();
+    moveToPoint(-38,-48, false, false, true);
+    // turnToHeading(180);
+    // driveToGoalDistance();
     intake.setState(IntakeState::IDLE);
     setWings(false);
     turnToHeading(-90);
@@ -338,12 +340,14 @@ inline void skillsAuton() {
     intake.setState(IntakeState::SCOREHIGH);
     pros::delay(3200);
     intake.setState(IntakeState::IDLE);
-    driveDistance(10);
-    moveToPoint(-65, -16, true, true);
+    driveDistance(9);
+    moveToPoint(-66, -17, true, true, true);
     tongue.setState(true);
-    turnToHeading(-20);
+    chassis.swingToHeading(-5, lemlib::DriveSide::RIGHT, 1000, {.minSpeed = 90});
+	chassis.waitUntilDone();
     odomLift.setState(true);
-    driveInParkZone();
+   	moveDrive(90, 800);
+	moveDrive(0, 100);
 }
 
 inline void runSelectedAuton() {

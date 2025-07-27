@@ -10,6 +10,9 @@ void initialize() {
 	pros::Task intakeTask([]{
 		while (true) {
 			intake.run();
+			if(!inertial_sensor.is_installed()) {
+				printf("disconnected!");
+			}
 			pros::delay(20);
 		}
 	});
@@ -33,9 +36,6 @@ void autonomous() {
 
 void opcontrol() {
 	odomLift.setState(true);
-	chassis.setPose(0,0,-90);
-	rightResetPos();
-
     while (true) {
 		// intake has its own thread
 		drivetrainControls();

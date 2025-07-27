@@ -152,25 +152,25 @@ inline void resetPos() {
             // Facing forward (0°)
             float offsetAngle = fabs(normalizedAngle);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(currentPose.x, FIELD_WALL - currentDistance, currentPose.theta);
+            chassis.setPose(currentPose.x, FIELD_WALL - currentDistance, chassis.getPose().theta);
             // controller.rumble("-");
         } else if (fabs(normalizedAngle - 90) < ANGLE_TOLERANCE) {
             // Facing right (90°)
             float offsetAngle = fabs(normalizedAngle - 90);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(FIELD_WALL - currentDistance, currentPose.y, currentPose.theta);
+            chassis.setPose(FIELD_WALL - currentDistance, currentPose.y, chassis.getPose().theta);
             // controller.rumble("-");
         } else if (fabs(normalizedAngle + 90) < ANGLE_TOLERANCE) {
             // Facing left (-90°)
             float offsetAngle = fabs(normalizedAngle + 90);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(-FIELD_WALL + currentDistance, currentPose.y, currentPose.theta);
+            chassis.setPose(-FIELD_WALL + currentDistance, currentPose.y, chassis.getPose().theta);
             //controller.rumble("-");
         } else if (fabs(fabs(normalizedAngle) - 180) < ANGLE_TOLERANCE) {
             // Facing backward (180° or -180°)
             float offsetAngle = fabs(fabs(normalizedAngle) - 180);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(currentPose.x, -FIELD_WALL + currentDistance, currentPose.theta);
+            chassis.setPose(currentPose.x, -FIELD_WALL + currentDistance, chassis.getPose().theta);
             //controller.rumble("-");
         }
     }
@@ -194,25 +194,25 @@ inline void leftResetPos() {
             // Facing right (90°)
             float offsetAngle = fabs(normalizedAngle - 90);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(currentPose.x, FIELD_WALL - currentDistance, currentPose.theta);
+            chassis.setPose(currentPose.x, FIELD_WALL - currentDistance, chassis.getPose().theta);
             controller.rumble("-");
         } else if (fabs(fabs(normalizedAngle) - 180) < ANGLE_TOLERANCE) {
             // Facing right (90°)
             float offsetAngle = fabs(fabs(normalizedAngle) - 180);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(FIELD_WALL - currentDistance, currentPose.y, currentPose.theta);
+            chassis.setPose(FIELD_WALL - currentDistance, currentPose.y, chassis.getPose().theta);
             controller.rumble("-");
         } else if (fabs(normalizedAngle) < ANGLE_TOLERANCE) {
             // Facing left (-90°)
             float offsetAngle = fabs(normalizedAngle);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(-FIELD_WALL + currentDistance, currentPose.y, currentPose.theta);
+            chassis.setPose(-FIELD_WALL + currentDistance, currentPose.y, chassis.getPose().theta);
             controller.rumble("-");
         } else if (fabs(normalizedAngle + 90) < ANGLE_TOLERANCE) {
             // Facing backward (180° or -180°)
             float offsetAngle = fabs(normalizedAngle + 90);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(currentPose.x, -FIELD_WALL + currentDistance, currentPose.theta);
+            chassis.setPose(currentPose.x, -FIELD_WALL + currentDistance, chassis.getPose().theta);
             controller.rumble("-");
         }
     }
@@ -236,25 +236,25 @@ inline void rightResetPos() {
             // Facing right (90°)
             float offsetAngle = fabs(normalizedAngle + 90);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(currentPose.x, FIELD_WALL - currentDistance, currentPose.theta);
+            chassis.setPose(currentPose.x, FIELD_WALL - currentDistance, chassis.getPose().theta);
             controller.rumble("-");
         } else if (fabs(normalizedAngle) < ANGLE_TOLERANCE) {
             // Facing right (90°)
             float offsetAngle = fabs(normalizedAngle);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(FIELD_WALL - currentDistance, currentPose.y, currentPose.theta);
+            chassis.setPose(FIELD_WALL - currentDistance, currentPose.y, chassis.getPose().theta);
             controller.rumble("-");
         } else if (fabs(fabs(normalizedAngle) - 180) < ANGLE_TOLERANCE) {
             // Facing left (-90°)
             float offsetAngle = fabs(fabs(normalizedAngle) - 180);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(-FIELD_WALL + currentDistance, currentPose.y, currentPose.theta);
+            chassis.setPose(-FIELD_WALL + currentDistance, currentPose.y, chassis.getPose().theta);
             controller.rumble("-");
         } else if (fabs(normalizedAngle - 90) < ANGLE_TOLERANCE) {
             // Facing backward (180° or -180°)
             float offsetAngle = fabs(normalizedAngle - 90);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(currentPose.x, -FIELD_WALL + currentDistance, currentPose.theta);
+            chassis.setPose(currentPose.x, -FIELD_WALL + currentDistance, chassis.getPose().theta);
             controller.rumble("-");
         }
     }
@@ -446,34 +446,33 @@ inline void waitAtMatchload() {
 }
 
 inline void skillsWaitAtMatchload() {
-    waitAtMatchload(2200);
+    waitAtMatchload(2600);
 }
 
 inline void driveInParkZone() {
-    const int MOTOR_SPEED = 60; // out of 127
+    const int MOTOR_SPEED = 80; // out of 127
     const int TIMEOUT = 2000;
-    const float FIRST_ROLL_THRESHOLD = -1;
-    const float SECOND_ROLL_THRESHOLD = 0.25;
+    const float FIRST_ROLL_THRESHOLD = 7;
+    const float SECOND_ROLL_THRESHOLD = -5;
 
     uint32_t startTime = pros::millis();
     intake.setState(IntakeState::OUTTAKE);
 
     while(true) {
-        if(inertial_sensor.get_roll() < FIRST_ROLL_THRESHOLD) {
+        if(inertial_sensor.get_roll() > FIRST_ROLL_THRESHOLD) {
             break;
         }
 
         leftMotors.move(MOTOR_SPEED);
         rightMotors.move(MOTOR_SPEED);
     }
-    tongue.setState(false);
     while(true) {
-        if(inertial_sensor.get_roll() > SECOND_ROLL_THRESHOLD) {
+        if(inertial_sensor.get_roll() < SECOND_ROLL_THRESHOLD) {
             break;
         }
 
-        leftMotors.move(30);
-        rightMotors.move(30);
+        leftMotors.move(MOTOR_SPEED);
+        rightMotors.move(MOTOR_SPEED);
     }
     leftMotors.move(0);
     rightMotors.move(0);
@@ -490,7 +489,7 @@ inline void driveToDistance(float distance) {
     int TIME_BEFORE_EXIT = 50; // in milliseconds
     int TIMEOUT = 1000; // milliseconds
     int maxSpeed = 60;
-    int minSpeed = 16;
+    int minSpeed = 5;
 
     bool inSettleZone = false;
     uint32_t settleStartTime;
