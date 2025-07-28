@@ -400,8 +400,13 @@ inline void driveToGoal(bool direction) {
 
         pros::delay(20);
     }
-    leftMotors.move(-16);
-    rightMotors.move(-16);
+    if(direction) {
+        leftMotors.move(16);
+        rightMotors.move(16);
+    } else {
+       leftMotors.move(-16);
+        rightMotors.move(-16); 
+    }
 }
 
 inline void waitAtMatchload(int timeout) {

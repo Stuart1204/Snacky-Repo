@@ -17,9 +17,9 @@ void initialize() {
 		}
 	});
 
-	allianceColour = AllianceColour::RED;
-	startingSide = Selection::RIGHT;
-	autonSelectionEnum = Selection::SKILLS;
+	allianceColour = AllianceColour::BLUE;
+	startingSide = Selection::LEFT;
+	autonSelectionEnum = Selection::LONG_CONTROL;
 	//autonSelection();
 	if(autonSelectionEnum == Selection::SKILLS) {
 		enableColourSort = false;
