@@ -2,6 +2,7 @@
 #include "autons.cpp"
 #include "intake.cpp"
 #include "controls.cpp"
+#include "lemlib/chassis/chassis.hpp"
 #include "lemlib/pose.hpp"
 
 void initialize() {
@@ -17,9 +18,9 @@ void initialize() {
 		}
 	});
 
-	allianceColour = AllianceColour::BLUE;
-	startingSide = Selection::LEFT;
-	autonSelectionEnum = Selection::LONG_CONTROL;
+	allianceColour = AllianceColour::RED;
+	startingSide = Selection::RIGHT;
+	autonSelectionEnum = Selection::SKILLS;
 	//autonSelection();
 	if(autonSelectionEnum == Selection::SKILLS) {
 		enableColourSort = false;

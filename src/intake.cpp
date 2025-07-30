@@ -58,6 +58,7 @@ class Intake {
             break;
          case IntakeState::SCORELOW:
             blockCounter = 0;
+
             break;
          case IntakeState::PARK:
             parkStageTracker = 0;
@@ -177,12 +178,14 @@ class Intake {
             break;
 
          case IntakeState::INTAKE:
-            moveWithStallDetection();
+            moveLower(127);
+            moveUpper(127);
+            moveScore(100);
             break;
          case IntakeState::OUTTAKE:
             moveLower(-127);
             moveUpper(-127);
-            moveScore(-127);
+            moveScore(-90);
             break;
          case IntakeState::SCOREHIGH:
             highOuttakeCounter++;
@@ -211,28 +214,38 @@ class Intake {
             } else {
                moveLower(127);
                moveUpper(127);
-               moveScore(-90);
+               moveScore(-70);
             }
             break;
          case IntakeState::SCORELOW: // meaning the robot is tryna score 7 on low
             if(autonSelectionEnum == Selection::SKILLS) {
-               moveLower(-65);
+               moveLower(-60);
+               moveUpper(-90);
+               moveScore(-20);
             } else {
                moveLower(-127);
+               moveUpper(-127);
+               moveScore(-100);
             }
-            moveUpper(-127);
-            moveScore(-127);
             countBlocks(parkSensor);
-            if((blockCounter >= 6 || slowLowGoal) && autonSelectionEnum == Selection::SKILLS) {
+            // if((blockCounter >= 6 || slowLowGoal) && autonSelectionEnum == Selection::SKILLS) {
+            //    moveLower(-45);
+            // }
+            if(slowLowGoal && autonSelectionEnum == Selection::SKILLS) {
                moveLower(-45);
-            }
+            } 
             break;
          case IntakeState::PARK:
             loadPark();
             break;
          case IntakeState::LOWINTAKE:
             moveLower(127);
-            moveUpper(0);
+            moveUpper(10);
+            moveScore(0);
+            break;
+         case IntakeState::LOWOUTTAKE:
+            moveLower(-127);
+            moveUpper(10);
             moveScore(0);
             break;
          case IntakeState::INTAKEWITHEJECT:

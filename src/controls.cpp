@@ -51,6 +51,11 @@ inline void intakeControls() {
 
     if(controller.get_digital_new_press(Buttons::LEFT)) {
         slowLowGoal = !slowLowGoal;
+        if(slowLowGoal) {
+           controller.rumble(".."); 
+        } else {
+            controller.rumble(".");
+        }
     }
 }
 
@@ -150,7 +155,7 @@ inline void displayData() {
     // pros::screen::print(TEXT_LARGE_CENTER, 3, "y: %f", pose.y);
     // pros::screen::print(TEXT_LARGE_CENTER, 5, "heading: %f", pose.theta);
     // // pros::screen::print(TEXT_LARGE_CENTER, 7, "yaw: %f", inertial_sensor.get_yaw());
-    pros::screen::print(TEXT_LARGE_CENTER, 9, "roll: %f", inertial_sensor.get_roll());
+    pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %f", frontCurrentDistance);
 
     pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
     pros::screen::print(TEXT_LARGE_CENTER, 3, "y: %f", pose.y);
@@ -266,7 +271,7 @@ inline void autonSelection() {
         button longControlButton(0, 15, 120, 180, pros::Color::sky_blue, "LG");
         button longAndCenterButton(120, 15, 240, 180, pros::Color::sky_blue, "LG+C");
         button SAWPButton(240, 15, 360, 180, pros::Color::sky_blue, "SAWP");
-        button nothingButton(360, 15, 480, 180, pros::Color::sky_blue, "Nothing");
+        button NISAWPButton(360, 15, 480, 180, pros::Color::sky_blue, "NISAWP");
 
         if(allianceColour == AllianceColour::RED) {
             if(startingSide == Selection::LEFT) {
@@ -298,8 +303,8 @@ inline void autonSelection() {
                 autonSelectionEnum = Selection::SOLO_AWP;
                 break;
             }
-            if(nothingButton.isPressed()) {
-                autonSelectionEnum = Selection::NOTHING;
+            if(NISAWPButton.isPressed()) {
+                autonSelectionEnum = Selection::NI_SAWP;
                 break;
             }
             pros::delay(20);
@@ -315,7 +320,10 @@ inline void autonSelection() {
                     button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Red, Left, LG+C");
                 }
                 if(autonSelectionEnum == Selection::SOLO_AWP) {
-                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Red, Left, SAWP");
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Bad!");
+                }
+                if(autonSelectionEnum == Selection::NI_SAWP) {
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Bad!");
                 }
             }
             if(startingSide == Selection::RIGHT) {
@@ -328,6 +336,9 @@ inline void autonSelection() {
                 if(autonSelectionEnum == Selection::SOLO_AWP) {
                     button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Red, Right, SAWP");
                 }
+                if(autonSelectionEnum == Selection::NI_SAWP) {
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Red, Right, NISAWP");
+                }
             }
         }
         if(allianceColour == AllianceColour::BLUE) {
@@ -339,7 +350,10 @@ inline void autonSelection() {
                     button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Blue, Left, LG+C");
                 }
                 if(autonSelectionEnum == Selection::SOLO_AWP) {
-                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Blue, Left, SAWP");
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Bad!");
+                }
+                if(autonSelectionEnum == Selection::NI_SAWP) {
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Bad!");
                 }
             }
             if(startingSide == Selection::RIGHT) {
@@ -351,6 +365,9 @@ inline void autonSelection() {
                 }
                 if(autonSelectionEnum == Selection::SOLO_AWP) {
                     button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Blue, Right, SAWP");
+                }
+                if(autonSelectionEnum == Selection::NI_SAWP) {
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Blue, Right, NISAWP");
                 }
             }
         }

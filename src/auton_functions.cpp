@@ -143,6 +143,10 @@ inline void resetPos() {
     // Normalize angle to -180 to 180 range
     float normalizedAngle = fmod(currentPose.theta + 180.0, 360.0) - 180.0;
 
+    if(!frontDistSensor.is_installed()) {
+        return;
+    }
+
     float currentDistance;
     if(frontDistSensor.get() != 9999) {
         currentDistance = (frontDistSensor.get_distance() * MM_TO_INCHES) + FRONT_DIST_OFFSET; 
@@ -185,6 +189,10 @@ inline void leftResetPos() {
     // Normalize angle to -180 to 180 range
     float normalizedAngle = fmod(currentPose.theta + 180.0, 360.0) - 180.0;
 
+    if(!leftDistSensor.is_installed()) {
+        return;
+    }
+
     float currentDistance;
     if(leftDistSensor.get() != 9999) {
        currentDistance = (leftDistSensor.get_distance() * MM_TO_INCHES) + LEFT_DIST_OFFSET; 
@@ -226,6 +234,10 @@ inline void rightResetPos() {
     
     // Normalize angle to -180 to 180 range
     float normalizedAngle = fmod(currentPose.theta + 180.0, 360.0) - 180.0;
+
+    if(!rightDistSensor.is_installed()) {
+        return;
+    }
 
     float currentDistance;
     if(rightDistSensor.get() != 9999) {
@@ -455,29 +467,25 @@ inline void skillsWaitAtMatchload() {
 }
 
 inline void driveInParkZone() {
-    const int MOTOR_SPEED = 80; // out of 127
-    const int TIMEOUT = 2000;
-    const float FIRST_ROLL_THRESHOLD = 7;
-    const float SECOND_ROLL_THRESHOLD = -5;
-
+    const int MOTOR_SPEED = 70; // out of 127
+    const int TIMEOUT = 1200;
+    
+    odomLift.setState(true);
+    intake.setState(IntakeState::LOWINTAKE);
     uint32_t startTime = pros::millis();
-    intake.setState(IntakeState::OUTTAKE);
 
     while(true) {
-        if(inertial_sensor.get_roll() > FIRST_ROLL_THRESHOLD) {
-            break;
+        if(frontDistSensor.get_distance() * MM_TO_INCHES < 69 && frontDistSensor.get_distance() * MM_TO_INCHES > 62) {
+            if(pros::millis() - startTime > 450) {
+                break;
+            }
         }
-
         leftMotors.move(MOTOR_SPEED);
         rightMotors.move(MOTOR_SPEED);
-    }
-    while(true) {
-        if(inertial_sensor.get_roll() < SECOND_ROLL_THRESHOLD) {
+
+        if (pros::millis() - startTime > TIMEOUT) {
             break;
         }
-
-        leftMotors.move(MOTOR_SPEED);
-        rightMotors.move(MOTOR_SPEED);
     }
     leftMotors.move(0);
     rightMotors.move(0);

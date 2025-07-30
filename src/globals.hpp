@@ -87,7 +87,8 @@ enum IntakeState {
     SCORELOW = 5,
     PARK = 6,
     LOWINTAKE = 7,
-    INTAKEWITHEJECT = 8,
+    LOWOUTTAKE = 8,
+    INTAKEWITHEJECT = 9
 };
 
 // aliance colour
@@ -105,7 +106,9 @@ enum Selection {
     LONG_CONTROL = 5,
     LONG_AND_CENTER = 6,
     SOLO_AWP = 7,
-    NOTHING = 8
+    NI_SAWP = 8,
+    MATCHLOAD_SCORE = 9,
+    NOTHING = 10
 };
 
 // -- Namespace Configurations -- //
