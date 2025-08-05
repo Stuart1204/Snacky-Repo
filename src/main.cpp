@@ -18,10 +18,10 @@ void initialize() {
 		}
 	});
 
-	allianceColour = AllianceColour::RED;
+	allianceColour = AllianceColour::BLUE;
 	startingSide = Selection::RIGHT;
-	autonSelectionEnum = Selection::SKILLS;
-	//autonSelection();
+	autonSelectionEnum = Selection::SOLO_AWP;
+	autonSelection();
 	if(autonSelectionEnum == Selection::SKILLS) {
 		enableColourSort = false;
 	} else {
