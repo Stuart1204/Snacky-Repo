@@ -77,6 +77,46 @@ inline void SAWP() {
     driveToGoal(false);
 }
 
+inline void SIGSAWP() {
+    chassis.setPose(-48, -17.5, 180);
+    tongue.setState(true);
+    moveToPoint(-48, -48, true, false);
+    //resetPos();
+    turnToHeading(-90);
+    leftResetPos();
+    intake.setState(IntakeState::INTAKE);
+    moveDrive(70, 500);
+    waitAtMatchload();
+    moveToPoint(-36, -48, false, false, true);
+    turnToHeading(-90);
+    tongue.setState(false);
+    intake.setState(IntakeState::SCOREHIGH);
+    driveToGoal(false);
+    pros::delay(900); // 2000 if wanted to score all balls
+    intake.setState(IntakeState::IDLE);
+    turnWithSpeeds(127, -50, -20);
+    intake.setState(IntakeState::INTAKE);
+    moveToPoint(-26, -24, true, false, true);
+    turnToHeading(0);
+    leftResetPos();
+    moveToPoint(-24, 17, true, false, true, 70);
+    moveToPoint(-9, 41, true, false, true, 70);
+    tongue.setState(true);
+    pros::delay(300);
+    moveToPoint(-12, 11, false, false, true, 75);
+    intake.setState(IntakeState::SCOREMID);
+    turnToHeading(-45);
+    driveToGoal(false);
+    pros::delay(200);
+    intake.setState(IntakeState::INTAKE);
+    moveToPoint(-43, 45, true, false, true);
+    turnToHeading(-90);
+    rightResetPos();
+    moveToPoint(-26, 48, false, false, true);
+    intake.setState(IntakeState::SCOREHIGH);
+    moveToPoint(-23, 48, false, false, true);
+}
+
 inline void NISAWP() {
     chassis.setPose(-48, -17.5, 180);
     tongue.setState(true);

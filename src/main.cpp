@@ -19,9 +19,9 @@ void initialize() {
 	});
 
 	allianceColour = AllianceColour::BLUE;
-	startingSide = Selection::RIGHT;
+	startingSide = Selection::SKILLS;
 	autonSelectionEnum = Selection::SOLO_AWP;
-	autonSelection();
+	//autonSelection();
 	if(autonSelectionEnum == Selection::SKILLS) {
 		enableColourSort = false;
 	} else {
@@ -32,7 +32,8 @@ void disabled() {}
 
 void competition_initialize() {}
 void autonomous() {
-	runSelectedAuton();
+	//runSelectedAuton();
+	SIGSAWP();
 }
 
 void opcontrol() {

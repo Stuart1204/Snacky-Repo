@@ -180,6 +180,28 @@ inline void resetPos() {
     }
 }
 
+inline void turnWithSpeeds(int leftDriveSpeed, int rightDriveSpeed, float targetAngle) {
+    uint32_t startTime = pros::millis();
+    
+    while(true) {
+        float normalizedAngle = fmod(chassis.getPose().theta + 180.0, 360.0) - 180.0;
+        float error = targetAngle - normalizedAngle;
+
+        if (pros::millis() - startTime > 2000) {
+            break;
+        }
+
+        leftMotors.move(leftDriveSpeed);
+        rightMotors.move(rightDriveSpeed);
+
+        if(fabs(error) < 2) {
+            break;
+        }
+    }
+    leftMotors.move(0);
+    rightMotors.move(0);
+}
+
 inline void leftResetPos() {
     const float FIELD_WALL = 70.0; // inches
     const float ANGLE_TOLERANCE = 8.0; // degrees
@@ -443,7 +465,7 @@ inline void waitAtMatchload(int timeout) {
                 direction = false;
             }
         } else {
-            if(counter < 5) {
+            if(counter < 2) {
                 leftMotors.move(-30);
                 rightMotors.move(-30);
             } else {
@@ -459,7 +481,7 @@ inline void waitAtMatchload(int timeout) {
 }
 
 inline void waitAtMatchload() {
-    waitAtMatchload(750);
+    waitAtMatchload(550);
 }
 
 inline void skillsWaitAtMatchload() {
