@@ -84,11 +84,11 @@ inline void activatePistons() {
         park.setState(true);
         activatePark = false;
     }
-    if (controller.get_digital_new_press(Buttons::DOWN)) {
-        park.toggle();
-    }
     if (controller.get_digital_new_press(Buttons::intakeLift)) {
         intakeLift.toggle();
+    }
+    if (controller.get_digital_new_press(Buttons::DOWN)) {
+        middleGoalDescore.toggle();
     }
 }
 

@@ -214,7 +214,7 @@ class Intake {
             } else {
                moveLower(127);
                moveUpper(127);
-               moveScore(-50);
+               moveScore(-127);
             }
             break;
          case IntakeState::SCORELOW: // meaning the robot is tryna score 7 on low

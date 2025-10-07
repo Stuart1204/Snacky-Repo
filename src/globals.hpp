@@ -43,9 +43,10 @@
 #define leftWingPort 'C'
 #define rightWingPort 'F'
 #define tonguePort 'G'
-#define parkPort 'B'
+#define parkPort 'E'
 #define intakeLiftPort 'H'
 #define odomLiftPort 'D'
+#define middleGoalDescorePort 'B'
 
 //drivetrain specs
 #define driveTrackWidth 11.375
@@ -165,6 +166,8 @@ inline pros::adi::DigitalOut tonguePiston(tonguePort, LOW);
 inline pros::adi::DigitalOut parkPiston(parkPort, LOW);
 inline pros::adi::DigitalOut intakeLiftPiston(intakeLiftPort, LOW);
 inline pros::adi::DigitalOut odomLiftPiston(odomLiftPort, LOW);
+inline pros::adi::DigitalOut middleGoalDescorePiston(middleGoalDescorePort, LOW);
+
 
 // Inertial Sensor on port
 inline pros::Imu inertial_sensor(imuPort);
