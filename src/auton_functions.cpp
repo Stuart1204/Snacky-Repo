@@ -137,7 +137,7 @@ inline void moveToPoint(float targetX, float targetY, bool direction, bool turnB
 
 inline void resetPos() {
     const float FIELD_WALL = 70.0; // inches
-    const float ANGLE_TOLERANCE = 15.0; // degrees
+    const float ANGLE_TOLERANCE = 30.0; // degrees
     
     lemlib::Pose currentPose = chassis.getPose();
     
@@ -205,7 +205,7 @@ inline void turnWithSpeeds(int leftDriveSpeed, int rightDriveSpeed, float target
 
 inline void leftResetPos() {
     const float FIELD_WALL = 70.0; // inches
-    const float ANGLE_TOLERANCE = 8.0; // degrees
+    const float ANGLE_TOLERANCE = 25.0; // degrees
     
     lemlib::Pose currentPose = chassis.getPose();
     
@@ -251,7 +251,7 @@ inline void leftResetPos() {
 
 inline void rightResetPos() {
     const float FIELD_WALL = 70.0; // inches
-    const float ANGLE_TOLERANCE = 8.0; // degrees
+    const float ANGLE_TOLERANCE = 25.0; // degrees
     
     lemlib::Pose currentPose = chassis.getPose();
     
