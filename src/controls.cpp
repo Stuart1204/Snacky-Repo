@@ -155,7 +155,7 @@ inline void displayData() {
     // pros::screen::print(TEXT_LARGE_CENTER, 3, "y: %f", pose.y);
     // pros::screen::print(TEXT_LARGE_CENTER, 5, "heading: %f", pose.theta);
     // // pros::screen::print(TEXT_LARGE_CENTER, 7, "yaw: %f", inertial_sensor.get_yaw());
-    pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %f", frontCurrentDistance);
+    pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %i", colourSortSensor.get_proximity());
 
     pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
     pros::screen::print(TEXT_LARGE_CENTER, 3, "y: %f", pose.y);

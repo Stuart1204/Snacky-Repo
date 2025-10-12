@@ -20,9 +20,9 @@ void initialize() {
 
 	allianceColour = AllianceColour::BLUE;
 	startingSide = Selection::SKILLS;
-	autonSelectionEnum = Selection::SOLO_AWP;
+	autonSelectionEnum = Selection::SKILLS;
 	//autonSelection();
-	if(autonSelectionEnum == Selection::SKILLS) {
+	if(autonSelectionEnum == Selection::SKILLS || startingSide == Selection::SKILLS) {
 		enableColourSort = false;
 	} else {
 		enableColourSort = true;
@@ -33,7 +33,14 @@ void disabled() {}
 void competition_initialize() {}
 void autonomous() {
 	//runSelectedAuton();
-	SIGSAWP();
+	//SIGSAWP();
+	intake.setState(IntakeState::INTAKE);
+	pros::delay(3000);
+	intake.setState(IntakeState::SCOREMID);
+	pros::delay(600);
+	stopScoringMid();
+	pros::delay(800);
+	intake.setState(IntakeState::IDLE);
 }
 
 void opcontrol() {

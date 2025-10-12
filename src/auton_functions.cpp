@@ -10,6 +10,7 @@
 #include "pros/distance.hpp"
 #include "pros/rtos.hpp"
 #include "pros/screen.h"
+#include "pros/screen.hpp"
 #include <cmath>
 #include <iostream>
 
@@ -577,6 +578,24 @@ inline void driveToGoalDistance() {
     driveToDistance(22);
     resetPos();
 }
+
+inline void stopScoringMid() {
+    uint32_t startTime = pros::millis();
+    int TIMEOUT = 400;
+
+    while(true) {
+        if (pros::millis() - startTime > TIMEOUT) {
+            controller.print(1,1,"timeout!");
+            break;
+        }
+
+        if(colourSortSensor.get_proximity() == 255) {
+            controller.print(1,1,"sensor!");
+            break;
+        }
+    }
+    intake.setState(IntakeState::STOPMID);
+}   
 
 #endif
 
