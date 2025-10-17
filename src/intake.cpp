@@ -24,7 +24,7 @@ class Intake {
       // colour sort counter
       int colourSortCounter = 0;
       bool currentlyColourSorting = false;
-      const int COLOUR_SORT_EJECT_TIME = 20;
+      const int COLOUR_SORT_EJECT_TIME = 10;
 
       int parkStageTracker = 0;
 
