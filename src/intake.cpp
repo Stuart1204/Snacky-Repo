@@ -80,39 +80,6 @@ class Intake {
       scoringRoller.move(speed);
    }
 
-   void moveWithStallDetection() {
-      // Always move lower intake (no stall detection needed)
-      moveLower(127);
-
-      int UPPER_STALL_SPEED_THRESHOLD = 50;
-      double SCORING_STALL_CURRENT_THRESHOLD = 600;
-      int STALL_TIME__THRESHOLD = 10;
-      
-      // Check if upper motor is stalled
-      if (abs(upperIntake.get_actual_velocity()) < UPPER_STALL_SPEED_THRESHOLD) {
-         upperStallCounter++;
-         if (upperStallCounter > STALL_TIME__THRESHOLD) {
-            moveUpper(0); // Stop upper motor if stalled
-         } else {
-            moveUpper(127);
-         }
-      } else {
-         moveUpper(127);
-      }
-      
-      // Check if scoring roller is stalled
-      if (abs(scoringRoller.get_current_draw()) > SCORING_STALL_CURRENT_THRESHOLD) {
-         scoreStallCounter++;
-         if (scoreStallCounter > STALL_TIME__THRESHOLD) {
-            moveScore(0); // Stop scoring motor if stalled
-         } else {
-            moveScore(127);
-         }
-      } else {
-         moveScore(127);
-      }
-   }
-
    void ejectBlock() {
       colourSortCounter++;
       if(colourSortCounter < COLOUR_SORT_EJECT_TIME) {
@@ -212,9 +179,15 @@ class Intake {
                moveUpper(-127);
                moveScore(-127);
             } else {
-               moveLower(127);
-               moveUpper(127);
-               moveScore(-75);
+               if(autonSelectionEnum == Selection::SKILLS) {
+                  moveLower(58);
+                  moveUpper(58);
+                  scoringRoller.move_velocity(-63);
+               } else {
+                  moveLower(127);
+                  moveUpper(127);
+                  moveScore(-50);
+               }
             }
             break;
          case IntakeState::STOPMID:

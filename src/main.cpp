@@ -32,7 +32,8 @@ void disabled() {}
 
 void competition_initialize() {}
 void autonomous() {
-	runSelectedAuton();
+	// runSelectedAuton();
+	vanadiumRightLongGoalAndCenterAuton();
 }
 
 void opcontrol() {

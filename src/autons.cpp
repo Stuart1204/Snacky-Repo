@@ -384,6 +384,43 @@ inline void rightLongGoalAndCenterAuton() {
     turnToHeading(-90);
 }
 
+inline void vanadiumRightLongGoalAndCenterAuton() {
+    // scores 4 on the long goal and 3 on the center goal. does not wo rry about control bonus
+    chassis.setPose(-46.5, -8, 90);
+    intake.setState(IntakeState::INTAKE);
+    moveToPoint(-24, -24, true, false, true, 65);
+    moveToPoint(-18, -38, true, false, true, 60);
+    moveToPoint(-9, -45, true, false, true, 80);
+    tongue.setState(true);
+    pros::delay(600);
+    moveToPoint(-24, -24, false, false);
+    intake.setState(IntakeState::IDLE);
+    tongue.setState(false);
+    moveToPoint(-10, -10, true, true, true);
+    intake.setState(IntakeState::OUTTAKE);
+    intakeLift.setState(true);
+    pros::delay(750);
+    intakeLift.setState(false);
+    intake.setState(IntakeState::INTAKE);
+    moveToPoint(-24, -24, false, false, true);
+    tongue.setState(true);
+    moveToPoint(-48, -48, false, false);
+    turnToHeading(-90);
+    leftResetPos();
+    moveToPoint(-60, -48, true, false, true);
+    moveDrive(50, 350);
+    waitAtMatchload();
+    moveToPoint(-36, -48, false, false);
+    turnToHeading(-90);
+    driveToGoal(false);
+    intake.setState(IntakeState::SCOREHIGH);
+    pros::delay(2000);
+    driveDistance(10);
+    intake.setState(IntakeState::IDLE);
+    setWings(true);
+    moveDrive(-70, 600);
+}
+
 inline void leftMatchloadScore() {
     // scores 4 on long goal and clears matchload station
     chassis.setPose(-48, 18, 0);
@@ -552,6 +589,10 @@ inline void skillsAuton() {
     odomLift.setState(true);
    	driveInParkZone();
     tongue.setState(false);
+}
+
+inline void skillsAuton2() {
+
 }
 
 inline void runSelectedAuton() {
