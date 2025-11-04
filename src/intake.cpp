@@ -4,6 +4,7 @@
 #include "globals.hpp"
 #include "main.h"
 #include "pros/adi.hpp"
+#include "pros/misc.hpp"
 #include "pros/optical.h"
 #include "other_functions.cpp"
 
@@ -183,7 +184,7 @@ class Intake {
                if(autonSelectionEnum == Selection::SKILLS) {
                   moveLower(90);
                   moveUpper(58);
-                  if(isAutonomous) {
+                  if(pros::competition::is_autonomous()) {
                      moveScore(-40); // want faster speed for autonomous skills
                   } else {
                      scoringRoller.move_velocity(-63);

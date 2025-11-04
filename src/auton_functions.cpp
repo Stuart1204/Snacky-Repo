@@ -436,11 +436,11 @@ inline void driveToGoal(bool direction) {
         pros::delay(20);
     }
     if(direction) {
-        leftMotors.move(16);
-        rightMotors.move(16);
+        leftMotors.move(10);
+        rightMotors.move(10);
     } else {
-       leftMotors.move(-16);
-        rightMotors.move(-16); 
+       leftMotors.move(-10);
+        rightMotors.move(-10); 
     }
 }
 

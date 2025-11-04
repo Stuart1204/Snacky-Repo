@@ -32,14 +32,12 @@ void disabled() {}
 
 void competition_initialize() {}
 void autonomous() {
-	isAutonomous = true;
 	skillsAuton2();
 	// runSelectedAuton();
 	//vanadiumRightLongGoalAndCenterAuton();
 }
 
 void opcontrol() {
-	isAutonomous = false;
 	odomLift.setState(true);
     while (true) {
 		// intake has its own thread
