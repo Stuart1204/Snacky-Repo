@@ -20,7 +20,7 @@ void initialize() {
 
 	allianceColour = AllianceColour::BLUE;
 	startingSide = Selection::LEFT;
-	autonSelectionEnum = Selection::LONG_CONTROL;
+	autonSelectionEnum = Selection::SKILLS;
 	//autonSelection();
 	if(autonSelectionEnum == Selection::SKILLS || startingSide == Selection::SKILLS) {
 		enableColourSort = false;
@@ -32,11 +32,14 @@ void disabled() {}
 
 void competition_initialize() {}
 void autonomous() {
+	isAutonomous = true;
+	skillsAuton2();
 	// runSelectedAuton();
-	vanadiumRightLongGoalAndCenterAuton();
+	//vanadiumRightLongGoalAndCenterAuton();
 }
 
 void opcontrol() {
+	isAutonomous = false;
 	odomLift.setState(true);
     while (true) {
 		// intake has its own thread

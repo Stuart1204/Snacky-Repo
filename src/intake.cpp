@@ -2,6 +2,7 @@
 #define INTAKE_CPP
 
 #include "globals.hpp"
+#include "main.h"
 #include "pros/adi.hpp"
 #include "pros/optical.h"
 #include "other_functions.cpp"
@@ -180,9 +181,13 @@ class Intake {
                moveScore(-127);
             } else {
                if(autonSelectionEnum == Selection::SKILLS) {
-                  moveLower(58);
+                  moveLower(90);
                   moveUpper(58);
-                  scoringRoller.move_velocity(-63);
+                  if(isAutonomous) {
+                     moveScore(-40); // want faster speed for autonomous skills
+                  } else {
+                     scoringRoller.move_velocity(-63);
+                  }
                } else {
                   moveLower(127);
                   moveUpper(127);

@@ -349,8 +349,8 @@ inline void rightResetPos() {
 // }
 
 inline void driveDistance(float targetDist, int maxSpeed) {
-    float TARGET_THRESHOLD = 2; // inches
-    int TIME_BEFORE_EXIT = 150; // in milliseconds
+    float TARGET_THRESHOLD = 3; // inches
+    int TIME_BEFORE_EXIT = 100; // in milliseconds
     int TIMEOUT = 2500; // milliseconds
 
     bool inSettleZone = false;
@@ -404,7 +404,7 @@ inline void driveDistance(float targetDist) {
 
 inline void driveToGoal(bool direction) {
     const float SPEED_THRESHOLD = 100; // out if 600
-    const int MOTOR_SPEED = 50; // out of 127
+    const int MOTOR_SPEED = 60; // out of 127
     const int TIMEOUT = 1000;
 
     bool reachedTargetSpeed = false;
@@ -486,7 +486,7 @@ inline void waitAtMatchload() {
 }
 
 inline void skillsWaitAtMatchload() {
-    waitAtMatchload(2600);
+    waitAtMatchload(1800);
 }
 
 inline void driveInParkZone() {
@@ -518,6 +518,8 @@ inline void moveDrive(int speed, int timeout) {
     leftMotors.move(speed);
     rightMotors.move(speed);
     pros::delay(timeout);
+    leftMotors.move(0);
+    rightMotors.move(0);
 }
 
 inline void driveToDistance(float distance) {
@@ -577,6 +579,12 @@ inline void driveToDistance(float distance) {
 inline void driveToGoalDistance() {
     driveToDistance(22);
     resetPos();
+}
+
+inline void skillsClearParkZone() {
+    moveDrive(80, 600);
+    moveDrive(-10, 200);
+    moveDrive(65, 1300);
 }
 
 inline void stopScoringMid() {

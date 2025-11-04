@@ -63,6 +63,7 @@ inline int scoreHeight; //1 for long goal, 2 for middle goal
 inline int blockCounter = 0;
 inline bool enableColourSort = false;
 inline bool slowLowGoal = false;
+inline bool isAutonomous = false;
 
 // global constants
 const inline float FRONT_DIST_OFFSET = 3.5;
