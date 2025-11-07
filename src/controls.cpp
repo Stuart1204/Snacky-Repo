@@ -87,51 +87,51 @@ inline void activatePistons() {
     if (controller.get_digital_new_press(Buttons::intakeLift)) {
         intakeLift.toggle();
     }
-    if (controller.get_digital_new_press(Buttons::DOWN)) {
+    if (controller.get_digital_new_press(Buttons::DOWN) || controller.get_digital_new_press(Buttons::UP)) {
         middleGoalDescore.toggle();
     }
 }
 
 inline int matchloadShakeCounter = 0;
 inline bool matchloadShakeDirection = false;
-inline void matchloadShakeControls() {
-    if(controller.get_digital_new_press(Buttons::UP)) {
-        matchloadShakeCounter = 0;
-        matchloadShakeDirection = true;
-    }
+// inline void matchloadShakeControls() {
+//     if(controller.get_digital_new_press(Buttons::UP)) {
+//         matchloadShakeCounter = 0;
+//         matchloadShakeDirection = true;
+//     }
 
-    if(controller.get_digital(Buttons::UP)) {
-        matchloadShake = true;
-    } else {
-        matchloadShake = false;
-    }
+//     if(controller.get_digital(Buttons::UP)) {
+//         matchloadShake = true;
+//     } else {
+//         matchloadShake = false;
+//     }
 
-    if(matchloadShake) {
-        matchloadShakeCounter++;
-        if(matchloadShakeDirection == true) {
-            if(matchloadShakeCounter < 8) {
-                leftMotors.move(70);
-                rightMotors.move(70);
-            } else {
-                matchloadShakeCounter = 0;
-                matchloadShakeDirection = false;
-            }
-        } else {
-            if(matchloadShakeCounter < 5) {
-                leftMotors.move(-30);
-                rightMotors.move(-30);
-            } else {
-                matchloadShakeCounter = 0;
-                matchloadShakeDirection = true;
-            }
-        }
-    }
-}
+//     if(matchloadShake) {
+//         matchloadShakeCounter++;
+//         if(matchloadShakeDirection == true) {
+//             if(matchloadShakeCounter < 8) {
+//                 leftMotors.move(70);
+//                 rightMotors.move(70);
+//             } else {
+//                 matchloadShakeCounter = 0;
+//                 matchloadShakeDirection = false;
+//             }
+//         } else {
+//             if(matchloadShakeCounter < 5) {
+//                 leftMotors.move(-30);
+//                 rightMotors.move(-30);
+//             } else {
+//                 matchloadShakeCounter = 0;
+//                 matchloadShakeDirection = true;
+//             }
+//         }
+//     }
+// }
 
 inline void subsystemControls() {
     intakeControls(); 
     activatePistons();
-    matchloadShakeControls();
+    //matchloadShakeControls();
     countBlocks(parkSensor);
 }
 

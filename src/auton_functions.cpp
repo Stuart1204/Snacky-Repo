@@ -584,7 +584,7 @@ inline void driveToGoalDistance() {
 inline void skillsClearParkZone() {
     moveDrive(80, 600);
     moveDrive(-10, 200);
-    moveDrive(65, 1300);
+    moveDrive(65, 1500);
 }
 
 inline void stopScoringMid() {

@@ -187,12 +187,12 @@ class Intake {
                   if(pros::competition::is_autonomous()) {
                      moveScore(-40); // want faster speed for autonomous skills
                   } else {
-                     scoringRoller.move_velocity(-63);
+                     scoringRoller.move_velocity(-130);
                   }
                } else {
                   moveLower(127);
                   moveUpper(127);
-                  moveScore(-50);
+                  moveScore(-38);
                }
             }
             break;
@@ -228,7 +228,7 @@ class Intake {
             moveScore(0);
             break;
          case IntakeState::LOWOUTTAKE:
-            moveLower(-127);
+            moveLower(-95);
             moveUpper(10);
             moveScore(0);
             break;

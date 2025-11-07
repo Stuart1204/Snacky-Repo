@@ -18,8 +18,8 @@ void initialize() {
 		}
 	});
 
-	allianceColour = AllianceColour::BLUE;
-	startingSide = Selection::LEFT;
+	allianceColour = AllianceColour::RED;
+	startingSide = Selection::RIGHT;
 	autonSelectionEnum = Selection::SKILLS;
 	//autonSelection();
 	if(autonSelectionEnum == Selection::SKILLS || startingSide == Selection::SKILLS) {
@@ -32,9 +32,9 @@ void disabled() {}
 
 void competition_initialize() {}
 void autonomous() {
-	skillsAuton2();
+	//skillsAuton2();
 	// runSelectedAuton();
-	//vanadiumRightLongGoalAndCenterAuton();
+	NISIGSAWP();
 }
 
 void opcontrol() {
