@@ -654,7 +654,9 @@ inline void skillsAuton2() {
     intake.setState(IntakeState::SCOREHIGH);
     driveToGoal(false);
     tongue.setState(false);
-    pros::delay(2000);
+    pros::delay(1100);
+    intake.setState(IntakeState::SCOREHIGHSLOW);
+    pros::delay(900);
     moveToPoint(60, 36, true, false, true);
     intake.setState(IntakeState::INTAKE);
     turnToHeading(165);
@@ -687,9 +689,9 @@ inline void skillsAuton2() {
     pros::delay(2000);
     driveDistance(10);
     intake.setState(IntakeState::INTAKE);
-    moveToPoint(20, -20, true, true, true, 80);
+    moveToPoint(28, -28, true, true, true);
     tongue.setState(true);
-    pros::delay(300);
+    moveToPoint(20, -20, true, false, true, 80);
     turnToPoint(9, -9, false);
     intake.setState(IntakeState::SCOREMID);
     driveToGoal(false);
@@ -711,7 +713,9 @@ inline void skillsAuton2() {
     intake.setState(IntakeState::SCOREHIGH);
     driveToGoal(false);
     tongue.setState(false);
-    pros::delay(2000);
+    pros::delay(1100);
+    intake.setState(IntakeState::SCOREHIGHSLOW);
+    pros::delay(900);
     moveToPoint(-60,-36, true, false, true);
     intake.setState(IntakeState::INTAKE);
     turnToHeading(-15);

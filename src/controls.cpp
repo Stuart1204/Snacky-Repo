@@ -12,7 +12,9 @@
 #include <iostream>
 
 inline void intakeControls() {
-    if(controller.get_digital(Buttons::L1)) {
+    if(controller.get_digital(Buttons::R1) && controller.get_digital(Buttons::L1)) {
+        intake.setState(IntakeState::SCOREHIGHSLOW);
+    } else if(controller.get_digital(Buttons::L1)) {
         intake.setState(IntakeState::INTAKE);
     } else if(controller.get_digital(Buttons::L2)) {
         // scoreLow slows down the lower stage to fit 7 on low goal

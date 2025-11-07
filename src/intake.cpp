@@ -253,6 +253,11 @@ class Intake {
             }
             intakeWithEjectCounter++;
             break;
+         case IntakeState::SCOREHIGHSLOW:
+            moveLower(127);
+            moveUpper(120);
+            moveScore(50);
+            break;
       }
    }
 
