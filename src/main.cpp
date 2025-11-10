@@ -4,6 +4,7 @@
 #include "controls.cpp"
 #include "lemlib/chassis/chassis.hpp"
 #include "lemlib/pose.hpp"
+#include "pros/rtos.hpp"
 
 void initialize() {
 	chassis.calibrate();
@@ -33,7 +34,7 @@ void disabled() {}
 void competition_initialize() {}
 void autonomous() {
 	skillsAuton2();
-	// runSelectedAuton();
+	//runSelectedAuton();
 	//NISIGSAWP();
 }
 

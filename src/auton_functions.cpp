@@ -459,16 +459,16 @@ inline void waitAtMatchload(int timeout) {
         counter++;
         if(direction == true) {
             if(counter < 8) {
-                leftMotors.move(70);
-                rightMotors.move(70);
+                leftMotors.move(55);
+                rightMotors.move(55);
             } else {
                 counter = 0;
                 direction = false;
             }
         } else {
             if(counter < 2) {
-                leftMotors.move(-30);
-                rightMotors.move(-30);
+                leftMotors.move(-15);
+                rightMotors.move(-15);
             } else {
                 counter = 0;
                 direction = true;

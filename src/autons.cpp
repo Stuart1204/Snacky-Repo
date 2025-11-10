@@ -254,16 +254,36 @@ inline void NISAWP() {
     driveToGoal(false);
 }
 
-// untested
-inline void rightLongGoalControlAuton() {
-    // for the right side
+// grabs blocks under goal
+inline void rightGrabBlocks() {
     chassis.setPose(-46.5, -8, 90);
     intake.setState(IntakeState::INTAKE);
     moveToPoint(-24, -24, true, false, true, 65);
+    tongue.setState(true);
     moveToPoint(-18, -38, true, false, true, 60);
+    tongue.setState(false);
     moveToPoint(-9, -45, true, false, true, 80);
     tongue.setState(true);
     pros::delay(600);
+}
+
+// grabs blocks under goal
+inline void leftGrabBlocks() {
+    chassis.setPose(-46.5, 8, 90);
+    intake.setState(IntakeState::INTAKE);
+    moveToPoint(-24, 24, true, false, true, 65);
+    tongue.setState(true);
+    moveToPoint(-18, 38, true, false, true, 60);
+    tongue.setState(false);
+    moveToPoint(-9, 45, true, false, true, 80);
+    tongue.setState(true);
+    pros::delay(600);
+}
+
+// untested
+inline void rightLongGoalControlAuton() {
+    // for the right side
+    rightGrabBlocks();
     moveToPoint(-24, -24, false, false);
     tongue.setState(false);
     moveToPoint(-48, -48, false, true);
@@ -286,13 +306,7 @@ inline void rightLongGoalControlAuton() {
 // untested
 inline void leftLongGoalControlAuton() {
     // for the left side
-    chassis.setPose(-46.5, 8, 90);
-    intake.setState(IntakeState::INTAKE);
-    moveToPoint(-24, 24, true, false, true, 65);
-    moveToPoint(-18, 38, true, false, true, 60);
-    moveToPoint(-9, 45, true, false, true, 80);
-    tongue.setState(true);
-    pros::delay(600);
+    leftGrabBlocks();
     moveToPoint(-24, 24, false, false);
     tongue.setState(false);
     moveToPoint(-48, 48, true, true);
@@ -314,13 +328,7 @@ inline void leftLongGoalControlAuton() {
 
 // new v2, gets the blocks under long goal, scores 1-2 on high middle, scores rest on long goal
 inline void leftLongGoalAndCenterAuton() {
-    chassis.setPose(-46.5, 8, 90);
-    intake.setState(IntakeState::INTAKE);
-    moveToPoint(-24, 24, true, false, true, 65);
-    moveToPoint(-18, 38, true, false, true, 60);
-    moveToPoint(-9, 45, true, false, true, 80);
-    tongue.setState(true);
-    pros::delay(600);
+    leftGrabBlocks();
     moveToPoint(-24, 24, false, false);
     moveToPoint(-15, 15, false, true, true);
     intake.setState(IntakeState::SCOREMID);
@@ -349,20 +357,14 @@ inline void leftLongGoalAndCenterAuton() {
 
 // new v2, gets the blocks under long goal, scores 1-2 on low middle, scores rest on long goal
 inline void rightLongGoalAndCenterAuton() {
-    chassis.setPose(-46.5, -8, 90);
-    intake.setState(IntakeState::INTAKE);
-    moveToPoint(-24, -24, true, false, true, 65);
-    moveToPoint(-18, -38, true, false, true, 60);
-    moveToPoint(-9, -45, true, false, true, 80);
-    tongue.setState(true);
-    pros::delay(600);
+    rightGrabBlocks();
     moveToPoint(-24, -24, false, false);
     intake.setState(IntakeState::IDLE);
     tongue.setState(false);
     moveToPoint(-10, -10, true, true, true);
     intake.setState(IntakeState::OUTTAKE);
     intakeLift.setState(true);
-    pros::delay(750);
+    pros::delay(700);
     intakeLift.setState(false);
     intake.setState(IntakeState::INTAKE);
     moveToPoint(-24, -24, false, false, true);
@@ -599,12 +601,13 @@ inline void skillsAuton2() {
     moveToPoint(9, 9, true, false, true);
     intake.setState(IntakeState::OUTTAKE);
     pros::delay(1350);
-    moveToPoint(48, 48, false, false, true);
     intakeLift.setState(false);
+    moveToPoint(36, 36, false, false, true);
+    tongue.setState(true);
+    moveToPoint(48, 48, false, false, true);
     intake.setState(IntakeState::IDLE);
     turnToHeading(90);
     leftResetPos();
-    tongue.setState(true);
     moveToPoint(57, 48, true, false, true);
     intake.setState(IntakeState::INTAKE);
     turnToHeading(90);
@@ -677,7 +680,7 @@ inline void skillsAuton2() {
     tongue.setState(false);
     pros::delay(1100);
     intake.setState(IntakeState::SCOREHIGHSLOW);
-    pros::delay(900);
+    pros::delay(700);
     moveToPoint(-60,-36, true, false, true);
     intake.setState(IntakeState::INTAKE);
     turnToHeading(-15);
