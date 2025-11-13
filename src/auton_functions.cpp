@@ -582,9 +582,12 @@ inline void driveToGoalDistance() {
 }
 
 inline void skillsClearParkZone() {
-    moveDrive(80, 600);
-    moveDrive(-10, 200);
+    moveDrive(73, 660);
+    moveDrive(-15, 200);
     moveDrive(65, 1500);
+    // if(frontDistSensor.get_distance() * MM_TO_INCHES > 50) {
+    //     moveDrive(70, 300);
+    // }
 }
 
 inline void stopScoringMid() {

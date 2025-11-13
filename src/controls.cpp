@@ -61,17 +61,12 @@ inline void intakeControls() {
     }
 }
 
-
-// inline void countBlocks() {
-//     if (intakeCountSensor.get_distance() < 45) {
-//         intake.sensorBlocked = true;
-//     }
-//     if (intake.sensorBlocked == true && intakeCountSensor.get_distance() > 100) {
-//         intake.sensorBlocked = false;
-//         intake.counter += 1;
-//     }
-// }
-
+inline void drivetrainParkControl() {
+    if(controller.get_digital(Buttons::DOWN)) {
+        leftMotors.move(-45);
+        rightMotors.move(-45);
+    }
+}
 
 inline void activatePistons() {
     if (controller.get_digital_new_press(Buttons::wing)) {
@@ -89,51 +84,18 @@ inline void activatePistons() {
     if (controller.get_digital_new_press(Buttons::intakeLift)) {
         intakeLift.toggle();
     }
-    if (controller.get_digital_new_press(Buttons::DOWN) || controller.get_digital_new_press(Buttons::UP)) {
+    if (controller.get_digital_new_press(Buttons::UP)) {
         middleGoalDescore.toggle();
     }
 }
 
 inline int matchloadShakeCounter = 0;
 inline bool matchloadShakeDirection = false;
-// inline void matchloadShakeControls() {
-//     if(controller.get_digital_new_press(Buttons::UP)) {
-//         matchloadShakeCounter = 0;
-//         matchloadShakeDirection = true;
-//     }
-
-//     if(controller.get_digital(Buttons::UP)) {
-//         matchloadShake = true;
-//     } else {
-//         matchloadShake = false;
-//     }
-
-//     if(matchloadShake) {
-//         matchloadShakeCounter++;
-//         if(matchloadShakeDirection == true) {
-//             if(matchloadShakeCounter < 8) {
-//                 leftMotors.move(70);
-//                 rightMotors.move(70);
-//             } else {
-//                 matchloadShakeCounter = 0;
-//                 matchloadShakeDirection = false;
-//             }
-//         } else {
-//             if(matchloadShakeCounter < 5) {
-//                 leftMotors.move(-30);
-//                 rightMotors.move(-30);
-//             } else {
-//                 matchloadShakeCounter = 0;
-//                 matchloadShakeDirection = true;
-//             }
-//         }
-//     }
-// }
 
 inline void subsystemControls() {
     intakeControls(); 
     activatePistons();
-    //matchloadShakeControls();
+    //drivetrainParkControl();
     countBlocks(parkSensor);
 }
 
@@ -153,17 +115,11 @@ inline void displayData() {
     float rightCurrentDistance = (rightDistSensor.get_distance() * MM_TO_INCHES) + RIGHT_DIST_OFFSET;
     // display lemlib pose
     lemlib::Pose pose = chassis.getPose();
-    // pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
-    // pros::screen::print(TEXT_LARGE_CENTER, 3, "y: %f", pose.y);
-    // pros::screen::print(TEXT_LARGE_CENTER, 5, "heading: %f", pose.theta);
-    // // pros::screen::print(TEXT_LARGE_CENTER, 7, "yaw: %f", inertial_sensor.get_yaw());
-    pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %i", colourSortSensor.get_proximity());
+    pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %f", frontDistSensor.get_distance() * MM_TO_INCHES);
 
     pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
     pros::screen::print(TEXT_LARGE_CENTER, 3, "y: %f", pose.y);
     pros::screen::print(TEXT_LARGE_CENTER, 5, "heading: %f", pose.theta);
-
-    //printf("current: %f\n", leftMotors.get_actual_velocity());
 }
 
 class button

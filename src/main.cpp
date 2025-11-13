@@ -33,8 +33,8 @@ void disabled() {}
 
 void competition_initialize() {}
 void autonomous() {
-	skillsAuton2();
-	//runSelectedAuton();
+	//skillsAuton();
+	runSelectedAuton();
 	//NISIGSAWP();
 }
 
