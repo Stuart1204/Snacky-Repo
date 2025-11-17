@@ -22,7 +22,7 @@ void initialize() {
 	allianceColour = AllianceColour::RED;
 	startingSide = Selection::RIGHT;
 	autonSelectionEnum = Selection::SKILLS;
-	//autonSelection();
+	autonSelection();
 	if(autonSelectionEnum == Selection::SKILLS || startingSide == Selection::SKILLS) {
 		enableColourSort = false;
 	} else {
@@ -33,10 +33,8 @@ void disabled() {}
 
 void competition_initialize() {}
 void autonomous() {
-	//skillsAuton();
 	runSelectedAuton();
-	//NISIGSAWP();
-}
+} 
 
 void opcontrol() {
 	odomLift.setState(true);

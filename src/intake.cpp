@@ -182,8 +182,8 @@ class Intake {
                moveScore(-127);
             } else {
                if(autonSelectionEnum == Selection::SKILLS) {
-                  moveLower(90);
-                  moveUpper(58);
+                  moveLower(100);
+                  moveUpper(80);
                   if(pros::competition::is_autonomous()) {
                      moveScore(-40); // want faster speed for autonomous skills
                   } else {
@@ -192,7 +192,7 @@ class Intake {
                } else {
                   moveLower(127);
                   moveUpper(127);
-                  moveScore(-38);
+                  moveScore(-45);
                }
             }
             break;
@@ -207,7 +207,7 @@ class Intake {
                moveUpper(-90);
                moveScore(-20);
             } else {
-               moveLower(-127);
+               moveLower(-100);
                moveUpper(-127);
                moveScore(-100);
             }

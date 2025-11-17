@@ -27,6 +27,32 @@ inline void rightSideAuto() {
 
 }
 
+// grabs blocks under goal
+inline void rightGrabBlocks() {
+    chassis.setPose(-46.5, -8, 90);
+    intake.setState(IntakeState::INTAKE);
+    moveToPoint(-24, -24, true, false, true, 65);
+    tongue.setState(true);
+    moveToPoint(-18, -38, true, false, true, 60);
+    tongue.setState(false);
+    moveToPoint(-9, -45, true, false, true, 80);
+    tongue.setState(true);
+    pros::delay(500);
+}
+
+// grabs blocks under goal
+inline void leftGrabBlocks() {
+    chassis.setPose(-46.5, 8, 90);
+    intake.setState(IntakeState::INTAKE);
+    moveToPoint(-24, 24, true, false, true, 65);
+    tongue.setState(true);
+    moveToPoint(-18, 37, true, false, true, 60);
+    tongue.setState(false);
+    moveToPoint(-9, 45, true, false, true, 80);
+    tongue.setState(true);
+    pros::delay(500);
+}
+
 inline void SAWP() {
     chassis.setPose(-48, -17.5, 180);
     tongue.setState(true);
@@ -99,8 +125,10 @@ inline void NISIGSAWP() {
     //resetPos();
     intake.setState(IntakeState::LOWINTAKE);
     setWings(true);
-    moveToPoint(-27, -27, true, true, false, 70);
-    //moveToPoint(-12, -14, true, true, false, 35);
+    moveToPoint(-27, -27, true, true, true, 70);
+    tongue.setState(true);
+    moveToPoint(-18, -18, true, false, true, 70);
+    tongue.setState(false);
     moveToPoint(-12, -12, true, false, false, 50);
     turnToHeading(45);
     intakeLift.setState(true);
@@ -116,6 +144,44 @@ inline void NISIGSAWP() {
     moveToPoint(-22, 22, true, false, false, 35);
     turnToHeading(-45);
     intake.setState(IntakeState::SCOREMID);
+    driveToGoal(false);
+}
+
+inline void NISIGSAWP2() {
+    rightGrabBlocks();
+    moveToPoint(-24, -24, false, false);
+    intake.setState(IntakeState::IDLE);
+    tongue.setState(false);
+    moveToPoint(-10, -10, true, true, true);
+    intake.setState(IntakeState::SCORELOW);
+    intakeLift.setState(true);
+    pros::delay(1200);
+    intakeLift.setState(false);
+    intake.setState(IntakeState::INTAKE);
+    moveToPoint(-24, -24, false, false, true);
+    tongue.setState(true);
+    moveToPoint(-48, -48, false, false);
+    turnToHeading(-90);
+    leftResetPos();
+    moveToPoint(-60, -48, true, false, true);
+    moveDrive(50, 350);
+    waitAtMatchload();
+    moveToPoint(-36, -48, false, false);
+    turnToHeading(-90);
+    driveToGoal(false);
+    intake.setState(IntakeState::SCOREHIGH);
+    pros::delay(1500);
+    turnWithSpeeds(127, -50, -20);
+    leftResetPos();
+    intake.setState(IntakeState::INTAKE);
+    moveToPoint(-24, 18, true, false, true, 70);
+    tongue.setState(true);
+    moveToPoint(-23, -23, true, false, true);
+    turnToHeading(-20);
+    resetPos();
+    moveToPoint(-14, 14, false, false, true, 75);
+    intake.setState(IntakeState::SCOREMID);
+    turnToHeading(-45);
     driveToGoal(false);
 }
 
@@ -254,32 +320,6 @@ inline void NISAWP() {
     driveToGoal(false);
 }
 
-// grabs blocks under goal
-inline void rightGrabBlocks() {
-    chassis.setPose(-46.5, -8, 90);
-    intake.setState(IntakeState::INTAKE);
-    moveToPoint(-24, -24, true, false, true, 65);
-    tongue.setState(true);
-    moveToPoint(-18, -38, true, false, true, 60);
-    tongue.setState(false);
-    moveToPoint(-9, -45, true, false, true, 80);
-    tongue.setState(true);
-    pros::delay(600);
-}
-
-// grabs blocks under goal
-inline void leftGrabBlocks() {
-    chassis.setPose(-46.5, 8, 90);
-    intake.setState(IntakeState::INTAKE);
-    moveToPoint(-24, 24, true, false, true, 65);
-    tongue.setState(true);
-    moveToPoint(-18, 38, true, false, true, 60);
-    tongue.setState(false);
-    moveToPoint(-9, 45, true, false, true, 80);
-    tongue.setState(true);
-    pros::delay(600);
-}
-
 // untested
 inline void rightLongGoalControlAuton() {
     // for the right side
@@ -333,7 +373,7 @@ inline void leftLongGoalAndCenterAuton() {
     moveToPoint(-15, 15, false, true, true);
     intake.setState(IntakeState::SCOREMID);
     driveToGoal(false);
-    pros::delay(200);
+    pros::delay(400);
     stopScoringMid();
     moveToPoint(-28, 28, true, false, true);
     intake.setState(IntakeState::INTAKE);
@@ -362,9 +402,9 @@ inline void rightLongGoalAndCenterAuton() {
     intake.setState(IntakeState::IDLE);
     tongue.setState(false);
     moveToPoint(-10, -10, true, true, true);
-    intake.setState(IntakeState::OUTTAKE);
+    intake.setState(IntakeState::SCORELOW);
     intakeLift.setState(true);
-    pros::delay(700);
+    pros::delay(900);
     intakeLift.setState(false);
     intake.setState(IntakeState::INTAKE);
     moveToPoint(-24, -24, false, false, true);
@@ -428,8 +468,9 @@ inline void rightMatchloadScore() {
 inline void skillsAuton() {
     chassis.setPose(-63, -14, 0);
     intake.setState(IntakeState::INTAKE);
-    odomLift.setState(false);
+    odomLift.setState(true);
     skillsClearParkZone();
+    odomLift.setState(false);
     tongue.setState(true);
     turnToHeading(15);
     leftResetPos();
@@ -495,7 +536,8 @@ inline void skillsAuton() {
     moveToPoint(60, 36, true, false, true);
     intake.setState(IntakeState::INTAKE);
     turnToHeading(168);
-    moveDrive(60, 500);
+    moveDrive(60, 550);
+    moveDrive(-2, 200);
     skillsClearParkZone();
     tongue.setState(true);
     turnToHeading(-165);
@@ -580,10 +622,11 @@ inline void runSelectedAuton() {
             rightLongGoalAndCenterAuton();
         }
         if(autonSelectionEnum == Selection::SOLO_AWP) {
-            SAWP();
+            //SIGSAWP();
+            NISIGSAWP();
         }
         if(autonSelectionEnum == Selection::NI_SAWP) {
-            NISAWP();
+            NISIGSAWP();
         }
     }
 }

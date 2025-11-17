@@ -491,7 +491,7 @@ inline void skillsWaitAtMatchload() {
 
 inline void driveInParkZone() {
     const int MOTOR_SPEED = 70; // out of 127
-    const int TIMEOUT = 1200;
+    const int TIMEOUT = 1300;
     
     odomLift.setState(true);
     intake.setState(IntakeState::LOWINTAKE);
@@ -582,9 +582,11 @@ inline void driveToGoalDistance() {
 }
 
 inline void skillsClearParkZone() {
-    moveDrive(73, 660);
-    moveDrive(-15, 200);
-    moveDrive(65, 1500);
+    odomLift.setState(true);
+    moveDrive(75, 500);
+    moveDrive(25, 150);
+    moveDrive(65, 1350);
+    odomLift.setState(false);
     // if(frontDistSensor.get_distance() * MM_TO_INCHES > 50) {
     //     moveDrive(70, 300);
     // }
