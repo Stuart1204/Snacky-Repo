@@ -21,7 +21,7 @@ void initialize() {
 
 	allianceColour = AllianceColour::RED;
 	startingSide = Selection::RIGHT;
-	autonSelectionEnum = Selection::SKILLS;
+	autonSelectionEnum = Selection::LONG_AND_CENTER;
 	autonSelection();
 	if(autonSelectionEnum == Selection::SKILLS || startingSide == Selection::SKILLS) {
 		enableColourSort = false;
@@ -34,6 +34,7 @@ void disabled() {}
 void competition_initialize() {}
 void autonomous() {
 	runSelectedAuton();
+	// elims7BallRightSide();
 } 
 
 void opcontrol() {

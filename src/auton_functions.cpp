@@ -585,11 +585,12 @@ inline void skillsClearParkZone() {
     odomLift.setState(true);
     moveDrive(75, 500);
     moveDrive(25, 150);
-    moveDrive(65, 1350);
+    moveDrive(65, 1800);
     odomLift.setState(false);
     // if(frontDistSensor.get_distance() * MM_TO_INCHES > 50) {
     //     moveDrive(70, 300);
     // }
+    moveDrive(-75, 500);
 }
 
 inline void stopScoringMid() {

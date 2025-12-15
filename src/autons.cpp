@@ -145,6 +145,8 @@ inline void NISIGSAWP() {
     turnToHeading(-45);
     intake.setState(IntakeState::SCOREMID);
     driveToGoal(false);
+    // pros::delay(1600);
+    // moveToPoint(-60, 27, true, false, false, 127);
 }
 
 inline void NISIGSAWP2() {
@@ -483,7 +485,7 @@ inline void skillsAuton() {
     intake.setState(IntakeState::SCOREHIGH);
     driveToGoal(false);
     tongue.setState(true);
-    pros::delay(1300);
+    pros::delay(1100);
     rightResetPos();
     moveToPoint(-57, 48, true, false, true);
     intake.setState(IntakeState::INTAKE);
@@ -496,7 +498,7 @@ inline void skillsAuton() {
     intake.setState(IntakeState::SCOREHIGH);
     driveToGoal(false);
     tongue.setState(false);
-    pros::delay(2000);
+    pros::delay(1900);
     driveDistance(10);
     intake.setState(IntakeState::INTAKE);
     moveToPoint(-24, 25, true, true, true);
@@ -511,7 +513,7 @@ inline void skillsAuton() {
     intakeLift.setState(true);
     moveToPoint(9, 9, true, false, true);
     intake.setState(IntakeState::OUTTAKE);
-    pros::delay(1350);
+    pros::delay(1100);
     intakeLift.setState(false);
     moveToPoint(36, 36, false, false, true);
     tongue.setState(true);
@@ -551,7 +553,7 @@ inline void skillsAuton() {
     intake.setState(IntakeState::SCOREHIGH);
     driveToGoal(false);
     tongue.setState(true);
-    pros::delay(1300);
+    pros::delay(1200);
     rightResetPos();
     moveToPoint(57, -48, true, false, true);
     intake.setState(IntakeState::INTAKE);
@@ -564,19 +566,20 @@ inline void skillsAuton() {
     intake.setState(IntakeState::SCOREHIGH);
     driveToGoal(false);
     tongue.setState(false);
-    pros::delay(2000);
+    pros::delay(1900);
     driveDistance(10);
-    intake.setState(IntakeState::INTAKE);
-    moveToPoint(28, -28, true, true, true);
-    tongue.setState(true);
-    moveToPoint(20, -20, true, false, true, 80);
-    turnToPoint(9, -9, false);
-    intake.setState(IntakeState::SCOREMID);
-    driveToGoal(false);
-    pros::delay(1000);
-    moveToPoint(11, -26, true, false,true);
-    moveToPoint(-26, -32, true, false, true);
+    intake.setState(IntakeState::SCOREHIGH);
+    moveToPoint(30, -30, true, true, true);
+    // tongue.setState(true);
+    // moveToPoint(20, -20, true, false, true, 80);
+    // turnToPoint(9, -9, false);
+    // intake.setState(IntakeState::SCOREMID);
+    // driveToGoal(false);
+    // pros::delay(1000);
+    // moveToPoint(11, -26, true, false,true);
+    moveToPoint(-26, -31, true, false, true);
     resetPos();
+    tongue.setState(true);
     moveToPoint(-48, -48, true, false, true);
     turnToHeading(-90);
     leftResetPos();
@@ -591,7 +594,7 @@ inline void skillsAuton() {
     intake.setState(IntakeState::SCOREHIGH);
     driveToGoal(false);
     tongue.setState(false);
-    pros::delay(1100);
+    pros::delay(1000);
     intake.setState(IntakeState::SCOREHIGHSLOW);
     pros::delay(700);
     moveToPoint(-60,-36, true, false, true);
@@ -600,6 +603,72 @@ inline void skillsAuton() {
     driveInParkZone();
 }
 
+inline void elims7BallLeftSide() {
+    chassis.setPose(-46.5, 8, 90);
+    intake.setState(IntakeState::INTAKE);
+    moveToPoint(-26, 26, true, false, true, 100);
+    tongue.setState(true);
+    pros::delay(100);
+    moveToPoint(-36, 40, true, false, true, 100);
+    moveToPoint(-45, 48, true, false, true, 100);
+    turnToHeading(-90);
+    rightResetPos();
+    moveToPoint(-60, 48, true, false, true);
+    rightResetPos();
+    moveDrive(60, 350);
+    waitAtMatchload(750);
+    moveToPoint(-30, 48, false, false);
+    driveToGoal(false);
+    intake.setState(IntakeState::SCOREHIGH);
+    pros::delay(2250);
+}
+inline void elims7BallRightSide() {
+    chassis.setPose(-46.5, -8, 90);
+    intake.setState(IntakeState::INTAKE);
+    moveToPoint(-26, -26, true, false, true, 85);
+    tongue.setState(true);
+    pros::delay(100);
+    moveToPoint(-34, -40, true, false, true, 100);
+    moveToPoint(-48, -49, true, false, true, 100);
+    turnToHeading(-90);
+    leftResetPos();
+    moveToPoint(-60, -48, true, false, true);
+    leftResetPos();
+    moveDrive(60, 350);
+    waitAtMatchload(700);
+    moveToPoint(-30, -48, false, false);
+    intake.setState(IntakeState::SCOREHIGH);
+    driveToGoal(false);
+    enableColourSort = false;
+    // intake.setState(IntakeState::SCOREHIGH);
+    pros::delay(1500);
+    int notColour;
+    if(allianceColour == AllianceColour::BLUE) {
+        notColour = AllianceColour::RED;
+    }
+    if(allianceColour == AllianceColour::RED) {
+        notColour = AllianceColour::BLUE;
+    }
+    uint32_t startTime = pros::millis();
+    while(true) {
+        if(checkColour(colourSortSensor) == notColour) {
+            break;
+        }
+        if (pros::millis() - startTime > 1500) {
+            break;
+        }
+        pros::delay(20);
+    }
+    setWings(true);
+    moveDrive(50, 350);
+    moveDrive(-70, 350);
+}
+
+// inline void wingMacro() {
+//     chassis.turnToHeading(-45, 500, {.minSpeed = 90});
+//     driveDistance(4, 70);
+//     chassis
+// }
 inline void runSelectedAuton() {
     if(autonSelectionEnum == Selection::SKILLS) {
         skillsAuton();
@@ -616,7 +685,8 @@ inline void runSelectedAuton() {
     }
     if(startingSide == Selection::RIGHT) {
         if(autonSelectionEnum == Selection::LONG_CONTROL) {
-            rightLongGoalControlAuton();
+            // rightLongGoalControlAuton();
+            elims7BallRightSide();
         }
         if(autonSelectionEnum == Selection::LONG_AND_CENTER) {
             rightLongGoalAndCenterAuton();
