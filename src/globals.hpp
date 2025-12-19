@@ -40,13 +40,13 @@
 #define verticalEncoderPort -17
 
 //solenoids
-#define leftWingPort 'C'
-#define rightWingPort 'F'
-#define tonguePort 'G'
-#define parkPort 'E'
-#define intakeLiftPort 'H'
-#define odomLiftPort 'D'
-#define middleGoalDescorePort 'B'
+#define leftWingPort 'A'
+#define rightWingPort 'C'
+#define tonguePort 'F'
+#define parkPort 'D'
+#define intakeLiftPort 'E'
+#define odomLiftPort 'B'
+#define middleGoalDescorePort 'G'
 
 //drivetrain specs
 #define driveTrackWidth 11.375
