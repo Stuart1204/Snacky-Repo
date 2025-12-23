@@ -29,12 +29,12 @@ class Piston {
 };
 
 // pistons
-inline Piston leftWing(leftWingPiston);
-inline Piston rightWing(rightWingPiston);
+inline Piston wing(wingPiston);
 inline Piston tongue(tonguePiston);
 inline Piston park(parkPiston);
 inline Piston intakeLift(intakeLiftPiston);
 inline Piston odomLift(odomLiftPiston);
-inline Piston middleGoalDescore(middleGoalDescorePiston);
+inline Piston middleGoal(middleGoalPiston);
+inline Piston sunroof(sunroofPiston);
 
 #endif

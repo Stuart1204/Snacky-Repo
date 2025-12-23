@@ -70,8 +70,7 @@ inline void drivetrainParkControl() {
 
 inline void activatePistons() {
     if (controller.get_digital_new_press(Buttons::wing)) {
-        leftWing.toggle();
-        rightWing.toggle();
+        wing.toggle();
     }
     if (controller.get_digital_new_press(Buttons::tongue)) {
         tongue.toggle();
@@ -85,7 +84,10 @@ inline void activatePistons() {
         intakeLift.toggle();
     }
     if (controller.get_digital_new_press(Buttons::UP)) {
-        middleGoalDescore.toggle();
+        sunroof.toggle();
+    }
+    if (controller.get_digital_new_press(Buttons::DOWN)) {
+        middleGoal.toggle();
     }
 }
 

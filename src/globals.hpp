@@ -17,36 +17,35 @@
 // -- Defined Ports -- //
 
 //motor ports
-#define lBPort -1
-#define lMPort 2
-#define lFPort -3
+#define lBPort -20
+#define lMPort -12
+#define lFPort -1
 
-#define rBPort 14
-#define rMPort -13
-#define rFPort 18
+#define rBPort 11
+#define rMPort 18
+#define rFPort 17
 
-#define lowIntakePort 12
-#define upperIntakePort -11
-#define scoringRollerPort 21
+#define lowIntakePort 15
+#define upperIntakePort -14
 
 //sensor ports
-#define imuPort 7
+#define imuPort 16
 #define colourSortPort 9
 #define parkSensorPort 5
 #define leftDistPort 4
-#define rightDistPort 15
+#define rightDistPort 13
 #define frontDistPort 6
 
 #define verticalEncoderPort -17
 
 //solenoids
-#define leftWingPort 'A'
-#define rightWingPort 'C'
-#define tonguePort 'F'
+#define rightWingPort 'E'
+#define tonguePort 'C'
 #define parkPort 'D'
-#define intakeLiftPort 'E'
+#define intakeLiftPort 'F'
 #define odomLiftPort 'B'
-#define middleGoalDescorePort 'G'
+#define middleGoalPort 'H'
+#define sunroofPort 'G'
 
 //drivetrain specs
 #define driveTrackWidth 11.375
@@ -156,19 +155,18 @@ inline pros::Controller controller(pros::E_CONTROLLER_MASTER);
 // motors
 inline pros::Motor lowerIntake(lowIntakePort, pros::v5::MotorGears::rpm_600);
 inline pros::Motor upperIntake(upperIntakePort, pros::v5::MotorGears::rpm_600);
-inline pros::Motor scoringRoller(scoringRollerPort, pros::v5::MotorGears::rpm_600);
 
 inline pros::MotorGroup leftMotors({lBPort, lMPort, lFPort}, pros::v5::MotorGears::rpm_600);
 inline pros::MotorGroup rightMotors({rBPort, rMPort, rFPort}, pros::v5::MotorGears::rpm_600);
 
 // pneumatics
-inline pros::adi::DigitalOut leftWingPiston(leftWingPort, LOW);
-inline pros::adi::DigitalOut rightWingPiston(rightWingPort, LOW);
+inline pros::adi::DigitalOut wingPiston(rightWingPort, LOW);
+inline pros::adi::DigitalOut sunroofPiston(sunroofPort, LOW);
 inline pros::adi::DigitalOut tonguePiston(tonguePort, LOW);
 inline pros::adi::DigitalOut parkPiston(parkPort, LOW);
 inline pros::adi::DigitalOut intakeLiftPiston(intakeLiftPort, LOW);
 inline pros::adi::DigitalOut odomLiftPiston(odomLiftPort, LOW);
-inline pros::adi::DigitalOut middleGoalDescorePiston(middleGoalDescorePort, LOW);
+inline pros::adi::DigitalOut middleGoalPiston(middleGoalPort, LOW);
 
 
 // Inertial Sensor on port

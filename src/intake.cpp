@@ -78,15 +78,11 @@ class Intake {
    void moveUpper(int speed) {
       upperIntake.move(speed);
    }
-   void moveScore(int speed) {
-      scoringRoller.move(speed);
-   }
 
    void ejectBlock() {
       colourSortCounter++;
       if(colourSortCounter < COLOUR_SORT_EJECT_TIME) {
          moveUpper(50);
-         moveScore(-127);
       } else {
          colourSortCounter = 0;
          currentlyColourSorting = false;
@@ -143,29 +139,24 @@ class Intake {
          case IntakeState::IDLE: 
             moveLower(0);
             moveUpper(0);
-            moveScore(0);
             break;
 
          case IntakeState::INTAKE:
             moveLower(127);
             moveUpper(127);
-            moveScore(100);
             break;
          case IntakeState::OUTTAKE:
             moveLower(-127);
             moveUpper(-127);
-            moveScore(-90);
             break;
          case IntakeState::SCOREHIGH:
             highOuttakeCounter++;
             if(highOuttakeCounter < 7) {
                moveLower(-60);
                moveUpper(-100);
-               moveScore(-127);
             } else {
                moveLower(127);
                moveUpper(127);
-               moveScore(127);
                if(enableColourSort) {
                   colourSort();
                   colourSortSensor.set_led_pwm(100);
@@ -175,41 +166,15 @@ class Intake {
             }
             break;
          case IntakeState::SCOREMID:
-            midOuttakeCounter++;
-            if(midOuttakeCounter < 10) {
-               moveLower(-60);
-               moveUpper(-127);
-               moveScore(-127);
-            } else {
-               if(autonSelectionEnum == Selection::SKILLS) {
-                  moveLower(100);
-                  moveUpper(80);
-                  if(pros::competition::is_autonomous()) {
-                     moveScore(-40); // want faster speed for autonomous skills
-                  } else {
-                     scoringRoller.move_velocity(-130);
-                  }
-               } else {
-                  moveLower(127);
-                  moveUpper(127);
-                  moveScore(-45);
-               }
-            }
-            break;
-         case IntakeState::STOPMID:
-            moveLower(0);
-            moveUpper(-2);
-            moveScore(-90);
+            
             break;
          case IntakeState::SCORELOW: // meaning the robot is tryna score 7 on low
             if(autonSelectionEnum == Selection::SKILLS) {
                moveLower(-60);
                moveUpper(-90);
-               moveScore(-20);
             } else {
                moveLower(-100);
                moveUpper(-127);
-               moveScore(-100);
             }
             countBlocks(parkSensor);
             // if((blockCounter >= 6 || slowLowGoal) && autonSelectionEnum == Selection::SKILLS) {
@@ -225,17 +190,14 @@ class Intake {
          case IntakeState::LOWINTAKE:
             moveLower(127);
             moveUpper(10);
-            moveScore(0);
             break;
          case IntakeState::LOWOUTTAKE:
             moveLower(-95);
             moveUpper(10);
-            moveScore(0);
             break;
          case IntakeState::INTAKEWITHEJECT:
             moveLower(127);
             moveUpper(127);
-            moveScore(127);
             if(allianceColour == AllianceColour::BLUE) {
                if(checkColour(parkSensor) == AllianceColour::RED) {
                   moveLower(-127);
@@ -256,7 +218,6 @@ class Intake {
          case IntakeState::SCOREHIGHSLOW:
             moveLower(127);
             moveUpper(120);
-            moveScore(40);
             break;
       }
    }

@@ -17,8 +17,7 @@ inline int checkColour(pros::Optical opticalSensor) {
 }
 
 inline void setWings(bool state) {
-    leftWing.setState(state);
-    rightWing.setState(state);
+    wing.setState(state);
 }
 
 inline bool detectedState = false;
