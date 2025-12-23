@@ -130,11 +130,11 @@ namespace Buttons {
     constexpr auto RIGHT = pros::E_CONTROLLER_DIGITAL_RIGHT;
 
     // controller buttons specific
-    constexpr auto wing = Buttons::X;
-    constexpr auto park = Buttons::B;
-    constexpr auto tongue = Buttons::A;
-    constexpr auto intakeLift = Buttons::Y;
-    constexpr auto colourSort = Buttons::RIGHT;
+    // constexpr auto wing = Buttons::X;
+    // constexpr auto park = Buttons::B;
+    // constexpr auto tongue = Buttons::A;
+    // constexpr auto intakeLift = Buttons::Y;
+    // constexpr auto colourSort = Buttons::RIGHT;
 }
 
 namespace MotorConfigs {

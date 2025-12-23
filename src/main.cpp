@@ -4,7 +4,9 @@
 #include "controls.cpp"
 #include "lemlib/chassis/chassis.hpp"
 #include "lemlib/pose.hpp"
+#include "pros/misc.hpp"
 #include "pros/rtos.hpp"
+#include <sys/types.h>
 
 void initialize() {
 	chassis.calibrate();
@@ -12,9 +14,6 @@ void initialize() {
 	pros::Task intakeTask([]{
 		while (true) {
 			intake.run();
-			if(!inertial_sensor.is_installed()) {
-				printf("disconnected!");
-			}
 			pros::delay(20);
 		}
 	});
@@ -22,7 +21,9 @@ void initialize() {
 	allianceColour = AllianceColour::RED;
 	startingSide = Selection::RIGHT;
 	autonSelectionEnum = Selection::LONG_AND_CENTER;
+
 	autonSelection();
+
 	if(autonSelectionEnum == Selection::SKILLS || startingSide == Selection::SKILLS) {
 		enableColourSort = false;
 	} else {
@@ -34,10 +35,16 @@ void disabled() {}
 void competition_initialize() {}
 void autonomous() {
 	runSelectedAuton();
-	// elims7BallRightSide();
 } 
 
 void opcontrol() {
+	bool autoDoublePark = false; 
+	u_int32_t teleOpStartTime;
+	if(!pros::competition::is_autonomous() && !pros::competition::is_disabled() && pros::competition::is_connected()) {
+		teleOpStartTime = pros::millis();
+		autoDoublePark = true;
+	}
+
 	odomLift.setState(true);
     while (true) {
 		// intake has its own thread
@@ -45,5 +52,11 @@ void opcontrol() {
 		subsystemControls();
 		displayData();
 		pros::delay(20);
+
+		if(autoDoublePark) {
+			if(pros::millis() - teleOpStartTime > 134900) {
+				park.setState(true);
+			}
+		}
     }
 }

@@ -17,7 +17,7 @@ inline void intakeControls() {
     } else if(controller.get_digital(Buttons::L1)) {
         intake.setState(IntakeState::INTAKE);
     } else if(controller.get_digital(Buttons::L2)) {
-        // scoreLow slows down the lower stage to fit 7 on low goal
+        // scoreLow scores low goal when intake is up
         if(intakeLift.getState() == true) {
             intake.setState(IntakeState::SCORELOW);
         } else {
@@ -34,7 +34,7 @@ inline void intakeControls() {
     }
 
     // uses the same park button to exit off park
-    if(controller.get_digital_new_press(Buttons::park)) {
+    if(controller.get_digital_new_press(Buttons::B)) {
         if(park.getState() == true) {
             park.setState(false);
         } else {
@@ -42,7 +42,7 @@ inline void intakeControls() {
         }
     }
 
-    if(controller.get_digital_new_press(Buttons::colourSort)) {
+    if(controller.get_digital_new_press(Buttons::RIGHT)) {
         enableColourSort = !enableColourSort;
         if(enableColourSort) {
             controller.rumble("...");
@@ -69,25 +69,22 @@ inline void drivetrainParkControl() {
 }
 
 inline void activatePistons() {
-    if (controller.get_digital_new_press(Buttons::wing)) {
+    if (controller.get_digital_new_press(Buttons::X)) {
         wing.toggle();
     }
-    if (controller.get_digital_new_press(Buttons::tongue)) {
+    if (controller.get_digital_new_press(Buttons::A)) {
         tongue.toggle();
     }
-    // backup park button if the other doesn't work
+    // double park macro uses activate park to extened pistons
     if(activatePark) {
         park.setState(true);
         activatePark = false;
     }
-    if (controller.get_digital_new_press(Buttons::intakeLift)) {
+    if (controller.get_digital_new_press(Buttons::Y)) {
         intakeLift.toggle();
     }
     if (controller.get_digital_new_press(Buttons::UP)) {
         sunroof.toggle();
-    }
-    if (controller.get_digital_new_press(Buttons::DOWN)) {
-        middleGoal.toggle();
     }
 }
 

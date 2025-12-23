@@ -16,9 +16,6 @@ class Intake {
       int upperPower = 0;
       int rollerPower = 0;
 
-      int scoreStallCounter = 0;
-      int upperStallCounter = 0;
-
       // for middle goal we need to reverse a little bit before scoring
       int midOuttakeCounter = 0;
       // same with the high goal
@@ -44,19 +41,19 @@ class Intake {
          case IntakeState::IDLE: 
             break;
          case IntakeState::INTAKE:
-            scoreStallCounter = 0;
-            upperStallCounter = 0;
-            setWings(true);
+            middleGoal.setState(false);
+            wing.setState(true);
             break;
          case IntakeState::OUTTAKE:
             break;
          case IntakeState::SCOREHIGH:
-            setWings(false);
+            middleGoal.setState(false);
+            wing.setState(false);
             highOuttakeCounter = 0;
             colourSortCounter = 0;
             break;
          case IntakeState::SCOREMID:
-            midOuttakeCounter = 0;
+            middleGoal.setState(true);
             break;
          case IntakeState::SCORELOW:
             blockCounter = 0;
@@ -150,38 +147,29 @@ class Intake {
             moveUpper(-127);
             break;
          case IntakeState::SCOREHIGH:
-            highOuttakeCounter++;
-            if(highOuttakeCounter < 7) {
-               moveLower(-60);
-               moveUpper(-100);
+            moveLower(127);
+            moveUpper(127);
+            if(enableColourSort) {
+               colourSort();
+               colourSortSensor.set_led_pwm(100);
             } else {
-               moveLower(127);
-               moveUpper(127);
-               if(enableColourSort) {
-                  colourSort();
-                  colourSortSensor.set_led_pwm(100);
-               } else {
-                  colourSortSensor.set_led_pwm(0);
-               }
+               colourSortSensor.set_led_pwm(0);
             }
             break;
          case IntakeState::SCOREMID:
-            
+            moveLower(127);
+            moveUpper(127);
             break;
          case IntakeState::SCORELOW: // meaning the robot is tryna score 7 on low
             if(autonSelectionEnum == Selection::SKILLS) {
-               moveLower(-60);
+               moveLower(-40);
                moveUpper(-90);
             } else {
                moveLower(-100);
                moveUpper(-127);
             }
-            countBlocks(parkSensor);
-            // if((blockCounter >= 6 || slowLowGoal) && autonSelectionEnum == Selection::SKILLS) {
-            //    moveLower(-45);
-            // }
             if(slowLowGoal && autonSelectionEnum == Selection::SKILLS) {
-               moveLower(-45);
+               moveLower(-30);
             } 
             break;
          case IntakeState::PARK:
@@ -217,7 +205,7 @@ class Intake {
             break;
          case IntakeState::SCOREHIGHSLOW:
             moveLower(127);
-            moveUpper(120);
+            moveUpper(70);
             break;
       }
    }
