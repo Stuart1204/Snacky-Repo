@@ -17,12 +17,17 @@
 inline lemlib::PID angularPID(3.8, 0.0, 15.0, 0, false);
 inline lemlib::PID linearPID(7.5, 0.0, 26.0, 0, false);
 
-// turns to a desired heading
-inline void turnToHeading(float targetHeading) {
-    float TARGET_THRESHOLD = 2.5; // degrees
+inline void turnToHeading(float targetHeading, bool exitEarly) {
+    float TARGET_THRESHOLD; // degrees
     int MIN_SPEED = 10;
     int TIME_BEFORE_EXIT = 100; // in milliseconds
     int TIMEOUT = 1000; // milliseconds
+
+    if(exitEarly) {
+        TARGET_THRESHOLD = 7.5;
+    } else {
+        TARGET_THRESHOLD = 2.5;
+    }
 
     // Normalize target heading to [0, 360)
     targetHeading = fmod(fmod(targetHeading, 360.0) + 360.0, 360.0);
@@ -91,6 +96,10 @@ inline void turnToHeading(float targetHeading) {
     angularPID.reset();
     leftMotors.move(0);
     rightMotors.move(0);
+}
+// turns to a desired heading
+inline void turnToHeading(float targetHeading) {
+    turnToHeading(targetHeading, false);
 }
 
 // turns to a desired point. may be ran in conjunction with moveToPoint
@@ -294,59 +303,6 @@ inline void rightResetPos() {
         }
     }
 }
-
-// inline void driveToDistance(float targetDistance, bool doResetPosition) {
-//     float TARGET_THRESHOLD = 2; // inches
-//     int TIME_BEFORE_EXIT = 150; // in milliseconds
-//     int TIMEOUT = 2500; // milliseconds
-
-//     float currentDist = frontDistSensor.get_distance() * MM_TO_INCHES + FRONT_DIST_OFFSET; // convert mm to inches
-
-//     bool inSettleZone = false;
-//     uint32_t settleStartTime;
-//     uint32_t startTime = pros::millis();
-
-//     while(true) {
-//         currentDist = frontDistSensor.get_distance() * MM_TO_INCHES + FRONT_DIST_OFFSET;
-//         float error = currentDist - targetDistance;
-
-//         // check to see if in settle zone
-//         if (fabs(error) <= TARGET_THRESHOLD) {
-//             if (!inSettleZone) {
-//                 settleStartTime = pros::millis();
-//                 inSettleZone = true;
-//             }
-            
-//             // wait in the settle zone
-//             if (pros::millis() - settleStartTime >= TIME_BEFORE_EXIT) {
-//                 break; // exit loop
-//             }
-//         } else {
-//             inSettleZone = false; // reset the timer if we leave the settle zone
-//         }
-
-//         if (pros::millis() - startTime > TIMEOUT) {
-//             break;
-//         }
-        
-//         float targetSpeed = linearPID.update(error);
-//         leftMotors.move(targetSpeed);
-//         rightMotors.move(targetSpeed);
-
-//         pros::delay(20);
-//     }
-//     linearPID.reset();
-//     leftMotors.move(0);
-//     rightMotors.move(0);
-
-//     if(doResetPosition == true) {
-//         resetPos();
-//     }
-// }
-
-// inline void driveToDistance(float targetDistance) {
-//     driveToDistance(targetDistance, false);
-// }
 
 inline void driveDistance(float targetDist, int maxSpeed) {
     float TARGET_THRESHOLD = 3; // inches

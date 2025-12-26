@@ -31,7 +31,7 @@
 //sensor ports
 #define imuPort 16
 #define colourSortPort 9
-#define parkSensorPort 5
+#define parkSensorPort 3
 #define leftDistPort 4
 #define rightDistPort 13
 #define frontDistPort 6
@@ -45,6 +45,7 @@
 #define intakeLiftPort 'F'
 #define odomLiftPort 'B'
 #define middleGoalPort 'H'
+#define middleDescorePort 'A'
 #define sunroofPort 'G'
 
 //drivetrain specs
@@ -166,7 +167,8 @@ inline pros::adi::DigitalOut tonguePiston(tonguePort, LOW);
 inline pros::adi::DigitalOut parkPiston(parkPort, LOW);
 inline pros::adi::DigitalOut intakeLiftPiston(intakeLiftPort, LOW);
 inline pros::adi::DigitalOut odomLiftPiston(odomLiftPort, LOW);
-inline pros::adi::DigitalOut middleGoalPiston(middleGoalPort, LOW);
+inline pros::adi::DigitalOut middleGoalPiston(middleGoalPort, HIGH);
+inline pros::adi::DigitalOut middleDescorePiston(middleDescorePort, LOW);
 
 
 // Inertial Sensor on port

@@ -41,19 +41,19 @@ class Intake {
          case IntakeState::IDLE: 
             break;
          case IntakeState::INTAKE:
-            middleGoal.setState(false);
+            middleGoal.setState(true);
             wing.setState(true);
             break;
          case IntakeState::OUTTAKE:
             break;
          case IntakeState::SCOREHIGH:
-            middleGoal.setState(false);
+            middleGoal.setState(true);
             wing.setState(false);
             highOuttakeCounter = 0;
             colourSortCounter = 0;
             break;
          case IntakeState::SCOREMID:
-            middleGoal.setState(true);
+            middleGoal.setState(false);
             break;
          case IntakeState::SCORELOW:
             blockCounter = 0;
@@ -112,14 +112,14 @@ class Intake {
 
    void loadPark() {
       if(parkStageTracker == 0) {
-         moveLower(-80);
+         moveLower(-95);
          moveUpper(-127);
          if(parkSensor.get_proximity() > 200) {
             parkStageTracker++;
          }
       }
       if(parkStageTracker == 1) {
-         moveLower(-35);
+         moveLower(-45);
          moveUpper(-127);
          if(parkSensor.get_proximity() < 200) {
             parkStageTracker++;
@@ -158,7 +158,7 @@ class Intake {
             break;
          case IntakeState::SCOREMID:
             moveLower(127);
-            moveUpper(127);
+            moveUpper(50);
             break;
          case IntakeState::SCORELOW: // meaning the robot is tryna score 7 on low
             if(autonSelectionEnum == Selection::SKILLS) {

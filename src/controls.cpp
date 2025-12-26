@@ -69,8 +69,10 @@ inline void drivetrainParkControl() {
 }
 
 inline void activatePistons() {
+    
     if (controller.get_digital_new_press(Buttons::X)) {
-        wing.toggle();
+        // wing.toggle();
+        middleDescore.toggle();
     }
     if (controller.get_digital_new_press(Buttons::A)) {
         tongue.toggle();
