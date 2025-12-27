@@ -1,3 +1,4 @@
+#include "auton_functions.cpp"
 #include "globals.hpp"
 #include "autons.cpp"
 #include "intake.cpp"
@@ -20,9 +21,9 @@ void initialize() {
 
 	allianceColour = AllianceColour::RED;
 	startingSide = Selection::RIGHT;
-	autonSelectionEnum = Selection::LONG_AND_CENTER;
+	autonSelectionEnum = Selection::SKILLS;
 
-	autonSelection();
+	// autonSelection();
 
 	if(autonSelectionEnum == Selection::SKILLS || startingSide == Selection::SKILLS) {
 		enableColourSort = false;
@@ -34,7 +35,8 @@ void disabled() {}
 
 void competition_initialize() {}
 void autonomous() {
-	runSelectedAuton();
+	skillsAuton();
+	// runSelectedAuton();
 } 
 
 void opcontrol() {

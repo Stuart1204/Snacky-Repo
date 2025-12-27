@@ -112,14 +112,14 @@ class Intake {
 
    void loadPark() {
       if(parkStageTracker == 0) {
-         moveLower(-95);
+         moveLower(-90);
          moveUpper(-127);
          if(parkSensor.get_proximity() > 200) {
             parkStageTracker++;
          }
       }
       if(parkStageTracker == 1) {
-         moveLower(-45);
+         moveLower(-40);
          moveUpper(-127);
          if(parkSensor.get_proximity() < 200) {
             parkStageTracker++;
@@ -157,19 +157,27 @@ class Intake {
             }
             break;
          case IntakeState::SCOREMID:
-            moveLower(127);
-            moveUpper(50);
+            if(autonSelectionEnum == Selection::SKILLS) {
+               moveLower(127);
+               moveUpper(60);
+            } else {
+               moveLower(127);
+               moveUpper(90);
+            }
+            if(slowMidGoal && autonSelectionEnum == Selection::SKILLS) {
+               moveUpper(40);
+            } 
             break;
          case IntakeState::SCORELOW: // meaning the robot is tryna score 7 on low
             if(autonSelectionEnum == Selection::SKILLS) {
-               moveLower(-40);
-               moveUpper(-90);
+               moveLower(-50);
+               moveUpper(-127);
             } else {
                moveLower(-100);
                moveUpper(-127);
             }
             if(slowLowGoal && autonSelectionEnum == Selection::SKILLS) {
-               moveLower(-30);
+               moveLower(-40);
             } 
             break;
          case IntakeState::PARK:
@@ -205,7 +213,7 @@ class Intake {
             break;
          case IntakeState::SCOREHIGHSLOW:
             moveLower(127);
-            moveUpper(70);
+            moveUpper(80);
             break;
       }
    }

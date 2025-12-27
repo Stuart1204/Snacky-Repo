@@ -32,11 +32,11 @@
 #define imuPort 16
 #define colourSortPort 9
 #define parkSensorPort 3
-#define leftDistPort 4
+#define leftDistPort 5
 #define rightDistPort 13
 #define frontDistPort 6
 
-#define verticalEncoderPort -17
+#define verticalEncoderPort 4
 
 //solenoids
 #define rightWingPort 'E'
@@ -63,9 +63,11 @@ inline int scoreHeight; //1 for long goal, 2 for middle goal
 inline int blockCounter = 0;
 inline bool enableColourSort = false;
 inline bool slowLowGoal = false;
+inline bool slowMidGoal = false;
+inline bool enableAutoWing = false;
 
 // global constants
-const inline float FRONT_DIST_OFFSET = 3.5;
+const inline float FRONT_DIST_OFFSET = 5.5;
 const inline float LEFT_DIST_OFFSET = 2.5;
 const inline float RIGHT_DIST_OFFSET = 2.5;
 const inline float MM_TO_INCHES = 0.03937007874;
@@ -201,7 +203,7 @@ inline lemlib::OdomSensors sensors{
 };
 
 // lateral motion controller
-inline lemlib::ControllerSettings linearController(5.5, // proportional gain (kP)
+inline lemlib::ControllerSettings linearController(5.6, // proportional gain (kP)
                                             0, // integral gain (kI)
                                             29, // derivative gain (kD)
                                             3, // anti windup

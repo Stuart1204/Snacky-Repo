@@ -14,7 +14,7 @@
 #include <cmath>
 #include <iostream>
 
-inline lemlib::PID angularPID(3.8, 0.0, 15.0, 0, false);
+inline lemlib::PID angularPID(4.0, 0.0, 17.0, 0, false);
 inline lemlib::PID linearPID(7.5, 0.0, 26.0, 0, false);
 
 inline void turnToHeading(float targetHeading, bool exitEarly) {
@@ -358,9 +358,9 @@ inline void driveDistance(float targetDist) {
     driveDistance(targetDist, 127);
 }
 
-inline void driveToGoal(bool direction) {
+inline void driveToGoal(bool direction, int speed) {
     const float SPEED_THRESHOLD = 100; // out if 600
-    const int MOTOR_SPEED = 60; // out of 127
+    const int MOTOR_SPEED = speed; // out of 127
     const int TIMEOUT = 1000;
 
     bool reachedTargetSpeed = false;
@@ -398,6 +398,10 @@ inline void driveToGoal(bool direction) {
        leftMotors.move(-10);
         rightMotors.move(-10); 
     }
+}
+
+inline void driveToGoal(bool direction) {
+    driveToGoal(direction, 60);
 }
 
 inline void waitAtMatchload(int timeout) {
@@ -446,18 +450,14 @@ inline void skillsWaitAtMatchload() {
 }
 
 inline void driveInParkZone() {
-    const int MOTOR_SPEED = 70; // out of 127
-    const int TIMEOUT = 1300;
-    
-    odomLift.setState(true);
-    intake.setState(IntakeState::LOWINTAKE);
+    int MOTOR_SPEED = 60;
+    int TIMEOUT = 2500;
     uint32_t startTime = pros::millis();
+    int startValue = vertical_rotation.get_position() / 100;
 
     while(true) {
-        if(frontDistSensor.get_distance() * MM_TO_INCHES < 69 && frontDistSensor.get_distance() * MM_TO_INCHES > 62) {
-            if(pros::millis() - startTime > 450) {
-                break;
-            }
+        if(vertical_rotation.get_position() / 100 > startValue + 1100) {
+            break;
         }
         leftMotors.move(MOTOR_SPEED);
         rightMotors.move(MOTOR_SPEED);
@@ -538,34 +538,67 @@ inline void driveToGoalDistance() {
 }
 
 inline void skillsClearParkZone() {
-    odomLift.setState(true);
-    moveDrive(75, 500);
-    moveDrive(25, 150);
-    moveDrive(65, 1800);
-    odomLift.setState(false);
-    // if(frontDistSensor.get_distance() * MM_TO_INCHES > 50) {
-    //     moveDrive(70, 300);
-    // }
-    moveDrive(-75, 500);
-}
-
-inline void stopScoringMid() {
+    int MOTOR_SPEED = 60;
+    int TIMEOUT = 2500;
     uint32_t startTime = pros::millis();
-    int TIMEOUT = 400;
+    int startValue = vertical_rotation.get_position() / 100;
 
     while(true) {
-        if (pros::millis() - startTime > TIMEOUT) {
-            controller.print(1,1,"timeout!");
+        if(vertical_rotation.get_position() / 100 > startValue + 1650) {
             break;
         }
+        leftMotors.move(MOTOR_SPEED);
+        rightMotors.move(MOTOR_SPEED);
 
-        if(colourSortSensor.get_proximity() == 255) {
-            controller.print(1,1,"sensor!");
+        if (pros::millis() - startTime > TIMEOUT) {
             break;
         }
     }
-    intake.setState(IntakeState::STOPMID);
-}   
+    leftMotors.move(0);
+    rightMotors.move(0);
+
+    moveDrive(50, 400);
+}
+
+inline bool getGyroValue = false;
+inline int gyroValue;
+inline bool onFirstStep = true;
+inline bool onSecondStep = false;
+
+inline void startAutoWing() {
+    getGyroValue = true;
+    enableAutoWing = true;
+    onFirstStep = true;
+    onSecondStep = false;
+}
+
+inline void autoWing() {
+    if(getGyroValue) {
+        gyroValue = inertial_sensor.get_rotation();
+        getGyroValue = false;
+    }
+    if(enableAutoWing) {
+        if(onFirstStep) {
+            if(inertial_sensor.get_rotation() > gyroValue - 20) {
+                leftMotors.move(-120);
+                rightMotors.move(120);
+            } else {
+                onFirstStep = false;
+                onSecondStep = true;
+            }
+        }
+        if(onSecondStep) {
+            if(inertial_sensor.get_rotation() < gyroValue - 20) {
+                leftMotors.move(90);
+                rightMotors.move(10);
+            } else {
+                enableAutoWing = false;
+                leftMotors.move(-15);
+                rightMotors.move(15);
+            }
+        }
+    }
+}
 
 #endif
 

@@ -1,9 +1,9 @@
-bin/main.cpp.o: src/main.cpp src/globals.hpp include/main.h include/api.h \
- include/pros/adi.h include/pros/colors.h include/pros/device.h \
- include/pros/distance.h include/pros/error.h include/pros/ext_adi.h \
- include/pros/adi.h include/pros/adi.h include/pros/gps.h \
- include/pros/imu.h include/pros/link.h include/pros/llemu.h \
- include/liblvgl/llemu.h include/liblvgl/lvgl.h \
+bin/main.cpp.o: src/main.cpp src/auton_functions.cpp src/globals.hpp \
+ include/main.h include/api.h include/pros/adi.h include/pros/colors.h \
+ include/pros/device.h include/pros/distance.h include/pros/error.h \
+ include/pros/ext_adi.h include/pros/adi.h include/pros/adi.h \
+ include/pros/gps.h include/pros/imu.h include/pros/link.h \
+ include/pros/llemu.h include/liblvgl/llemu.h include/liblvgl/lvgl.h \
  include/liblvgl/misc/lv_log.h include/liblvgl/lv_conf_internal.h \
  include/liblvgl/lv_conf_kconfig.h include/liblvgl/lv_conf.h \
  include/liblvgl/misc/lv_types.h include/liblvgl/misc/lv_timer.h \
@@ -141,9 +141,10 @@ bin/main.cpp.o: src/main.cpp src/globals.hpp include/main.h include/api.h \
  include/fmt/args.h include/lemlib/logger/message.hpp \
  include/lemlib/logger/infoSink.hpp \
  include/lemlib/logger/telemetrySink.hpp include/pros/optical.hpp \
- include/pros/screen.hpp src/autons.cpp src/intake.cpp \
- src/other_functions.cpp src/piston.cpp src/auton_functions.cpp \
- include/lemlib/timer.hpp include/pros/distance.hpp src/controls.cpp
+ include/pros/screen.hpp src/other_functions.cpp src/piston.cpp \
+ src/intake.cpp include/lemlib/timer.hpp include/pros/distance.hpp \
+ src/autons.cpp src/controls.cpp
+src/auton_functions.cpp:
 src/globals.hpp:
 include/main.h:
 include/api.h:
@@ -384,11 +385,10 @@ include/lemlib/logger/infoSink.hpp:
 include/lemlib/logger/telemetrySink.hpp:
 include/pros/optical.hpp:
 include/pros/screen.hpp:
-src/autons.cpp:
-src/intake.cpp:
 src/other_functions.cpp:
 src/piston.cpp:
-src/auton_functions.cpp:
+src/intake.cpp:
 include/lemlib/timer.hpp:
 include/pros/distance.hpp:
+src/autons.cpp:
 src/controls.cpp:

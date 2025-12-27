@@ -3,6 +3,7 @@
 
 #include "globals.hpp"
 #include "other_functions.cpp"
+#include "auton_functions.cpp"
 #include "intake.cpp"
 #include "piston.cpp"
 #include "pros/colors.hpp"
@@ -51,20 +52,28 @@ inline void intakeControls() {
         }
     }
 
-    if(controller.get_digital_new_press(Buttons::LEFT)) {
-        slowLowGoal = !slowLowGoal;
+    if(controller.get_digital_new_press(Buttons::DOWN)) {
+        if(intake.getState() == IntakeState::SCOREMID) {
+            slowMidGoal = !slowMidGoal;
+            if(slowMidGoal) {
+                controller.rumble(".."); 
+            } else {
+                controller.rumble(".");
+            }
+        }
+        if(intake.getState() == IntakeState::SCORELOW) {
+            slowLowGoal = !slowLowGoal;
+            if(slowLowGoal) {
+                controller.rumble(".."); 
+            } else {
+                controller.rumble(".");
+            }
+        }
         if(slowLowGoal) {
            controller.rumble(".."); 
         } else {
             controller.rumble(".");
         }
-    }
-}
-
-inline void drivetrainParkControl() {
-    if(controller.get_digital(Buttons::DOWN)) {
-        leftMotors.move(-45);
-        rightMotors.move(-45);
     }
 }
 
@@ -105,9 +114,19 @@ inline void drivetrainControls() {
 	rightMotors.set_brake_mode(MotorConfigs::BRAKE);
     int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
     int rightX = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
-    if(!matchloadShake) {
+    if(!enableAutoWing) {
         chassis.arcade(leftY, rightX, false, 0.5);
     }
+    // auto wing code
+    if(controller.get_digital_new_press(Buttons::LEFT)) {
+        startAutoWing();
+    }
+    if(enableAutoWing) {
+        if(abs(leftY) > 17 || abs(rightX) > 17) {
+            enableAutoWing = false;
+        }
+    }
+    autoWing();
 }
 
 inline void displayData() {
@@ -116,7 +135,7 @@ inline void displayData() {
     float rightCurrentDistance = (rightDistSensor.get_distance() * MM_TO_INCHES) + RIGHT_DIST_OFFSET;
     // display lemlib pose
     lemlib::Pose pose = chassis.getPose();
-    pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %f", frontDistSensor.get_distance() * MM_TO_INCHES);
+    pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %i", vertical_rotation.get_position() / 100);
 
     pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
     pros::screen::print(TEXT_LARGE_CENTER, 3, "y: %f", pose.y);
