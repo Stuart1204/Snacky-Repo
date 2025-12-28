@@ -14,6 +14,24 @@
 #include "auton_functions.cpp"
 #include "other_functions.cpp"
 
+inline void autonWingMacro() {
+    startAutoWing();
+    while(enableAutoWing) {
+        autoWing();
+    }
+    leftMotors.move(7);
+    rightMotors.move(-7);
+    pros::delay(500);
+    leftMotors.move(-70);
+    rightMotors.move(-60);
+    pros::delay(500);
+    leftMotors.move(-15);
+    rightMotors.move(-30);
+    pros::delay(1000);
+    leftMotors.move(0);
+    rightMotors.move(-30);
+}
+
 // grabs blocks under goal
 inline void rightGrabBlocks() {
     chassis.setPose(-46.5, -8, 90);
@@ -69,6 +87,50 @@ inline void rightFourBlock() {
     pros::delay(900);
     leftMotors.move(-40);
     rightMotors.move(-40);
+}
+
+inline void rightSevenBlock() {
+    chassis.setPose(-46.5, -8, 90);
+    intake.setState(IntakeState::INTAKE);
+    moveToPoint(-33, -12, true, false, true, 85);
+    moveToPoint(-25, -26, true, false, true, 90);
+    tongue.setState(true);
+    turnToHeading(-137, true);
+    moveToPoint(-43, -48, true, false, true, 90);
+    turnToHeading(-90, true);
+    leftResetPos();
+    moveToPoint(-56, -48, true, false, true);
+    turnToHeading(-90, true);
+    moveDrive(60, 450);
+    waitAtMatchload();
+    moveToPoint(-32, -48, false, false, true);
+    tongue.setState(false);
+    intake.setState(IntakeState::SCOREHIGH);
+    driveToGoal(false);
+    goalShake(1100);
+    autonWingMacro();
+}
+
+inline void leftSevenBlock() {
+    chassis.setPose(-46.5, 8, 90);
+    intake.setState(IntakeState::INTAKE);
+    moveToPoint(-33, 12, true, false, true, 85);
+    moveToPoint(-25, 26, true, false, true, 90);
+    tongue.setState(true);
+    turnToHeading(-42, true);
+    moveToPoint(-43, 48, true, false, true, 90);
+    turnToHeading(-90, true);
+    rightResetPos();
+    moveToPoint(-56, 48, true, false, true);
+    turnToHeading(-90, true);
+    moveDrive(60, 450);
+    waitAtMatchload();
+    moveToPoint(-32, 48, false, false, true);
+    tongue.setState(false);
+    intake.setState(IntakeState::SCOREHIGH);
+    driveToGoal(false);
+    goalShake(1100);
+    autonWingMacro();
 }
 
 // new v2, gets the blocks under long goal, scores 1-2 on high middle, scores rest on long goal
@@ -129,6 +191,50 @@ inline void rightLongGoalAndCenterAuton() {
     intake.setState(IntakeState::IDLE);
     setWings(true);
     moveDrive(-70, 600);
+}
+
+inline void NISAWP() {
+    chassis.setPose(-48, -17.5, 180);
+    tongue.setState(true);
+    moveToPoint(-48, -48, true, false);
+    //resetPos();
+    turnToHeading(-90);
+    leftResetPos();
+    intake.setState(IntakeState::INTAKE);
+    //setWings(true);
+    leftMotors.move(60);
+    rightMotors.move(60);
+    pros::delay(300);
+    leftMotors.move(40);
+    rightMotors.move(40);
+    pros::delay(300);
+    waitAtMatchload();
+    moveToPoint(-32, -48, false, false, true);
+    tongue.setState(false);
+    intake.setState(IntakeState::SCOREHIGH);
+    driveToGoal(false);
+    pros::delay(1200);
+    intake.setState(IntakeState::IDLE);
+    turnToHeading(90, true);
+    leftResetPos();
+    intake.setState(IntakeState::LOWINTAKE);
+    setWings(true);
+    moveToPoint(-27, -27, true, true, false, 50);
+    //moveToPoint(-12, -14, true, true, false, 35);
+    moveToPoint(-12, -12, true, false, false, 35);
+    turnToHeading(45);
+    intakeLift.setState(true);
+    intake.setState(IntakeState::LOWOUTTAKE);
+    driveToGoal(true);
+    pros::delay(500);
+    intake.setState(IntakeState::INTAKE);
+    moveToPoint(-20, -16, false, false, true);
+    intakeLift.setState(false);
+    setWings(true);
+    moveToPoint(-19, 19, true, true, true);
+    turnToHeading(-45);
+    intake.setState(IntakeState::SCOREMID);
+    driveToGoal(false);
 }
 
 inline void leftMatchloadScore() {
@@ -293,72 +399,6 @@ inline void skillsAuton() {
     driveInParkZone();
 }
 
-inline void elims7BallLeftSide() {
-    chassis.setPose(-46.5, 8, 90);
-    intake.setState(IntakeState::INTAKE);
-    moveToPoint(-26, 26, true, false, true, 100);
-    tongue.setState(true);
-    pros::delay(100);
-    moveToPoint(-36, 40, true, false, true, 100);
-    moveToPoint(-45, 48, true, false, true, 100);
-    turnToHeading(-90);
-    rightResetPos();
-    moveToPoint(-60, 48, true, false, true);
-    rightResetPos();
-    moveDrive(60, 350);
-    waitAtMatchload(750);
-    moveToPoint(-30, 48, false, false);
-    driveToGoal(false);
-    intake.setState(IntakeState::SCOREHIGH);
-    pros::delay(2250);
-}
-inline void elims7BallRightSide() {
-    chassis.setPose(-46.5, -8, 90);
-    intake.setState(IntakeState::INTAKE);
-    moveToPoint(-26, -26, true, false, true, 85);
-    tongue.setState(true);
-    pros::delay(100);
-    moveToPoint(-34, -40, true, false, true, 100);
-    moveToPoint(-48, -49, true, false, true, 100);
-    turnToHeading(-90);
-    leftResetPos();
-    moveToPoint(-60, -48, true, false, true);
-    leftResetPos();
-    moveDrive(60, 350);
-    waitAtMatchload(700);
-    moveToPoint(-30, -48, false, false);
-    intake.setState(IntakeState::SCOREHIGH);
-    driveToGoal(false);
-    enableColourSort = false;
-    // intake.setState(IntakeState::SCOREHIGH);
-    pros::delay(1500);
-    int notColour;
-    if(allianceColour == AllianceColour::BLUE) {
-        notColour = AllianceColour::RED;
-    }
-    if(allianceColour == AllianceColour::RED) {
-        notColour = AllianceColour::BLUE;
-    }
-    uint32_t startTime = pros::millis();
-    while(true) {
-        if(checkColour(colourSortSensor) == notColour) {
-            break;
-        }
-        if (pros::millis() - startTime > 1500) {
-            break;
-        }
-        pros::delay(20);
-    }
-    setWings(true);
-    moveDrive(50, 350);
-    moveDrive(-70, 350);
-}
-
-// inline void wingMacro() {
-//     chassis.turnToHeading(-45, 500, {.minSpeed = 90});
-//     driveDistance(4, 70);
-//     chassis
-// }
 inline void runSelectedAuton() {
     if(autonSelectionEnum == Selection::SKILLS) {
         skillsAuton();
@@ -376,7 +416,7 @@ inline void runSelectedAuton() {
     if(startingSide == Selection::RIGHT) {
         if(autonSelectionEnum == Selection::LONG_CONTROL) {
             // rightLongGoalControlAuton();
-            elims7BallRightSide();
+            // elims7BallRightSide();
         }
         if(autonSelectionEnum == Selection::LONG_AND_CENTER) {
             rightLongGoalAndCenterAuton();

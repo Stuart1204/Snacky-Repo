@@ -441,6 +441,42 @@ inline void waitAtMatchload(int timeout) {
     rightMotors.move(0);
 }
 
+inline void goalShake(int TIMEOUT) {
+    int MOTOR_SPEED = 60;
+    uint32_t startTime = pros::millis();
+    bool direction = false;
+    bool driveBack = false;
+
+    while(true) {
+        if(!driveBack) {
+            if(direction) {
+                leftMotors.move(10);
+                rightMotors.move(-120);
+                pros::delay(200);
+                direction = !direction;
+            } else {
+                leftMotors.move(-120);
+                rightMotors.move(10);
+                pros::delay(200);
+                direction = !direction;
+            }
+        } else {
+            leftMotors.move(-90);
+            rightMotors.move(-90);
+        }
+
+        if (pros::millis() - startTime > TIMEOUT - 500) {
+            driveBack = true;
+        }
+
+        if (pros::millis() - startTime > TIMEOUT) {
+            break;
+        }
+    }
+    leftMotors.move(0);
+    rightMotors.move(0);
+}
+
 inline void waitAtMatchload() {
     waitAtMatchload(550);
 }

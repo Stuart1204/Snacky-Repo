@@ -35,7 +35,9 @@ void disabled() {}
 
 void competition_initialize() {}
 void autonomous() {
-	skillsAuton();
+	// skillsAuton();
+	rightSevenBlock();
+	// NISAWP();
 	// runSelectedAuton();
 } 
 
