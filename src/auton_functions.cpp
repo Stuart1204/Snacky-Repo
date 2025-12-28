@@ -2,7 +2,6 @@
 #define auton_functions_cpp
 
 #include "globals.hpp"
-#include <lvgl.h>
 #include "other_functions.cpp"
 #include "intake.cpp"
 #include "lemlib/pid.hpp"

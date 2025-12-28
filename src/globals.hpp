@@ -45,8 +45,7 @@
 #define intakeLiftPort 'F'
 #define odomLiftPort 'B'
 #define middleGoalPort 'H'
-#define middleDescorePort 'A'
-#define sunroofPort 'G'
+#define middleDescorePort 'G'
 
 //drivetrain specs
 #define driveTrackWidth 11.375
@@ -164,7 +163,6 @@ inline pros::MotorGroup rightMotors({rBPort, rMPort, rFPort}, pros::v5::MotorGea
 
 // pneumatics
 inline pros::adi::DigitalOut wingPiston(rightWingPort, LOW);
-inline pros::adi::DigitalOut sunroofPiston(sunroofPort, LOW);
 inline pros::adi::DigitalOut tonguePiston(tonguePort, LOW);
 inline pros::adi::DigitalOut parkPiston(parkPort, LOW);
 inline pros::adi::DigitalOut intakeLiftPiston(intakeLiftPort, LOW);

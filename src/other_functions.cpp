@@ -35,7 +35,7 @@ inline void countBlocks(pros::Optical sensor) {
 inline bool checkIsImmediateOuttake() {
 	int rightDistance = (rightDistSensor.get_distance() * MM_TO_INCHES) + RIGHT_DIST_OFFSET; 
 	int leftDistance = (leftDistSensor.get_distance() * MM_TO_INCHES) + LEFT_DIST_OFFSET; 
-	if ((leftDistance < 21 && leftDistance > 18) || (rightDistance < 21 && rightDistance > 18)) {
+	if ((leftDistance < 24 && leftDistance > 18) || (rightDistance < 24 && rightDistance > 18)) {
 		return true;
 	}
 	else {

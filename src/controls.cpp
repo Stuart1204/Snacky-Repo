@@ -94,9 +94,6 @@ inline void activatePistons() {
     if (controller.get_digital_new_press(Buttons::Y)) {
         intakeLift.toggle();
     }
-    if (controller.get_digital_new_press(Buttons::UP)) {
-        sunroof.toggle();
-    }
 }
 
 inline int matchloadShakeCounter = 0;
@@ -135,7 +132,7 @@ inline void displayData() {
     float rightCurrentDistance = (rightDistSensor.get_distance() * MM_TO_INCHES) + RIGHT_DIST_OFFSET;
     // display lemlib pose
     lemlib::Pose pose = chassis.getPose();
-    pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %i", vertical_rotation.get_position() / 100);
+    pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %f", rightCurrentDistance);
 
     pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
     pros::screen::print(TEXT_LARGE_CENTER, 3, "y: %f", pose.y);

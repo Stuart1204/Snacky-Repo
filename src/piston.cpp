@@ -35,7 +35,6 @@ inline Piston park(parkPiston);
 inline Piston intakeLift(intakeLiftPiston);
 inline Piston odomLift(odomLiftPiston);
 inline Piston middleGoal(middleGoalPiston);
-inline Piston sunroof(sunroofPiston);
 inline Piston middleDescore(middleDescorePiston);
 
 #endif

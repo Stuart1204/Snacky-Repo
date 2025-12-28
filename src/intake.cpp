@@ -25,6 +25,7 @@ class Intake {
       bool currentlyColourSorting = false;
       bool isImmediateOuttake = true;
       const int COLOUR_SORT_EJECT_TIME = 10;
+      uint32_t immediateOuttakeStartTime = pros::millis();
 
       int parkStageTracker = 0;
 
@@ -48,11 +49,11 @@ class Intake {
          case IntakeState::OUTTAKE:
             break;
          case IntakeState::SCOREHIGH:
-         if(checkIsImmediateOuttake) {
+         if(checkIsImmediateOuttake()) {
             isImmediateOuttake = true;
-         }
-         else {
+         } else {
             isImmediateOuttake = false;
+            immediateOuttakeStartTime = pros::millis();
          }
             middleGoal.setState(true);
             wing.setState(false);
@@ -159,10 +160,12 @@ class Intake {
                moveUpper(127);
             }
             else {
-               uint32_t startTime = pros::millis();
-               if (pros::millis() - startTime > 500) {
+               if (pros::millis() - immediateOuttakeStartTime > 75) {
                   moveLower(127);
                   moveUpper(127);
+               } else {
+                  moveLower(0);
+                  moveUpper(0);
                }
             }
             if(enableColourSort) {
