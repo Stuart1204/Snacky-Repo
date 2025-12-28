@@ -23,6 +23,7 @@ class Intake {
       // colour sort counter
       int colourSortCounter = 0;
       bool currentlyColourSorting = false;
+      bool isImmediateOuttake = true;
       const int COLOUR_SORT_EJECT_TIME = 10;
 
       int parkStageTracker = 0;
@@ -47,6 +48,12 @@ class Intake {
          case IntakeState::OUTTAKE:
             break;
          case IntakeState::SCOREHIGH:
+         if(checkIsImmediateOuttake) {
+            isImmediateOuttake = true;
+         }
+         else {
+            isImmediateOuttake = false;
+         }
             middleGoal.setState(true);
             wing.setState(false);
             highOuttakeCounter = 0;
@@ -147,12 +154,22 @@ class Intake {
             moveUpper(-127);
             break;
          case IntakeState::SCOREHIGH:
-            moveLower(127);
-            moveUpper(127);
+            if(isImmediateOuttake) {
+               moveLower(127);
+               moveUpper(127);
+            }
+            else {
+               uint32_t startTime = pros::millis();
+               if (pros::millis() - startTime > 500) {
+                  moveLower(127);
+                  moveUpper(127);
+               }
+            }
             if(enableColourSort) {
                colourSort();
                colourSortSensor.set_led_pwm(100);
-            } else {
+            } 
+            else {
                colourSortSensor.set_led_pwm(0);
             }
             break;
