@@ -121,7 +121,7 @@ inline void turnToPoint(float targetX, float targetY, bool direction) {
 
     //printf("Final target heading: %f\n", targetHeading);
     // use turnToHeading to turn the robot
-    turnToHeading(targetHeading);
+    turnToHeading(targetHeading, true);
 }
 
 inline void moveToPoint(float targetX, float targetY, bool direction, bool turnBeforeMoving, bool blendMovements, float maxSpeed) {
@@ -478,7 +478,7 @@ inline void goalShake(int TIMEOUT) {
 }
 
 inline void waitAtMatchload() {
-    waitAtMatchload(550);
+    waitAtMatchload(450);
 }
 
 inline void skillsWaitAtMatchload() {
@@ -492,7 +492,7 @@ inline void driveInParkZone() {
     int startValue = vertical_rotation.get_position() / 100;
 
     while(true) {
-        if(vertical_rotation.get_position() / 100 > startValue + 1100) {
+        if(vertical_rotation.get_position() / 100 > startValue + 900) {
             break;
         }
         leftMotors.move(MOTOR_SPEED);
@@ -631,6 +631,62 @@ inline void autoWing() {
                 enableAutoWing = false;
                 leftMotors.move(-15);
                 rightMotors.move(15);
+            }
+        }
+    }
+}
+
+inline void autonAutoWing() {
+    if(getGyroValue) {
+        gyroValue = inertial_sensor.get_rotation();
+        getGyroValue = false;
+    }
+    if(enableAutoWing) {
+        if(onFirstStep) {
+            if(inertial_sensor.get_rotation() > gyroValue - 38) {
+                leftMotors.move(-80);
+                rightMotors.move(80);
+            } else {
+                onFirstStep = false;
+                onSecondStep = true;
+            }
+        }
+        if(onSecondStep) {
+            if(inertial_sensor.get_rotation() < gyroValue - 38) {
+                leftMotors.move(90);
+                rightMotors.move(10);
+            } else {
+                enableAutoWing = false;
+                leftMotors.move(-15);
+                rightMotors.move(15);
+            }
+        }
+    }
+}
+
+inline void autonAutoWingOpposite() {
+    if(getGyroValue) {
+        gyroValue = inertial_sensor.get_rotation();
+        getGyroValue = false;
+    }
+    if(enableAutoWing) {
+        if(onFirstStep) {
+            if(inertial_sensor.get_rotation() < gyroValue + 38) {
+                leftMotors.move(80);
+                rightMotors.move(-80);
+            } else {
+                onFirstStep = false;
+                onSecondStep = true;
+            }
+        }
+        if(onSecondStep) {
+            if(inertial_sensor.get_rotation() > gyroValue + 38) {
+                leftMotors.move(10);
+                rightMotors.move(90);
+            } else {
+                enableAutoWing = false;
+                leftMotors.move(15);
+                rightMotors.move(-15);
             }
         }
     }

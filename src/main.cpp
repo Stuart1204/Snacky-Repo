@@ -36,8 +36,10 @@ void disabled() {}
 void competition_initialize() {}
 void autonomous() {
 	// skillsAuton();
-	rightSevenBlock();
-	// NISAWP();
+	// autonWingMacro();
+	right7Block();
+	// chassis.setPose(0,0,-90);
+	// autonWingMacroOpposite();
 	// runSelectedAuton();
 } 
 

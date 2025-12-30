@@ -168,13 +168,6 @@ class Intake {
                   moveUpper(0);
                }
             }
-            if(enableColourSort) {
-               colourSort();
-               colourSortSensor.set_led_pwm(100);
-            } 
-            else {
-               colourSortSensor.set_led_pwm(0);
-            }
             break;
          case IntakeState::SCOREMID:
             if(autonSelectionEnum == Selection::SKILLS) {
