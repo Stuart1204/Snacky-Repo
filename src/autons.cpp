@@ -33,17 +33,22 @@ inline void autonWingMacro() {
 }
 
 inline void autonWingMacroOpposite() {
-    startAutoWing();
-    while(enableAutoWing) {
-        autonAutoWingOpposite();
-    }
+    // startAutoWing();
+    // while(enableAutoWing) {
+    //     autonAutoWingOpposite();
+    // }
+    turnToHeading(-90, true);
+    wing.setState(true);
+	turnToHeading(30, false);
+	turnToHeading(110, true);
+	wing.setState(false);
     leftMotors.move(-7);
     rightMotors.move(7);
-    pros::delay(300);
-    turnToHeading(100);
+    pros::delay(100);
+    turnToHeading(95, true);
     leftMotors.move(70);
     rightMotors.move(60);
-    pros::delay(500);
+    pros::delay(150);
     chassis.turnToHeading(75, 1500, {.maxSpeed = 50, .minSpeed = 30});
 }
 
@@ -116,7 +121,7 @@ inline void rightGrab7() {
     leftResetPos();
     moveToPoint(-56, -48, true, false, true);
     turnToHeading(-90, true);
-    moveDrive(50, 600);
+    moveDrive(50, 500);
     waitAtMatchload();
 }
 
@@ -140,7 +145,7 @@ inline void rightGrab7Diamond() {
 }
 
 inline void rightScoreAndWing() {
-    moveToPoint(-32, -48, false, false, true);
+    moveToPoint(-32, -48, false, false, true, 90);
     tongue.setState(false);
     intake.setState(IntakeState::SCOREHIGH);
     driveToGoal(false);
