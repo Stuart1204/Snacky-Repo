@@ -115,7 +115,7 @@ inline void drivetrainControls() {
         chassis.arcade(leftY, rightX, false, 0.5);
     }
     // auto wing code
-    if(controller.get_digital_new_press(Buttons::LEFT)) {
+if(controller.get_digital_new_press(Buttons::LEFT) && autonSelectionEnum != Selection::SKILLS) {
         startAutoWing();
     }
     if(enableAutoWing) {

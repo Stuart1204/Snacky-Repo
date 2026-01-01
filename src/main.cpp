@@ -21,7 +21,7 @@ void initialize() {
 
 	allianceColour = AllianceColour::RED;
 	startingSide = Selection::RIGHT;
-	autonSelectionEnum = Selection::SKILLS;
+	autonSelectionEnum = Selection::LONG_CONTROL;
 
 	// autonSelection();
 
@@ -36,8 +36,7 @@ void disabled() {}
 void competition_initialize() {}
 void autonomous() {
 	// skillsAuton();
-	// autonWingMacro();
-	right7Block();
+	SAWP13();
 	
 
 	// chassis.setPose(0,0,-90);

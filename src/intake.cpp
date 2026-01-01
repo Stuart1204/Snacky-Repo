@@ -3,6 +3,7 @@
 
 #include "globals.hpp"
 #include "main.h"
+#include "piston.cpp"
 #include "pros/adi.hpp"
 #include "pros/misc.hpp"
 #include "pros/optical.h"
@@ -30,6 +31,9 @@ class Intake {
       int parkStageTracker = 0;
 
       int intakeWithEjectCounter; // for intakeWithEject state
+
+      bool lowOuttakeJiggleDirection = false;
+      int lowOuttakeJiggleCounter = 0;
  
    public:
       Intake(){} // constructor
@@ -62,10 +66,14 @@ class Intake {
             break;
          case IntakeState::SCOREMID:
             middleGoal.setState(false);
+            middleDescore.setState(false);
             break;
          case IntakeState::SCORELOW:
             blockCounter = 0;
-
+            if(autonSelectionEnum == Selection::SKILLS) {
+               lowOuttakeJiggleDirection = true;
+               lowOuttakeJiggleCounter = 0;
+            }
             break;
          case IntakeState::PARK:
             parkStageTracker = 0;
@@ -175,7 +183,7 @@ class Intake {
                moveUpper(60);
             } else {
                moveLower(127);
-               moveUpper(90);
+               moveUpper(85);
             }
             if(slowMidGoal && autonSelectionEnum == Selection::SKILLS) {
                moveUpper(40);
@@ -183,8 +191,25 @@ class Intake {
             break;
          case IntakeState::SCORELOW: // meaning the robot is tryna score 7 on low
             if(autonSelectionEnum == Selection::SKILLS) {
-               moveLower(-50);
-               moveUpper(-127);
+               // moveLower(-50);
+               // moveUpper(-127);
+
+               if(lowOuttakeJiggleDirection) {
+                  moveLower(-50);
+                  moveUpper(-100);
+                  if(lowOuttakeJiggleCounter > 25) {
+                     lowOuttakeJiggleCounter = 0;
+                     lowOuttakeJiggleDirection = false;
+                  }
+               } else {
+                  moveLower(-50);
+                  moveUpper(80);
+                  if(lowOuttakeJiggleCounter > 3) {
+                     lowOuttakeJiggleCounter = 0;
+                     lowOuttakeJiggleDirection = true;
+                  }
+               }
+               lowOuttakeJiggleCounter++;
             } else {
                moveLower(-100);
                moveUpper(-127);
@@ -204,6 +229,9 @@ class Intake {
             moveLower(-95);
             moveUpper(10);
             break;
+         case IntakeState::UPPEROUTTAKE:
+            moveUpper(-100);
+            moveLower(-20);
          case IntakeState::INTAKEWITHEJECT:
             moveLower(127);
             moveUpper(127);

@@ -28,7 +28,7 @@ inline void autonWingMacro() {
     leftMotors.move(-15);
     rightMotors.move(-30);
     pros::delay(1000);
-    leftMotors.move(5);
+    leftMotors.move(8);
     rightMotors.move(-35);
 }
 
@@ -71,7 +71,7 @@ inline void leftGrabBlocks() {
     intake.setState(IntakeState::INTAKE);
     moveToPoint(-24, 24, true, false, true, 65);
     tongue.setState(true);
-    moveToPoint(-18, 37, true, false, true, 60);
+    moveToPoint(-17, 37, true, false, true, 60);
     tongue.setState(false);
     moveToPoint(-9, 45, true, false, true, 80);
     tongue.setState(true);
@@ -86,7 +86,7 @@ inline void rightAutoMatchload() { // grabs matchloads right away
     turnToHeading(-90, true);
     leftResetPos();
     intake.setState(IntakeState::INTAKE);
-    moveDrive(65, 500);
+    moveDrive(60, 500);
     waitAtMatchload();
     leftResetPos();
 }
@@ -185,33 +185,58 @@ inline void left7Block() {
     autonWingMacro();
 }
 
-// new v2, gets the blocks under long goal, scores 1-2 on high middle, scores rest on long goal
-inline void leftLongGoalAndCenterAuton() {
+inline void leftLGAndC_CenterFirst() {
     leftGrabBlocks();
-    moveToPoint(-24, 24, false, false);
-    moveToPoint(-15, 15, false, true, true);
+    moveToPoint(-15, 17, false, false, false, 90);
+    turnToHeading(-45, true);
     intake.setState(IntakeState::SCOREMID);
     driveToGoal(false);
-    pros::delay(400);
-    // stopScoringMid();
-    moveToPoint(-28, 28, true, false, true);
-    intake.setState(IntakeState::INTAKE);
+    pros::delay(100);
+    middleGoal.setState(true);
+    intake.setState(IntakeState::IDLE);
     tongue.setState(true);
     moveToPoint(-48, 48, true, false);
     turnToHeading(-90);
     rightResetPos();
     moveToPoint(-60, 48, true, false, true);
+    intake.setState(IntakeState::INTAKE);
     moveDrive(50, 350);
     waitAtMatchload();
-    moveToPoint(-36, 48, false, false);
-    turnToHeading(-90);
-    driveToGoal(false);
+    rightResetPos();
+    moveToPoint(-31, 48, false, false, true);
+    tongue.setState(false);
     intake.setState(IntakeState::SCOREHIGH);
-    pros::delay(2000);
-    driveDistance(10);
+    driveToGoal(false);
+    goalShake(1500);
+    autonWingMacro();
+}
+
+
+inline void leftLGAndC_CenterLast() {
+    leftGrabBlocks();
+    moveToPoint(-24, 27, false, false);
+    moveToPoint(-48, 48, false, true);
+    turnToHeading(-90);
+    rightResetPos();
+    moveToPoint(-60, 48, true, false, true);
+    moveDrive(50, 350);
+    waitAtMatchload();
+    rightResetPos();
+    moveToPoint(-31, 48, false, false, true);
+    tongue.setState(false);
+    intake.setState(IntakeState::SCOREHIGH);
+    driveToGoal(false);
+    goalShake(300);
+    wing.setState(true);
+    intake.setState(IntakeState::OUTTAKE);
+    turnToHeading(-105, true);
+    resetPos();
     intake.setState(IntakeState::IDLE);
-    setWings(true);
-    moveDrive(-70, 600);
+    rightResetPos();
+    moveToPoint(-46, 48, true, false);
+    moveToPoint(-16, 16, false, true, true, 90);
+    intake.setState(IntakeState::SCOREMID);
+    driveToGoal(false);
 }
 
 // scores 2 on the center goal first, wings the long goal
@@ -250,22 +275,43 @@ inline void rightLGAndC_CenterLast() {
     turnToHeading(-90);
     leftResetPos();
     moveToPoint(-60, -48, true, false, true);
-    moveDrive(50, 350);
+    moveDrive(50, 170);
     waitAtMatchload();
     leftResetPos();
     moveToPoint(-31, -48, false, false, true);
     tongue.setState(false);
     intake.setState(IntakeState::SCOREHIGH);
     driveToGoal(false);
-    goalShake(700);
+    goalShake(300);
     wing.setState(true);
-    pros::delay(200);
+    intake.setState(IntakeState::OUTTAKE);
+    pros::delay(100);
+    intake.setState(IntakeState::IDLE);
     turnToHeading(0, true);
     leftResetPos();
     lemlib::Pose currentPose = chassis.getPose();
-    chassis.setPose(currentPose.x, currentPose.y + 6, currentPose.theta);
-    moveToPoint(-18, -18, true, false, true, 80);
+    chassis.setPose(currentPose.x, currentPose.y + 8, currentPose.theta);
+    moveToPoint(-17, -17, true, false, true, 80);
+    intake.setState(IntakeState::OUTTAKE);
     moveToPoint(-11, -11, true, false, 90);
+    intake.setState(IntakeState::SCORELOW);
+    intakeLift.setState(true);
+    pros::delay(900);
+    intakeLift.setState(false);
+}
+
+inline void NISAWP() {
+    rightLGAndC_CenterLast();
+    intake.setState(IntakeState::INTAKE);
+    driveDistance(-12);
+    intakeLift.setState(false);
+    setWings(true);
+    moveToPoint(-22, 16, true, true, true, 70);
+    tongue.setState(true);
+    moveToPoint(-20, 22, true, false, false, 35);
+    moveToPoint(-12, 12, false, true, true);
+    intake.setState(IntakeState::SCOREMID);
+    driveToGoal(false);
 }
 
 inline void SAWP13() {
@@ -288,7 +334,7 @@ inline void SAWP13() {
     chassis.waitUntilDone();
     tongue.setState(true);
     moveToPoint(-50, 48, true, false);
-    turnToHeading(-75, true);
+    turnToHeading(-80, true);
     resetPos();
     rightResetPos();
     moveToPoint(-32, 48.5, false, false, true);
@@ -308,49 +354,49 @@ inline void SAWP13() {
     driveToGoal(false);
 }
 
-inline void NISAWP() {
-    chassis.setPose(-48, -17.5, 180);
-    tongue.setState(true);
-    moveToPoint(-48, -48, true, false);
-    //resetPos();
-    turnToHeading(-90);
-    leftResetPos();
-    intake.setState(IntakeState::INTAKE);
-    //setWings(true);
-    leftMotors.move(60);
-    rightMotors.move(60);
-    pros::delay(300);
-    leftMotors.move(40);
-    rightMotors.move(40);
-    pros::delay(300);
-    waitAtMatchload();
-    moveToPoint(-32, -48, false, false, true);
-    tongue.setState(false);
-    intake.setState(IntakeState::SCOREHIGH);
-    driveToGoal(false);
-    pros::delay(1200);
-    intake.setState(IntakeState::IDLE);
-    turnToHeading(0, true);
-    leftResetPos();
-    intake.setState(IntakeState::LOWINTAKE);
-    setWings(true);
-    moveToPoint(-27, -27, true, true, false, 50);
-    //moveToPoint(-12, -14, true, true, false, 35);
-    moveToPoint(-12, -12, true, false, false, 35);
-    turnToHeading(45);
-    intakeLift.setState(true);
-    intake.setState(IntakeState::LOWOUTTAKE);
-    driveToGoal(true);
-    pros::delay(500);
-    intake.setState(IntakeState::INTAKE);
-    moveToPoint(-20, -16, false, false, true);
-    intakeLift.setState(false);
-    setWings(true);
-    moveToPoint(-19, 19, true, true, true);
-    turnToHeading(-45);
-    intake.setState(IntakeState::SCOREMID);
-    driveToGoal(false);
-}
+// inline void NISAWP() {
+//     chassis.setPose(-48, -17.5, 180);
+//     tongue.setState(true);
+//     moveToPoint(-48, -48, true, false);
+//     //resetPos();
+//     turnToHeading(-90);
+//     leftResetPos();
+//     intake.setState(IntakeState::INTAKE);
+//     //setWings(true);
+//     leftMotors.move(60);
+//     rightMotors.move(60);
+//     pros::delay(300);
+//     leftMotors.move(40);
+//     rightMotors.move(40);
+//     pros::delay(300);
+//     waitAtMatchload();
+//     moveToPoint(-32, -48, false, false, true);
+//     tongue.setState(false);
+//     intake.setState(IntakeState::SCOREHIGH);
+//     driveToGoal(false);
+//     pros::delay(1200);
+//     intake.setState(IntakeState::IDLE);
+//     turnToHeading(0, true);
+//     leftResetPos();
+//     intake.setState(IntakeState::LOWINTAKE);
+//     setWings(true);
+//     moveToPoint(-27, -27, true, true, false, 50);
+//     //moveToPoint(-12, -14, true, true, false, 35);
+//     moveToPoint(-12, -12, true, false, false, 35);
+//     turnToHeading(45);
+//     intakeLift.setState(true);
+//     intake.setState(IntakeState::LOWOUTTAKE);
+//     driveToGoal(true);
+//     pros::delay(500);
+//     intake.setState(IntakeState::INTAKE);
+//     moveToPoint(-20, -16, false, false, true);
+//     intakeLift.setState(false);
+//     setWings(true);
+//     moveToPoint(-19, 19, true, true, true);
+//     turnToHeading(-45);
+//     intake.setState(IntakeState::SCOREMID);
+//     driveToGoal(false);
+// }
 
 inline void leftMatchloadScore() {
     // scores 4 on long goal and clears matchload station
@@ -402,14 +448,14 @@ inline void skillsAuton() {
     driveToGoal(false, 40);
     pros::delay(300);
     intake.setState(IntakeState::IDLE);
-    middleGoal.setState(true);
     moveToPoint(-34, 48, true, false);
+    middleGoal.setState(true);
     turnToHeading(-90, true);
     rightResetPos();
-    moveToPoint(-52, 48, true, false, true);
+    moveToPoint(-50, 48, true, false, true);
     turnToHeading(-90, true);
     intake.setState(IntakeState::INTAKE);
-    moveDrive(60, 500);
+    moveDrive(65, 500);
     skillsWaitAtMatchload(); /////////// FIRST MATCHLOAD
     rightResetPos();
     moveToPoint(-43, 62, false, false, true);
@@ -432,10 +478,10 @@ inline void skillsAuton() {
     pros::delay(2200);
     leftResetPos();
     turnToHeading(90);
-    moveToPoint(50, 48, true, false, true);
+    moveToPoint(49, 48, true, false, true);
     turnToHeading(90, true);
     intake.setState(IntakeState::INTAKE);
-    moveDrive(50, 500);
+    moveDrive(60, 500);
     skillsWaitAtMatchload(); /////////// SECOND MATCHLOAD
     leftResetPos();
     moveToPoint(40, 48, false, false, true);
@@ -468,10 +514,10 @@ inline void skillsAuton() {
     moveToPoint(38, -48, true, false);
     turnToHeading(90, true);
     rightResetPos();
-    moveToPoint(52, -48, true, false, true);
+    moveToPoint(50, -48, true, false, true);
     turnToHeading(90, true);
     intake.setState(IntakeState::INTAKE);
-    moveDrive(60, 500);
+    moveDrive(65, 500);
     skillsWaitAtMatchload(); /////// THIRD MATCHLOAD
     rightResetPos();
     moveToPoint(43, -62, false, false, true);
@@ -494,10 +540,10 @@ inline void skillsAuton() {
     pros::delay(2200);
     leftResetPos();
     turnToHeading(-90);
-    moveToPoint(-50,-48, true, false, true);
+    moveToPoint(-49,-48, true, false, true);
     turnToHeading(-90, true);
     intake.setState(IntakeState::INTAKE);
-    moveDrive(50, 500);
+    moveDrive(60, 500);
     skillsWaitAtMatchload(); /////// FOURTH MATCHLOAD
     leftResetPos();
     moveToPoint(-40, -48, false, false, true);
@@ -511,7 +557,7 @@ inline void skillsAuton() {
     moveToPoint(-60, -36, true, false, true);
     intake.setState(IntakeState::INTAKE);
     turnToHeading(-12);
-    moveDrive(60, 550);
+    moveDrive(60, 700);
     moveDrive(-2, 200);
     driveInParkZone();
 }
@@ -524,26 +570,24 @@ inline void runSelectedAuton() {
     }
     if(startingSide == Selection::LEFT) {
         if(autonSelectionEnum == Selection::LONG_CONTROL) {
-            // leftLongGoalControlAuton();
+            left7Block(); // not long control
         }
         if(autonSelectionEnum == Selection::LONG_AND_CENTER) {
-            leftLongGoalAndCenterAuton();
+            leftLGAndC_CenterLast();
         }
     }
     if(startingSide == Selection::RIGHT) {
         if(autonSelectionEnum == Selection::LONG_CONTROL) {
-            // rightLongGoalControlAuton();
-            // elims7BallRightSide();
+            right7Block(); // not long control
         }
         if(autonSelectionEnum == Selection::LONG_AND_CENTER) {
-            rightLGAndC_CenterFirst();
+            rightLGAndC_CenterLast();
         }
         if(autonSelectionEnum == Selection::SOLO_AWP) {
-            //SIGSAWP();
-            // NISIGSAWP();
+            SAWP13();
         }
         if(autonSelectionEnum == Selection::NI_SAWP) {
-            // NISIGSAWP();
+            NISAWP();
         }
     }
 }

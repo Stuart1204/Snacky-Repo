@@ -305,8 +305,8 @@ inline void rightResetPos() {
 }
 
 inline void driveDistance(float targetDist, int maxSpeed) {
-    float TARGET_THRESHOLD = 3; // inches
-    int TIME_BEFORE_EXIT = 100; // in milliseconds
+    float TARGET_THRESHOLD = 5; // inches
+    int TIME_BEFORE_EXIT = 0; // in milliseconds
     int TIMEOUT = 2500; // milliseconds
 
     bool inSettleZone = false;
@@ -486,13 +486,13 @@ inline void skillsWaitAtMatchload() {
 }
 
 inline void driveInParkZone() {
-    int MOTOR_SPEED = 60;
+    int MOTOR_SPEED = 65;
     int TIMEOUT = 2500;
     uint32_t startTime = pros::millis();
     int startValue = vertical_rotation.get_position() / 100;
 
     while(true) {
-        if(vertical_rotation.get_position() / 100 > startValue + 900) {
+        if(vertical_rotation.get_position() / 100 > startValue + 600) {
             break;
         }
         leftMotors.move(MOTOR_SPEED);
