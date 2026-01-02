@@ -61,8 +61,8 @@ class Intake {
          }
             middleGoal.setState(true);
             wing.setState(false);
+            middleDescore.setState(false);
             highOuttakeCounter = 0;
-            colourSortCounter = 0;
             break;
          case IntakeState::SCOREMID:
             middleGoal.setState(false);

@@ -145,6 +145,7 @@ inline void rightGrab7Diamond() {
 }
 
 inline void rightScoreAndWing() {
+    turnToHeading(-90, true);
     moveToPoint(-32, -48, false, false, true, 90);
     tongue.setState(false);
     intake.setState(IntakeState::SCOREHIGH);
@@ -155,12 +156,19 @@ inline void rightScoreAndWing() {
 
 inline void right7Block() {
     rightGrab7();
-    rightScoreAndWing();
-}
-
-inline void right7BlockDiamond() {
-    rightGrab7Diamond();
-    rightScoreAndWing();
+    // rightScoreAndWing();
+    turnToHeading(-90, true);
+    moveToPoint(-32, -48, false, false, true, 90);
+    tongue.setState(false);
+    intake.setState(IntakeState::SCOREHIGH);
+    driveToGoal(false);
+    goalShake(1400);
+    moveDrive(55, 325);
+    wing.setState(true);
+    leftMotors.move(-50);
+    rightMotors.move(-50);
+    pros::delay(500);
+    middleGoal.setState(false);
 }
 
 inline void left7Block() {
