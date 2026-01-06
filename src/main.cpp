@@ -39,6 +39,7 @@ void autonomous() {
 	// chassis.setPose(0,0,-90);
 	// autonWingMacroOpposite();
 	runSelectedAuton();
+	// right4Block();
 } 
 
 void opcontrol() {

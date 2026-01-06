@@ -180,13 +180,13 @@ class Intake {
          case IntakeState::SCOREMID:
             if(autonSelectionEnum == Selection::SKILLS) {
                moveLower(127);
-               moveUpper(60);
+               moveUpper(55);
             } else {
                moveLower(127);
                moveUpper(85);
             }
             if(slowMidGoal && autonSelectionEnum == Selection::SKILLS) {
-               moveUpper(40);
+               moveUpper(45);
             } 
             break;
          case IntakeState::SCORELOW: // meaning the robot is tryna score 7 on low
@@ -195,14 +195,14 @@ class Intake {
                // moveUpper(-127);
 
                if(lowOuttakeJiggleDirection) {
-                  moveLower(-50);
+                  moveLower(-65);
                   moveUpper(-100);
                   if(lowOuttakeJiggleCounter > 25) {
                      lowOuttakeJiggleCounter = 0;
                      lowOuttakeJiggleDirection = false;
                   }
                } else {
-                  moveLower(-50);
+                  moveLower(-65);
                   moveUpper(80);
                   if(lowOuttakeJiggleCounter > 3) {
                      lowOuttakeJiggleCounter = 0;
@@ -215,7 +215,7 @@ class Intake {
                moveUpper(-127);
             }
             if(slowLowGoal && autonSelectionEnum == Selection::SKILLS) {
-               moveLower(-40);
+               moveLower(-45);
             } 
             break;
          case IntakeState::PARK:
