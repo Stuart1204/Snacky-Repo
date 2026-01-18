@@ -537,23 +537,26 @@ inline void skillsAuton(){
     odomLift.setState(true);
     tongue.setState(true);
     intake.setState(IntakeState::INTAKE);
-    moveDrive(30, 600);
+    moveDrive(15, 300);
     tongue.setState(false);
-    moveDrive(30, 1500);
+    pros::delay(400);
+    moveDrive(70, 400);
+    intakeShake(400);
+    moveDrive(-15, 300);
     moveDrive(-60, 800);
     turnToHeading(-90);
     odomLift.setState(false);
     resetPos();
     // leftResetPos();
     rightResetPos();
-    moveToPoint(-12,12, false, false);
-    turnToHeading(-45);
-    moveDrive(50, 300);
+    moveToPoint(-10,10, false, true, true);
+    turnWithSpeeds(20, -70, -50);
+    // turnToHeading(-45);
+    moveDrive(40, 475);
     // moveToPoint(-18,18, true, false);
     driveToGoal(false, 40);
     intake.setState(IntakeState::SCOREMID);
-    pros::delay(1200);
-
+    pros::delay(3000);
 }
 
 inline void runSelectedAuton() {
