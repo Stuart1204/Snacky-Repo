@@ -43,12 +43,7 @@ void autonomous() {
 } 
 
 void opcontrol() {
-	bool autoDoublePark = false; 
-	u_int32_t teleOpStartTime;
-	if(!pros::competition::is_autonomous() && !pros::competition::is_disabled() && pros::competition::is_connected()) {
-		teleOpStartTime = pros::millis();
-		autoDoublePark = true;
-	}
+	
 
 	odomLift.setState(true);
     while (true) {
@@ -57,11 +52,5 @@ void opcontrol() {
 		subsystemControls();
 		displayData();
 		pros::delay(20);
-
-		if(autoDoublePark) {
-			if(pros::millis() - teleOpStartTime > 134900) {
-				park.setState(true);
-			}
-		}
     }
 }
