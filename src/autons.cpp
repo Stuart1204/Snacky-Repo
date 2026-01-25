@@ -533,6 +533,7 @@ inline void rightMatchloadScore() {
 //}
 
 inline void skillsAuton(){
+    //-----------------------Park zone + Middle Goal 7-----------------------
     chassis.setPose(-55, 0, -90);
     odomLift.setState(true);
     tongue.setState(true);
@@ -556,7 +557,139 @@ inline void skillsAuton(){
     // moveToPoint(-18,18, true, false);
     driveToGoal(false, 40);
     intake.setState(IntakeState::SCOREMID);
+    pros::delay(2300);
+    //-----------------------1st Matchload -----------------------
+    intake.setState(IntakeState::INTAKE);
+    moveToPoint(-50, 34, true, false, false);
+    turnToHeading(0);
+    chassis.waitUntilDone();
+    resetPos();
+    leftResetPos();
+    tongue.setState(true);
+    moveToPoint(-50, 44, true, false, true);
+    turnToHeading(-90, true);
+    moveDrive(65, 500);
+    skillsWaitAtMatchload(); /////////// FIRST MATCHLOAD
+    rightResetPos();
+    moveToPoint(-43, 62, false, false, true);
+    turnToHeading(-90, true);
+    rightResetPos();
+    resetPos();
+    tongue.setState(false);
+    moveToPoint(32, 61, false, false, true, 90);
+    // rightResetPos();
+    turnToHeading(0, true);
+    resetPos();
+    rightResetPos();
+    moveToPoint(36, 48, false, false, false, 80);
+    turnToHeading(90);
+    leftResetPos();
+    moveToPoint(30, 48, false, false, true);
+    driveToGoal(false);
+    tongue.setState(true);
+    //-----------------------1st Long Goal -----------------------
+    intake.setState(IntakeState::SCOREHIGH);
+    goalShake(2200);
+    turnToHeading(90);
+    leftResetPos();
+    moveToPoint(49, 48, true, false, true);
+    turnToHeading(90, true);
+    intake.setState(IntakeState::INTAKE);
+    moveDrive(60, 500);
+    //-----------------------2nd Matchload -----------------------
+    skillsWaitAtMatchload();
+    leftResetPos();
+    moveToPoint(40, 48, false, false, true);
+    moveToPoint(30, 48, false, false, true);
+    driveToGoal(false);
+    tongue.setState(false);
+    intake.setState(IntakeState::SCOREHIGH);
+    pros::delay(1300);
+    intake.setState(IntakeState::SCOREHIGHSLOW);
+    pros::delay(900);
+    intake.setState(IntakeState::INTAKE);
+    moveToPoint(46, 48, true, false, true);
+    moveToPoint(40, 1, true, true, false);
+    turnToHeading(90); 
+    pros::delay(10);
+    //-----------------------2nd Park Zone -----------------------
+    odomLift.setState(true);
+    intake.setState(IntakeState::INTAKE);
+    moveDrive(127, 600);
+    tongue.setState(true);
+    moveDrive(15, 300);
+    tongue.setState(false);
+    pros::delay(400);
+    moveDrive(70, 400);
+    intakeShake(500);
+    moveDrive(-15, 300);
+    moveDrive(-60, 800);
+    odomLift.setState(false);
+    turnToHeading(90);
+    resetPos();
+    leftResetPos();
+    turnToPoint(24, -24, true);
+    moveToPoint(30, -30, true, false, false);
+    moveToPoint(24, 23, false, true, false);
+    turnToPoint(0,0, true);
+    moveDrive(70, 300);
+     //-----------------------Score 7 Low -----------------------
+    intakeLift.setState(true);
+    intake.setState(IntakeState::SCORELOW);
     pros::delay(3000);
+    moveToPoint(26, 24, false, false, false);
+    intakeLift.setState(false);
+    intake.setState(IntakeState::INTAKE);
+    moveToPoint(48, -40, true, false, true);
+    turnToHeading(180);
+    resetPos();
+    leftResetPos();
+    moveToPoint(50, -47, true, false, true);
+    tongue.setState(true);
+    turnToHeading(90, true);
+    moveDrive(65, 500);
+    skillsWaitAtMatchload(); /////// THIRD MATCHLOAD
+    rightResetPos();
+    moveToPoint(43, -62, false, false, true);
+    turnToHeading(90, true);
+    rightResetPos();
+    resetPos();
+    tongue.setState(false);
+    moveToPoint(-32, -61, false, false, true, 90);
+    // rightResetPos();
+    turnToHeading(180, true);
+    resetPos();
+    rightResetPos();
+    moveToPoint(-36,- 48, false, false, false, 80);
+    turnToHeading(-90);
+    leftResetPos();
+    moveToPoint(-30,- 48, false, false, true);
+    driveToGoal(false);
+    tongue.setState(true);
+    intake.setState(IntakeState::SCOREHIGH);
+    pros::delay(2200);
+    leftResetPos();
+    turnToHeading(-90);
+    moveToPoint(-49,-48, true, false, true);
+    turnToHeading(-90, true);
+    intake.setState(IntakeState::INTAKE);
+    moveDrive(60, 500);
+    skillsWaitAtMatchload(); /////// FOURTH MATCHLOAD
+    leftResetPos();
+    moveToPoint(-40, -48, false, false, true);
+    moveToPoint(-30, -48, false, false, true);
+    driveToGoal(false);
+    tongue.setState(false);
+    intake.setState(IntakeState::SCOREHIGH);
+    pros::delay(1300);
+    intake.setState(IntakeState::SCOREHIGHSLOW);
+    pros::delay(700);
+    moveToPoint(-60, -36, true, false, true);
+    intake.setState(IntakeState::INTAKE);
+    turnToHeading(-12);
+    moveDrive(60, 700);
+    moveDrive(-2, 200);
+    driveInParkZone();
 }
 
 inline void runSelectedAuton() {

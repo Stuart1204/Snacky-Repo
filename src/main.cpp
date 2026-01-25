@@ -23,7 +23,7 @@ void initialize() {
 	startingSide = Selection::RIGHT;
 	autonSelectionEnum = Selection::LONG_CONTROL;
 
-	autonSelection();
+	//autonSelection();
 
 	if(autonSelectionEnum == Selection::SKILLS || startingSide == Selection::SKILLS) {
 		enableColourSort = false;
@@ -35,10 +35,10 @@ void disabled() {}
 
 void competition_initialize() {}
 void autonomous() {
-	// skillsAuton();
+	skillsAuton();
 	// chassis.setPose(0,0,-90);
 	// autonWingMacroOpposite();
-	runSelectedAuton();
+	//runSelectedAuton();
 	// right4Block();
 } 
 
