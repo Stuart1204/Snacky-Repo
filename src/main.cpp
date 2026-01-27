@@ -20,8 +20,8 @@ void initialize() {
 	});
 
 	allianceColour = AllianceColour::RED;
-	startingSide = Selection::RIGHT;
-	autonSelectionEnum = Selection::LONG_CONTROL;
+	startingSide = Selection::LEFT;
+	autonSelectionEnum = Selection::LONG_AND_CENTER;
 
 	//autonSelection();
 
@@ -36,10 +36,7 @@ void disabled() {}
 void competition_initialize() {}
 void autonomous() {
 	skillsAuton();
-	// chassis.setPose(0,0,-90);
-	// autonWingMacroOpposite();
 	//runSelectedAuton();
-	// right4Block();
 } 
 
 void opcontrol() {

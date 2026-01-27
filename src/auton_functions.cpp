@@ -197,7 +197,7 @@ inline void turnWithSpeeds(int leftDriveSpeed, int rightDriveSpeed, float target
         float normalizedAngle = fmod(chassis.getPose().theta + 180.0, 360.0) - 180.0;
         float error = targetAngle - normalizedAngle;
 
-        if (pros::millis() - startTime > 2000) {
+        if (pros::millis() - startTime > 1200) {
             break;
         }
 
@@ -618,7 +618,11 @@ inline void skillsClearParkZone() {
     leftMotors.move(0);
     rightMotors.move(0);
 
-    moveDrive(50, 400);
+    leftMotors.move(40);
+    rightMotors.move(50);
+    pros::delay(400);
+    leftMotors.move(0);
+    rightMotors.move(0);
 }
 
 inline bool getGyroValue = false;

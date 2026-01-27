@@ -180,13 +180,13 @@ class Intake {
          case IntakeState::SCOREMID:
             if(autonSelectionEnum == Selection::SKILLS) {
                moveLower(127);
-               moveUpper(35);
+               moveUpper(65);
             } else {
                moveLower(127);
-               moveUpper(85);
+               moveUpper(127);
             }
             if(slowMidGoal && autonSelectionEnum == Selection::SKILLS) {
-               moveUpper(35);
+               moveUpper(50);
             } 
             break;
          case IntakeState::SCORELOW: // meaning the robot is tryna score 7 on low
