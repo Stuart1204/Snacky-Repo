@@ -20,8 +20,8 @@ void initialize() {
 	});
 
 	allianceColour = AllianceColour::RED;
-	startingSide = Selection::LEFT;
-	autonSelectionEnum = Selection::LONG_AND_CENTER;
+	startingSide = Selection::SKILLS;
+	autonSelectionEnum = Selection::SKILLS;
 
 	//autonSelection();
 
