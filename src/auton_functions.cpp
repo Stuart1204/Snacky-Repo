@@ -483,13 +483,13 @@ inline void intakeShake(int TIMEOUT) {
 
     while(true) {
         if(direction) {
-            leftMotors.move(-20);
-            rightMotors.move(80);
+            leftMotors.move(-30);
+            rightMotors.move(110);
             pros::delay(200);
             direction = !direction;
         } else {
-            leftMotors.move(80);
-            rightMotors.move(-20);
+            leftMotors.move(110);
+            rightMotors.move(-30);
             pros::delay(200);
             direction = !direction;
         }
@@ -618,8 +618,8 @@ inline void skillsClearParkZone() {
     leftMotors.move(0);
     rightMotors.move(0);
 
-    leftMotors.move(40);
-    rightMotors.move(50);
+    leftMotors.move(33);
+    rightMotors.move(55);
     pros::delay(400);
     leftMotors.move(0);
     rightMotors.move(0);

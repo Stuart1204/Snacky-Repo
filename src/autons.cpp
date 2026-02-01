@@ -541,8 +541,8 @@ inline void skillsAuton(){
     moveDrive(15, 300);
     tongue.setState(false);
     pros::delay(400);
-    moveDrive(70, 400);
-    intakeShake(400);
+    moveDrive(70, 200);
+    intakeShake(600);
     moveDrive(-15, 300);
     moveDrive(-60, 800);
     turnToHeading(-90);
@@ -553,7 +553,7 @@ inline void skillsAuton(){
     moveToPoint(-10,10, false, true, true);
     turnWithSpeeds(20, -70, -50);
     // turnToHeading(-45);
-    moveDrive(40, 475);
+    moveDrive(45, 550);
     // moveToPoint(-18,18, true, false);
     driveToGoal(false, 40);
     intake.setState(IntakeState::SCOREMID);
@@ -581,7 +581,7 @@ inline void skillsAuton(){
     // rightResetPos();
     resetPos();
     leftResetPos();
-    moveToPoint(28, 63, true, false, true, 90);
+    moveToPoint(30, 65, true, false, true, 90);
     turnToHeading(35, true);
     turnWithSpeeds(-30, -90, 75);
     //-----------------------1st Long Goal -----------------------
@@ -615,9 +615,9 @@ inline void skillsAuton(){
     skillsClearParkZone();
 	// tongue.setState(true);
     leftResetPos();
-    leftMotors.move(40);
-    rightMotors.move(50);
-    pros::delay(500);
+    leftMotors.move(45);
+    rightMotors.move(55);
+    pros::delay(550);
     leftMotors.move(0);
     rightMotors.move(0);
 	chassis.turnToHeading(145, 500, {.minSpeed = 80, .earlyExitRange = 20});
@@ -635,9 +635,11 @@ inline void skillsAuton(){
 	moveDrive(-60, 250);
 	intakeLift.setState(false);
 	intake.setState(IntakeState::INTAKE);
-	moveToPoint(46, -48, true, true);
-	turnToHeading(90, true);
+    turnToPoint(46, -47, true);
+    chassis.moveToPoint(46, -47, 1500, {.minSpeed = 10, .earlyExitRange = 3});
+    chassis.waitUntil(24);
     tongue.setState(true);
+	turnToHeading(90, true);
 	rightResetPos();
 	moveToPoint(55, -48, true, true, true);
 	turnToHeading(90, true);
@@ -654,7 +656,7 @@ inline void skillsAuton(){
     // rightResetPos();
     resetPos();
     leftResetPos();
-    moveToPoint(-28,-63, true, false, true, 90);
+    moveToPoint(-30,-65, true, false, true, 90);
     turnToHeading(-145, true);
     turnWithSpeeds(-30, -90, -105);
     //-----------------------4th long goal -----------------------
