@@ -541,9 +541,10 @@ inline void skillsAuton(){
     moveDrive(15, 300);
     tongue.setState(false);
     pros::delay(400);
-    moveDrive(70, 200);
-    intakeShake(600);
-    moveDrive(-15, 300);
+    moveDrive(70, 400);
+    moveDrive(-60, 75);
+    moveDrive(60, 75);
+    intakeShake(1100);
     moveDrive(-60, 800);
     turnToHeading(-90);
     odomLift.setState(false);
@@ -551,9 +552,10 @@ inline void skillsAuton(){
     // leftResetPos();
     rightResetPos();
     moveToPoint(-10,10, false, true, true);
-    turnWithSpeeds(20, -70, -50);
+    turnWithSpeeds(20, -100, -50);
+    moveDrive(-60, 150);
     // turnToHeading(-45);
-    moveDrive(45, 550);
+    moveDrive(45, 480);
     // moveToPoint(-18,18, true, false);
     driveToGoal(false, 40);
     intake.setState(IntakeState::SCOREMID);
@@ -576,12 +578,12 @@ inline void skillsAuton(){
 	leftMotors.move(-80);
 	rightMotors.move(-20);
 	pros::delay(200);
-    turnToHeading(50, true);
+    turnToHeading(55, true);
     moveDrive(105, 1100);
     // rightResetPos();
     resetPos();
     leftResetPos();
-    moveToPoint(30, 65, true, false, true, 90);
+    moveToPoint(31, 65, true, false, true, 90);
     turnToHeading(35, true);
     turnWithSpeeds(-30, -90, 75);
     //-----------------------1st Long Goal -----------------------
@@ -635,9 +637,9 @@ inline void skillsAuton(){
 	moveDrive(-60, 250);
 	intakeLift.setState(false);
 	intake.setState(IntakeState::INTAKE);
-    turnToPoint(46, -47, true);
-    chassis.moveToPoint(46, -47, 1500, {.minSpeed = 10, .earlyExitRange = 3});
-    chassis.waitUntil(24);
+    turnToPoint(46, -45, true);
+    chassis.moveToPoint(40, -45, 1500, {.minSpeed = 5, .earlyExitRange = 2});
+    chassis.waitUntil(16);
     tongue.setState(true);
 	turnToHeading(90, true);
 	rightResetPos();
@@ -651,12 +653,12 @@ inline void skillsAuton(){
 	leftMotors.move(-80);
 	rightMotors.move(-20);
 	pros::delay(200);
-    turnToHeading(-130, true);
+    turnToHeading(-125, true);
     moveDrive(105, 1100);
     // rightResetPos();
     resetPos();
     leftResetPos();
-    moveToPoint(-30,-65, true, false, true, 90);
+    moveToPoint(-31,-65, true, false, true, 90);
     turnToHeading(-145, true);
     turnWithSpeeds(-30, -90, -105);
     //-----------------------4th long goal -----------------------
@@ -669,16 +671,16 @@ inline void skillsAuton(){
     intake.setState(IntakeState::INTAKE);
     moveDrive(60, 500);
     skillsWaitAtMatchload(); /////// FOURTH MATCHLOAD
-    leftResetPos();
-    moveToPoint(-40, -48, false, false, true);
+    // leftResetPos();
+    // moveToPoint(-40, -48, false, false, true);
     moveToPoint(-30, -48, false, false, true);
     driveToGoal(false);
     tongue.setState(false);
     intake.setState(IntakeState::SCOREHIGH);
-    pros::delay(1300);
+    goalShake(1300);
     intake.setState(IntakeState::SCOREHIGHSLOW);
     pros::delay(800);
-    moveToPoint(-60, -36, true, false, true);
+    moveToPoint(-55, -30, true, false, true);
     intake.setState(IntakeState::INTAKE);
     turnToHeading(-12);
     moveDrive(60, 700);

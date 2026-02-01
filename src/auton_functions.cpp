@@ -483,13 +483,13 @@ inline void intakeShake(int TIMEOUT) {
 
     while(true) {
         if(direction) {
-            leftMotors.move(-30);
-            rightMotors.move(110);
+            leftMotors.move(-20);
+            rightMotors.move(80);
             pros::delay(200);
             direction = !direction;
         } else {
-            leftMotors.move(110);
-            rightMotors.move(-30);
+            leftMotors.move(80);
+            rightMotors.move(-20);
             pros::delay(200);
             direction = !direction;
         }
@@ -511,7 +511,7 @@ inline void skillsWaitAtMatchload() {
 }
 
 inline void driveInParkZone() {
-    int MOTOR_SPEED = 65;
+    int MOTOR_SPEED = 75;
     int TIMEOUT = 2500;
     uint32_t startTime = pros::millis();
     int startValue = vertical_rotation.get_position() / 100;

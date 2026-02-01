@@ -180,7 +180,7 @@ class Intake {
          case IntakeState::SCOREMID:
             if(autonSelectionEnum == Selection::SKILLS) {
                moveLower(127);
-               moveUpper(65);
+               moveUpper(60);
             } else {
                moveLower(127);
                moveUpper(127);
