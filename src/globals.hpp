@@ -19,11 +19,11 @@
 //motor ports
 #define lBPort -1
 #define lMPort 2
-#define lFPort -3
+#define lFPort -4
 
-#define rBPort 14
-#define rMPort -13
-#define rFPort 18
+#define rBPort -13
+#define rMPort 15
+#define rFPort 16
 
 #define lowIntakePort 12
 #define upperIntakePort -11
@@ -40,13 +40,13 @@
 #define verticalEncoderPort -17
 
 //solenoids
-#define leftWingPort 'A'
-#define rightWingPort 'C'
+#define leftWingPort 'C'
+#define rightWingPort 'A'
 #define tonguePort 'F'
 #define parkPort 'D'
 #define intakeLiftPort 'E'
 #define odomLiftPort 'B'
-#define middleGoalDescorePort 'G'
+#define middleGoalDescorePort 'D'
 
 //drivetrain specs
 #define driveTrackWidth 11.375
