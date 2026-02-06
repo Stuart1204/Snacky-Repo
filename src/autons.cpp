@@ -559,9 +559,9 @@ inline void skillsAuton(){
     // moveToPoint(-18,18, true, false);
     driveToGoal(false, 40);
     intake.setState(IntakeState::SCOREMID);
-    pros::delay(1500);
+    pros::delay(1700);
     slowMidGoal = true;
-    pros::delay(800);
+    pros::delay(1000);
     //-----------------------1st Matchload -----------------------
     chassis.moveToPoint(-42, 45, 1200, {.minSpeed = 20, .earlyExitRange = 3});
     chassis.waitUntil(8);
@@ -638,7 +638,7 @@ inline void skillsAuton(){
 	intakeLift.setState(false);
 	intake.setState(IntakeState::INTAKE);
     turnToPoint(46, -45, true);
-    chassis.moveToPoint(40, -45, 1500, {.minSpeed = 5, .earlyExitRange = 2});
+    chassis.moveToPoint(40, -44, 1500, {.minSpeed = 5, .earlyExitRange = 2});
     chassis.waitUntil(16);
     tongue.setState(true);
 	turnToHeading(90, true);
@@ -653,7 +653,7 @@ inline void skillsAuton(){
 	leftMotors.move(-80);
 	rightMotors.move(-20);
 	pros::delay(200);
-    turnToHeading(-125, true);
+    turnToHeading(-120, true);
     moveDrive(105, 1100);
     // rightResetPos();
     resetPos();
