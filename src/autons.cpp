@@ -327,7 +327,7 @@ inline void NISAWP() {
 
 inline void SAWP13() {
     rightAutoMatchload();
-    moveToPoint(-31, -48, false, false, true);
+    moveToPoint(-30, -48, false, false, true);
     tongue.setState(false);
     intake.setState(IntakeState::SCOREHIGH);
     driveToGoal(false);
@@ -365,7 +365,7 @@ inline void SAWP13() {
     moveToPoint(-15, 15, false, true, true);
     pros::delay(200);
     intake.setState(IntakeState::SCOREMID);
-    driveToGoal(false);
+    driveToGoal(false, 30);
 }
 
 inline void leftMatchloadScore() {

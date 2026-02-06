@@ -182,8 +182,13 @@ class Intake {
                moveLower(127);
                moveUpper(60);
             } else {
-               moveLower(127);
-               moveUpper(127);
+               if(isAutonomous) {
+                  moveLower(127);
+                  moveUpper(75);
+               } else {
+                  moveLower(127);
+                  moveUpper(127);
+               }
             }
             if(slowMidGoal && autonSelectionEnum == Selection::SKILLS) {
                moveUpper(50);
