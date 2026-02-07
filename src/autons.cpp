@@ -592,14 +592,14 @@ inline void skillsAuton(){
     lemlib::Pose currentPose = chassis.getPose();
     chassis.setPose(28, currentPose.y, currentPose.theta);
     turnToHeading(90);
-    leftResetPos();
+    // leftResetPos();
     moveToPoint(49, 48, true, false, true);
     turnToHeading(90, true);
     intake.setState(IntakeState::INTAKE);
     moveDrive(60, 500);
     //-----------------------2nd Matchload -----------------------
     skillsWaitAtMatchload();
-    leftResetPos();
+    // leftResetPos();
     moveToPoint(40, 48, false, false, true);
     moveToPoint(30, 48, false, false, true);
     driveToGoal(false);
@@ -609,7 +609,7 @@ inline void skillsAuton(){
     intake.setState(IntakeState::SCOREHIGHSLOW);
     pros::delay(1200);
     // --------------- GOING TO CLEAR PARK ZONE
-    moveToPoint(60, 36, true, false, true);
+    moveToPoint(62, 36, true, false, true);
     intake.setState(IntakeState::INTAKE);
     turnToHeading(168);
     moveDrive(60, 550);
@@ -644,7 +644,7 @@ inline void skillsAuton(){
     tongue.setState(true);
 	turnToHeading(90, true);
 	rightResetPos();
-	moveToPoint(55, -48, true, true, true);
+	moveToPoint(51, -46.5, true, true, true);
 	turnToHeading(90, true);
 	rightResetPos();
     moveDrive(65, 500);

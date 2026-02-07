@@ -511,7 +511,7 @@ inline void skillsWaitAtMatchload() {
 }
 
 inline void driveInParkZone() {
-    int MOTOR_SPEED = 75;
+    int MOTOR_SPEED = 100;
     int TIMEOUT = 2500;
     uint32_t startTime = pros::millis();
     int startValue = vertical_rotation.get_position() / 100;
