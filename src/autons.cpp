@@ -559,9 +559,9 @@ inline void skillsAuton(){
     // moveToPoint(-18,18, true, false);
     driveToGoal(false, 40);
     intake.setState(IntakeState::SCOREMID);
-    pros::delay(1700);
+    pros::delay(2200);
     slowMidGoal = true;
-    pros::delay(1000);
+    pros::delay(500);
     //-----------------------1st Matchload -----------------------
     chassis.moveToPoint(-42, 45, 1200, {.minSpeed = 20, .earlyExitRange = 3});
     chassis.waitUntil(8);
@@ -605,9 +605,9 @@ inline void skillsAuton(){
     driveToGoal(false);
     tongue.setState(false);
     intake.setState(IntakeState::SCOREHIGH);
-    pros::delay(1300);
+    pros::delay(500);
     intake.setState(IntakeState::SCOREHIGHSLOW);
-    pros::delay(900);
+    pros::delay(1200);
     // --------------- GOING TO CLEAR PARK ZONE
     moveToPoint(60, 36, true, false, true);
     intake.setState(IntakeState::INTAKE);
@@ -622,6 +622,7 @@ inline void skillsAuton(){
     pros::delay(550);
     leftMotors.move(0);
     rightMotors.move(0);
+    moveDrive(-70, 150);
 	chassis.turnToHeading(145, 500, {.minSpeed = 80, .earlyExitRange = 20});
     turnToHeading(-165, true);
 	leftResetPos();
@@ -664,9 +665,9 @@ inline void skillsAuton(){
     //-----------------------4th long goal -----------------------
     intake.setState(IntakeState::SCOREHIGH);
 	goalShake(2200);
-	leftResetPos();
+	// leftResetPos();
     turnToHeading(-90);
-    moveToPoint(-49,-48, true, false, true);
+    moveToPoint(-50,-48, true, false, true);
     turnToHeading(-90, true);
     intake.setState(IntakeState::INTAKE);
     moveDrive(60, 500);
@@ -677,13 +678,13 @@ inline void skillsAuton(){
     driveToGoal(false);
     tongue.setState(false);
     intake.setState(IntakeState::SCOREHIGH);
-    goalShake(1300);
+    goalShake(600);
     intake.setState(IntakeState::SCOREHIGHSLOW);
-    pros::delay(800);
-    moveToPoint(-55, -30, true, false, true);
+    pros::delay(1200);
+    moveToPoint(-53, -35, true, false, true);
     intake.setState(IntakeState::INTAKE);
     turnToHeading(-12);
-    moveDrive(60, 700);
+    moveDrive(60, 500);
     moveDrive(-2, 200);
 	driveInParkZone();
 }

@@ -9,6 +9,11 @@
 #include "pros/rtos.hpp"
 #include <sys/types.h>
 
+void autonSkillsInDriver() {
+	skillsAuton();
+	pros::delay(10000);
+}
+
 void initialize() {
 	chassis.calibrate();
 	parkSensor.set_led_pwm(100);
@@ -34,6 +39,7 @@ void initialize() {
 void disabled() {}
 
 void competition_initialize() {}
+
 void autonomous() {
 	isAutonomous = true;
 	// skillsAuton();
@@ -41,6 +47,7 @@ void autonomous() {
 } 
 
 void opcontrol() {
+	// autonSkillsInDriver();
 	isAutonomous = false;
 
 	odomLift.setState(true);

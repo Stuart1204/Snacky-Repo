@@ -507,7 +507,7 @@ inline void waitAtMatchload() {
 }
 
 inline void skillsWaitAtMatchload() {
-    waitAtMatchload(1800);
+    waitAtMatchload(1700);
 }
 
 inline void driveInParkZone() {
