@@ -362,7 +362,7 @@ inline void SAWP13() {
     // moveToPoint(-50, 46, false, false, true, 70);
     moveDrive(-60, 330);
     moveDrive(-10, 75);
-    moveToPoint(-15, 15, false, true, true);
+    moveToPoint(-15, 15, false, true, true, 85);
     pros::delay(200);
     intake.setState(IntakeState::SCOREMID);
     driveToGoal(false, 30);
