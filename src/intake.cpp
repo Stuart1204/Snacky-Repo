@@ -184,7 +184,7 @@ class Intake {
             } else {
                if(isAutonomous) {
                   moveLower(127);
-                  moveUpper(75);
+                  moveUpper(60);
                } else {
                   moveLower(127);
                   moveUpper(127);
