@@ -56,4 +56,4 @@ void opcontrol() {
 		displayData();
 		pros::delay(20);
     }
-}
+} 
