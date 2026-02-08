@@ -180,6 +180,18 @@ inline void right7Block() {
     middleGoal.setState(false);
 }
 
+inline void right7BlockWing() {
+    rightGrab7();
+    // rightScoreAndWing();
+    turnToHeading(-90, true);
+    moveToPoint(-32, -48, false, false, true, 90);
+    tongue.setState(false);
+    intake.setState(IntakeState::SCOREHIGH);
+    driveToGoal(false);
+    goalShake(1400);
+    autonWingMacro();
+}
+
 inline void left7Block() {
     leftGrab7();
     turnToHeading(-90, true);
@@ -194,6 +206,17 @@ inline void left7Block() {
     rightMotors.move(-50);
     pros::delay(500);
     middleGoal.setState(false);
+}
+
+inline void left7BlockWing() {
+    leftGrab7();
+    turnToHeading(-90, true);
+    moveToPoint(-32, 48, false, false, true, 90);
+    tongue.setState(false);
+    intake.setState(IntakeState::SCOREHIGH);
+    driveToGoal(false);
+    goalShake(1400);
+    autonWingMacro();
 }
 
 inline void leftLGAndC_CenterFirst() {
