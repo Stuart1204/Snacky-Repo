@@ -262,12 +262,13 @@ inline void leftLGAndC_CenterLast() {
     driveToGoal(false);
     goalShake(300);
     wing.setState(true);
+    pros::delay(300);
     intake.setState(IntakeState::OUTTAKE);
     turnToHeading(-105, true);
     resetPos();
     intake.setState(IntakeState::IDLE);
     rightResetPos();
-    moveToPoint(-46, 48, true, false);
+    moveToPoint(-46, 46, true, false);
     moveToPoint(-16, 16, false, true, true, 90);
     intake.setState(IntakeState::SCOREMID);
     driveToGoal(false);
