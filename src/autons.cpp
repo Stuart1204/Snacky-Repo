@@ -252,7 +252,7 @@ inline void leftLGAndC_CenterLast() {
     moveToPoint(-48, 48, false, true);
     turnToHeading(-90);
     rightResetPos();
-    moveToPoint(-60, 48, true, false, true);
+    moveToPoint(-58, 48, true, false, true);
     moveDrive(50, 350);
     waitAtMatchload();
     rightResetPos();
