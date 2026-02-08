@@ -343,7 +343,7 @@ inline void NISAWP() {
     moveToPoint(-20, 16, true, true, true, 70);
     tongue.setState(true);
     moveToPoint(-19, 22, true, false, false, 35);
-    moveToPoint(-12, 13, false, true, true);
+    moveToPoint(-12, 15, false, true, true);
     intake.setState(IntakeState::SCOREMID);
     driveToGoal(false);
 }

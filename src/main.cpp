@@ -43,6 +43,7 @@ void competition_initialize() {}
 void autonomous() {
 	// skillsAuton();
 	runSelectedAuton();
+	right7BlockWing();
 } 
 
 void opcontrol() {
