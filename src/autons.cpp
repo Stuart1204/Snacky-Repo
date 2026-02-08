@@ -722,7 +722,8 @@ inline void runSelectedAuton() {
     }
     if(startingSide == Selection::LEFT) {
         if(autonSelectionEnum == Selection::LONG_CONTROL) {
-            left7Block(); // not long control
+            // left7Block(); // not long control
+            left7BlockWing();
         }
         if(autonSelectionEnum == Selection::LONG_AND_CENTER) {
             leftLGAndC_CenterLast();
@@ -730,7 +731,8 @@ inline void runSelectedAuton() {
     }
     if(startingSide == Selection::RIGHT) {
         if(autonSelectionEnum == Selection::LONG_CONTROL) {
-            right7Block(); // not long control
+            // right7Block(); // not long control
+            right7BlockWing();
         }
         if(autonSelectionEnum == Selection::LONG_AND_CENTER) {
             rightLGAndC_CenterLast();
