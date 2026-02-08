@@ -41,14 +41,12 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
-	isAutonomous = true;
 	// skillsAuton();
 	runSelectedAuton();
 } 
 
 void opcontrol() {
 	// autonSkillsInDriver();
-	isAutonomous = false;
 
 	odomLift.setState(true);
     while (true) {

@@ -182,7 +182,7 @@ class Intake {
                moveLower(127);
                moveUpper(70);
             } else {
-               if(isAutonomous) {
+               if(pros::competition::is_autonomous()) {
                   moveLower(127);
                   moveUpper(60);
                } else {

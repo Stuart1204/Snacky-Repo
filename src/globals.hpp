@@ -64,7 +64,6 @@ inline bool enableColourSort = false;
 inline bool slowLowGoal = false;
 inline bool slowMidGoal = false;
 inline bool enableAutoWing = false;
-inline bool isAutonomous = false;
 
 // global constants
 const inline float FRONT_DIST_OFFSET = 5.5;
