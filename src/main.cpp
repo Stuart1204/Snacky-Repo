@@ -25,10 +25,10 @@ void initialize() {
 	});
 
 	allianceColour = AllianceColour::RED;
-	startingSide = Selection::SKILLS;
-	autonSelectionEnum = Selection::SKILLS;
+	startingSide = Selection::LONG_AND_CENTER;
+	autonSelectionEnum = Selection::LONG_AND_CENTER;
 
-	autonSelection();
+	// autonSelection();
 
 	if(autonSelectionEnum == Selection::SKILLS || startingSide == Selection::SKILLS) {
 		enableColourSort = false;
@@ -42,12 +42,14 @@ void competition_initialize() {}
 
 void autonomous() {
 	// skillsAuton();
-	runSelectedAuton();
+	// runSelectedAuton();
+	// SAWP13();
+	// leftLGAndCRush();
+	// SAWP13();
+	// skillsAuton();
 } 
 
 void opcontrol() {
-	// autonSkillsInDriver();
-
 	odomLift.setState(true);
     while (true) {
 		// intake has its own thread
@@ -56,4 +58,4 @@ void opcontrol() {
 		displayData();
 		pros::delay(20);
     }
-} 
+}
