@@ -17,7 +17,7 @@
 // -- Defined Ports -- //
 
 //motor ports
-#define lBPort -1
+#define lBPort -7
 #define lMPort 2
 #define lFPort -4
 
@@ -30,14 +30,14 @@
 #define scoringRollerPort 21
 
 //sensor ports
-#define imuPort 7
-#define colourSortPort 9
-#define parkSensorPort 5
-#define leftDistPort 4
-#define rightDistPort 15
-#define frontDistPort 6
+#define imuPort 18
+#define colourSortPort 6
+#define parkSensorPort 3
+#define leftDistPort 10
+#define rightDistPort 17
+#define frontDistPort 5
 
-#define verticalEncoderPort -17
+#define verticalEncoderPort -14
 
 //solenoids
 #define leftWingPort 'C'
