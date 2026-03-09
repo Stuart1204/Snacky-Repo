@@ -184,7 +184,7 @@ class Intake {
             } else {
                if(pros::competition::is_autonomous()) {
                   moveLower(127);
-                  moveUpper(75);
+                  moveUpper(80);
                } else {
                   moveLower(127);
                   moveUpper(127);
@@ -200,14 +200,14 @@ class Intake {
                // moveUpper(-127);
 
                if(lowOuttakeJiggleDirection) {
-                  moveLower(-65);
+                  moveLower(-55);
                   moveUpper(-100);
                   if(lowOuttakeJiggleCounter > 25) {
                      lowOuttakeJiggleCounter = 0;
                      lowOuttakeJiggleDirection = false;
                   }
                } else {
-                  moveLower(-65);
+                  moveLower(-55);
                   moveUpper(80);
                   if(lowOuttakeJiggleCounter > 3) {
                      lowOuttakeJiggleCounter = 0;
@@ -216,7 +216,7 @@ class Intake {
                }
                lowOuttakeJiggleCounter++;
             } else {
-               moveLower(-100);
+               moveLower(-105);
                moveUpper(-127);
             }
             if(slowLowGoal && autonSelectionEnum == Selection::SKILLS) {
