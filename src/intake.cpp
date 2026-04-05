@@ -268,6 +268,7 @@ class Intake {
          case IntakeState::UPPEROUTTAKE:
             moveUpper(-100);
             moveLower(-20);
+            break;
          case IntakeState::INTAKEWITHEJECT:
             moveLower(127);
             moveUpper(127);
@@ -291,6 +292,10 @@ class Intake {
          case IntakeState::SCOREHIGHSLOW:
             moveLower(127);
             moveUpper(80);
+            break;
+         case IntakeState::SLOWOUTTAKE:
+            moveLower(-40);
+            moveUpper(-127);
             break;
       }
    }

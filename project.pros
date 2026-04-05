@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "Snacky Mecha",
+    "project_name": "Snacky Worlds",
     "target": "v5",
     "templates": {
       "LemLib": {
