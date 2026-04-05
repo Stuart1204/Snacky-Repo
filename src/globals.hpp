@@ -41,7 +41,8 @@
 //solenoids
 #define rightWingPort 'E'
 #define tonguePort 'C'
-#define parkPort 'D'
+#define leftDoinkerPort 'A'
+#define rightDoinkerPort 'D'
 #define intakeLiftPort 'F'
 #define odomLiftPort 'B'
 #define middleGoalPort 'H'
@@ -165,7 +166,8 @@ inline pros::MotorGroup rightMotors({rBPort, rMPort, rFPort}, pros::v5::MotorGea
 // pneumatics
 inline pros::adi::DigitalOut wingPiston(rightWingPort, LOW);
 inline pros::adi::DigitalOut tonguePiston(tonguePort, LOW);
-inline pros::adi::DigitalOut parkPiston(parkPort, LOW);
+inline pros::adi::DigitalOut leftDoinkerPiston(leftDoinkerPort, LOW);
+inline pros::adi::DigitalOut rightDoinkerPiston(rightDoinkerPort, LOW);
 inline pros::adi::DigitalOut intakeLiftPiston(intakeLiftPort, LOW);
 inline pros::adi::DigitalOut odomLiftPiston(odomLiftPort, LOW);
 inline pros::adi::DigitalOut middleGoalPiston(middleGoalPort, HIGH);

@@ -16,7 +16,7 @@ void autonSkillsInDriver() {
 
 void initialize() {
 	chassis.calibrate();
-	parkSensor.set_led_pwm(100);
+	// parkSensor.set_led_pwm(100);
 	pros::Task intakeTask([]{
 		while (true) {
 			intake.run();

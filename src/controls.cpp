@@ -22,7 +22,11 @@ inline void intakeControls() {
         if(intakeLift.getState() == true) {
             intake.setState(IntakeState::SCORELOW);
         } else {
-            intake.setState(IntakeState::OUTTAKE);
+            if(intakeLift.getState()) {
+                intake.setState(IntakeState::SCORELOW);
+            } else {
+                intake.setState(IntakeState::OUTTAKE);
+            }
         }
     } else if(controller.get_digital(Buttons::R1)) {
         intake.setState(IntakeState::SCOREHIGH);
@@ -34,25 +38,16 @@ inline void intakeControls() {
         }
     }
 
-    // uses the same park button to exit off park
-    if(controller.get_digital_new_press(Buttons::B)) {
-        if(park.getState() == true) {
-            park.setState(false);
-        } else {
-            intake.setState(IntakeState::PARK);
-        }
-    }
+    // // uses the same park button to exit off park
+    // if(controller.get_digital_new_press(Buttons::B)) {
+    //     if(park.getState() == true) {
+    //         park.setState(false);
+    //     } else {
+    //         intake.setState(IntakeState::PARK);
+    //     }
+    // }
 
     if(controller.get_digital_new_press(Buttons::RIGHT)) {
-        enableColourSort = !enableColourSort;
-        if(enableColourSort) {
-            controller.rumble("...");
-        } else {
-            controller.rumble(".");
-        }
-    }
-
-    if(controller.get_digital_new_press(Buttons::DOWN)) {
         if(intake.getState() == IntakeState::SCOREMID) {
             slowMidGoal = !slowMidGoal;
             if(slowMidGoal) {
@@ -79,20 +74,23 @@ inline void intakeControls() {
 
 inline void activatePistons() {
     
-    if (controller.get_digital_new_press(Buttons::X)) {
-        // wing.toggle();
-        middleDescore.toggle();
+    if (controller.get_digital_new_press(Buttons::Y)) {
+        intakeLift.toggle();
     }
     if (controller.get_digital_new_press(Buttons::A)) {
         tongue.toggle();
     }
-    // double park macro uses activate park to extened pistons
-    if(activatePark) {
-        park.setState(true);
-        activatePark = false;
+    if (controller.get_digital_new_press(Buttons::B)) {
+        rightDoinker.toggle();
+        leftDoinker.toggle();
     }
-    if (controller.get_digital_new_press(Buttons::Y)) {
-        intakeLift.toggle();
+    // double park macro uses activate park to extened pistons
+    // if(activatePark) {
+    //     park.setState(true);
+    //     activatePark = false;
+    // }
+    if (controller.get_digital_new_press(Buttons::X)) {
+        middleDescore.toggle();
     }
 }
 

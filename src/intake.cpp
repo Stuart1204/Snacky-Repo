@@ -25,8 +25,12 @@ class Intake {
       int colourSortCounter = 0;
       bool currentlyColourSorting = false;
       bool isImmediateOuttake = true;
+      bool isImmediateScoreMid = true;
+      bool isImmediateIntake = true;
       const int COLOUR_SORT_EJECT_TIME = 10;
       uint32_t immediateOuttakeStartTime = pros::millis();
+      uint32_t immediateScoreMidStartTime = pros::millis();
+      uint32_t immediateIntakeStartTime = pros::millis();
 
       int parkStageTracker = 0;
 
@@ -47,6 +51,12 @@ class Intake {
          case IntakeState::IDLE: 
             break;
          case IntakeState::INTAKE:
+            if(middleGoal.getState()) {
+               isImmediateIntake = true;
+            } else {
+               isImmediateIntake = false;
+               immediateIntakeStartTime = pros::millis();
+            }
             middleGoal.setState(true);
             wing.setState(true);
             break;
@@ -66,6 +76,12 @@ class Intake {
             break;
          case IntakeState::SCOREMID:
             middleGoal.setState(false);
+            if(!middleDescore.getState()) {
+               isImmediateScoreMid = true;
+            } else {
+               isImmediateScoreMid = false;
+               immediateScoreMidStartTime = pros::millis();
+            }
             middleDescore.setState(false);
             break;
          case IntakeState::SCORELOW:
@@ -155,8 +171,18 @@ class Intake {
             break;
 
          case IntakeState::INTAKE:
-            moveLower(127);
-            moveUpper(127);
+            if(isImmediateIntake) {
+               moveLower(127);
+               moveUpper(127);
+            } else {
+               if (pros::millis() - immediateIntakeStartTime > 125) {
+                  moveLower(127);
+                  moveUpper(127);
+               } else {
+                  moveLower(0);
+                  moveUpper(0);
+               }
+            }
             break;
          case IntakeState::OUTTAKE:
             moveLower(-127);
@@ -168,7 +194,7 @@ class Intake {
                moveUpper(127);
             }
             else {
-               if (pros::millis() - immediateOuttakeStartTime > 75) {
+               if (pros::millis() - immediateOuttakeStartTime > 125) {
                   moveLower(127);
                   moveUpper(127);
                } else {
@@ -186,8 +212,13 @@ class Intake {
                   moveLower(127);
                   moveUpper(80);
                } else {
-                  moveLower(127);
-                  moveUpper(127);
+                  if (pros::millis() - immediateScoreMidStartTime > 225) {
+                     moveLower(127);
+                     moveUpper(100);
+                  } else {
+                     moveLower(0);
+                     moveUpper(0);
+                  }
                }
             }
             if(slowMidGoal && autonSelectionEnum == Selection::SKILLS) {
@@ -216,7 +247,7 @@ class Intake {
                }
                lowOuttakeJiggleCounter++;
             } else {
-               moveLower(-105);
+               moveLower(-85);
                moveUpper(-127);
             }
             if(slowLowGoal && autonSelectionEnum == Selection::SKILLS) {
