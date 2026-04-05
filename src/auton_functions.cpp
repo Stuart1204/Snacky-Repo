@@ -342,6 +342,8 @@ inline void driveDistance(float targetDist, int maxSpeed) {
 
         if(targetSpeed > maxSpeed) targetSpeed = maxSpeed;
         if(targetSpeed < -maxSpeed) targetSpeed = -maxSpeed;
+        if(targetSpeed < 20 && targetSpeed > 0) targetSpeed = 20;
+        if(targetSpeed > -20 && targetSpeed < 0) targetSpeed = -20;
         
 
         leftMotors.move(targetSpeed);
