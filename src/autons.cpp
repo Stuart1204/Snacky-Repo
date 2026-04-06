@@ -223,12 +223,13 @@ inline void rightLGAndCRush() {
     moveToPoint(-17, -17, true, false, true, 50);
     intake.setState(IntakeState::UPPEROUTTAKE);
     // tongue.setState(false);
-    moveToPoint(-11, -11, true, false, true, 70);
+    moveToPoint(-12, -11, true, false, true, 70);
     intake.setState(IntakeState::SCORELOW);
     intakeLift.setState(true);
     pros::delay(750);
-    pros::delay(500); // extra delay
-    chassis.moveToPoint(-16, -29, 1000, {.forwards = false, .minSpeed = 90, .earlyExitRange = 5});
+    // pros::delay(500); // extra delay
+    intakeLift.setState(false);
+    chassis.moveToPoint(-19, -29, 1000, {.forwards = false, .minSpeed = 90, .earlyExitRange = 5});
     chassis.waitUntilDone();
     intake.setState(IntakeState::IDLE);
     turnToHeading(90, true);
@@ -242,7 +243,7 @@ inline void rightLGAndCRush() {
 
 inline void leftLGAndCRush() {
     chassis.setPose(-48, 18, 180);
-    moveToPoint(-48, 45, false, false, true, 90);
+    moveToPoint(-48, 44, false, false, true, 90);
     tongue.setState(true);
     turnToHeading(-90, true);
     rightResetPos();
@@ -258,22 +259,22 @@ inline void leftLGAndCRush() {
     turnToHeading(180, true);
     rightResetPos();
     lemlib::Pose currentPose = chassis.getPose();
-    chassis.setPose(currentPose.x, currentPose.y - 4, currentPose.theta);
+    chassis.setPose(currentPose.x, currentPose.y - 3, currentPose.theta);
     intake.setState(IntakeState::INTAKE);
     moveToPoint(-24, 24, true, false, true, 90);
     tongue.setState(true);
     moveToPoint(-12, 12, false, true, true, 60);
     intake.setState(IntakeState::SCOREMID);
-    pros::delay(700);
-    chassis.moveToPoint(-25, 30, 1000, {.minSpeed = 70, .earlyExitRange = 5});
+    pros::delay(750);
+    chassis.moveToPoint(-25, 31, 1000, {.minSpeed = 70, .earlyExitRange = 5});
     chassis.waitUntilDone();
     intake.setState(IntakeState::IDLE);
     turnToHeading(-110, true);
     wing.setState(false);
     currentPose = chassis.getPose();
-    moveToPoint(-13, currentPose.y, false, false, true, 50);
-    // leftMotors.move(-30);
+    moveToPoint(-16, currentPose.y, false, false, true, 50);
     rightMotors.move(-35);
+    leftMotors.move(3);
 }
 
 inline void rightLGAndC() {
