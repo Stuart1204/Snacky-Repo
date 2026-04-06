@@ -43,6 +43,7 @@ void competition_initialize() {}
 void autonomous() {
 	// skillsAuton();
 	// runSelectedAuton();
+	rightLGAndC();
 } 
 
 void opcontrol() {

@@ -297,6 +297,10 @@ class Intake {
             moveLower(-40);
             moveUpper(-127);
             break;
+         case IntakeState::LOWINTAKEUPOUTTAKE:
+            moveLower(127);
+            moveUpper(-40);
+            break;
       }
    }
 

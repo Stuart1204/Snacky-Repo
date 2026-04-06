@@ -57,9 +57,11 @@ inline void rightGrabBlocks() {
     chassis.setPose(-48, -16, 90);
     intake.setState(IntakeState::INTAKE);
     moveToPoint(-24, -24, true, false, true, 100);
-    moveToPoint(-12, -44, true, false, true, 90);
+    moveToPoint(-12.5, -44, true, false, true, 90);
     tongue.setState(true);
     pros::delay(220);
+    lemlib::Pose currentPose = chassis.getPose();
+    chassis.setPose(currentPose.x+4, currentPose.y+4, currentPose.theta);
 }
 
 // grabs blocks under goal
@@ -274,6 +276,40 @@ inline void leftLGAndCRush() {
     rightMotors.move(-35);
 }
 
+inline void rightLGAndC() {
+    // setup to get blocks under the long goal
+    rightGrabBlocks();
+    intake.setState(IntakeState::LOWINTAKEUPOUTTAKE);
+    moveToPoint(-24, -26, false, false, true);
+    tongue.setState(false);
+    turnToHeading(45, true);
+    intake.setState(IntakeState::UPPEROUTTAKE);
+    moveToPoint(-13, -13, true, false, true, 70);
+    intake.setState(IntakeState::SCORELOW);
+    intakeLift.setState(true);
+    pros::delay(600);
+    intake.setState(IntakeState::INTAKE);
+    intakeLift.setState(false);
+    chassis.moveToPoint(-43, -51, 1500, {.forwards = false, .minSpeed = 10, .earlyExitRange = 3});
+    chassis.waitUntil(20);
+    tongue.setState(true);
+    chassis.waitUntilDone();
+    turnToHeading(-90, true);
+    leftResetPos();
+    moveToPoint(-53, -48, true, false, true);
+    turnToHeading(-90, true);
+    leftResetPos();
+    moveDrive(60, 435);
+    waitAtMatchload();
+    leftResetPos();
+    moveToPoint(-28.5, -48, false, false, true);
+    tongue.setState(false);
+    intake.setState(IntakeState::SCOREHIGH);
+    driveToGoal(false);
+    goalShake(1100);
+    autonWingMacro();
+}
+
 inline void NISAWP() {
     chassis.setPose(-48, -18, 0);
     moveToPoint(-48, -45, false, false, true, 90);
@@ -425,52 +461,14 @@ inline void SAWP4Goal() {
     goalShake(700);
 }
 
-inline void leftMatchloadScore() {
-    // scores 4 on long goal and clears matchload station
-    chassis.setPose(-48, 18, 0);
-    intake.setState(IntakeState::INTAKE);
-    setWings(true);
-    tongue.setState(true);
-    moveToPoint(-48, 48, true, false);
-    turnToHeading(0);
-    resetPos();
-    turnToHeading(-90);
-    moveDrive(50, 600);
-    waitAtMatchload();
-    moveToPoint(-36, 48, false, false);
-    turnToHeading(-90);
-    tongue.setState(false);
-    intake.setState(IntakeState::IDLE);
-    setWings(false);
-    driveToGoal(false);
-    intake.setState(IntakeState::SCOREHIGH);
-    pros::delay(2300);
-    intake.setState(IntakeState::IDLE);
-    driveDistance(10);
-    setWings(true);
-    moveDrive(-100, 600);
-    intake.setState(IntakeState::SCOREHIGH);
-    tongue.setState(true);
-    moveToPoint(-48, 48, true, false);
-    turnToHeading(-90);
-    driveToGoal(true);
-    waitAtMatchload();
-    leftMotors.move(0);
-    rightMotors.move(0);
-}
-
-inline void rightMatchloadScore() {
-
-}
-
 inline void midRush() {
     chassis.setPose(-48, -16, 90);
     intake.setState(IntakeState::LOWINTAKE);
     moveToPoint(-30, -20, true, false, true);
     tongue.setState(true);
     moveToPoint(-27, -24, true, false, true, 100);
-    tongue.setState(false);
     turnToHeading(45, true);
+    tongue.setState(false);
     intake.setState(IntakeState::UPPEROUTTAKE);
     moveToPoint(-12, -9, true, false, true, 70);
     intake.setState(IntakeState::SCORELOW);
@@ -497,22 +495,25 @@ inline void midRush() {
 
 inline void midRushExtraBlocks() {
     rightGrabBlocks();
+    intake.setState(IntakeState::LOWINTAKEUPOUTTAKE);
     moveToPoint(-24, -26, false, false, true);
-    turnToHeading(45, true);
     tongue.setState(false);
+    turnToHeading(45, true);
     intake.setState(IntakeState::UPPEROUTTAKE);
-    moveToPoint(-12, -9, true, false, true, 70);
+    moveToPoint(-13, -13, true, false, true, 70);
     intake.setState(IntakeState::SCORELOW);
     intakeLift.setState(true);
     pros::delay(850);
     intakeLift.setState(false);
-    moveToPoint(-24, -15, false, false, true, 80);
+    moveToPoint(-21, -15, false, false, true, 80);
+    turnToHeading(0, true);
+    leftResetPos();
     intake.setState(IntakeState::INTAKE);
-    moveToPoint(-24, 17, true, true, true, 90);
+    moveToPoint(-21, 17, true, false, true, 90);
     tongue.setState(true);
     moveToPoint(-21, 22, true, false, true, 55);
     turnToHeading(-45, true);
-    moveToPoint(-12, 12, false, false, true);
+    moveToPoint(-14, 11, false, false, true);
     intake.setState(IntakeState::SCOREMID);
     leftDoinker.setState(true);
     driveToGoal(false, 35);

@@ -95,7 +95,8 @@ enum IntakeState {
     STOPMID = 10,
     SCOREHIGHSLOW = 11,
     UPPEROUTTAKE = 12,
-    SLOWOUTTAKE = 13
+    SLOWOUTTAKE = 13,
+    LOWINTAKEUPOUTTAKE = 14
 };
 
 // aliance colour
