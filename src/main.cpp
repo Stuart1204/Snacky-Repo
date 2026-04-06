@@ -43,7 +43,7 @@ void competition_initialize() {}
 void autonomous() {
 	// skillsAuton();
 	// runSelectedAuton();
-	SAWP4Goal();
+	leftLGAndC();
 } 
 
 void opcontrol() {
