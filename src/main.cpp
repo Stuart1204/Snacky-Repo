@@ -28,7 +28,7 @@ void initialize() {
 	startingSide = Selection::LONG_AND_CENTER;
 	autonSelectionEnum = Selection::LONG_AND_CENTER;
 
-	// autonSelection();
+	autonSelection();
 
 	if(autonSelectionEnum == Selection::SKILLS || startingSide == Selection::SKILLS) {
 		enableColourSort = false;
@@ -42,8 +42,8 @@ void competition_initialize() {}
 
 void autonomous() {
 	// skillsAuton();
-	// runSelectedAuton();
-	leftLGAndC();
+	runSelectedAuton();
+	// leftLGAndC();
 } 
 
 void opcontrol() {

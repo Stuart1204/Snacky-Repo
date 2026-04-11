@@ -338,7 +338,7 @@ inline void leftLGAndC() {
     intake.setState(IntakeState::SCOREHIGH);
     driveToGoal(false);
     goalShake(1100);
-    autonWingMacroOpposite();
+    autonWingMacro();
 }
 
 inline void NISAWP() {
