@@ -9,11 +9,6 @@
 #include "pros/rtos.hpp"
 #include <sys/types.h>
 
-void autonSkillsInDriver() {
-	skillsAuton();
-	pros::delay(10000);
-}
-
 void initialize() {
 	chassis.calibrate();
 	// parkSensor.set_led_pwm(100);
@@ -43,10 +38,11 @@ void competition_initialize() {}
 void autonomous() {
 	// skillsAuton();
 	runSelectedAuton();
-	// leftLGAndC();
 } 
 
 void opcontrol() {
+	leftDoinker.setState(false);
+	rightDoinker.setState(false);
 	odomLift.setState(true);
     while (true) {
 		// intake has its own thread

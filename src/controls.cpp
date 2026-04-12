@@ -149,7 +149,7 @@ inline void displayData() {
     float rightCurrentDistance = (rightDistSensor.get_distance() * MM_TO_INCHES) + RIGHT_DIST_OFFSET;
     // display lemlib pose
     lemlib::Pose pose = chassis.getPose();
-    pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %f", rightCurrentDistance);
+    // pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %f", rightCurrentDistance);
 
     pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
     pros::screen::print(TEXT_LARGE_CENTER, 3, "y: %f", pose.y);
@@ -263,7 +263,7 @@ inline void autonSelection() {
         button longControlButton(0, 15, 120, 180, pros::Color::sky_blue, "LG");
         button longAndCenterButton(120, 15, 240, 180, pros::Color::sky_blue, "LG+C");
         button SAWPButton(240, 15, 360, 180, pros::Color::sky_blue, "SAWP");
-        button NISAWPButton(360, 15, 480, 180, pros::Color::sky_blue, "NISAWP");
+        button NISAWPButton(360, 15, 480, 180, pros::Color::sky_blue, "4-Goal");
 
         if(allianceColour == AllianceColour::RED) {
             if(startingSide == Selection::LEFT) {

@@ -492,6 +492,40 @@ inline void SAWP4Goal() {
     goalShake(700);
 }
 
+inline void upperMidRush() {
+    uint32_t autonStartTime = pros::millis();
+    chassis.setPose(-48, 16, 90);
+    intake.setState(IntakeState::INTAKE);
+    moveToPoint(-30, 20, true, false, true);
+    tongue.setState(true);
+    moveToPoint(-27, 22, true, false, true, 100);
+    moveToPoint(-16, 13, false, true, true);
+    intake.setState(IntakeState::SCOREMID);
+    moveDrive(-20, 300);
+    pros::delay(1000);
+    middleDescore.setState(true);
+    driveDistance(8);
+    moveDrive(-45, 300);
+    // pros::delay(300);
+    leftMotors.move(5);
+    rightMotors.move(-25);
+    leftDoinker.setState(true);
+    intake.setState(IntakeState::IDLE);
+    pros::delay(300);
+    leftMotors.move(-55);
+    rightMotors.move(20);
+    while(pros::millis() < autonStartTime + 14000) {
+        pros::delay(20);
+    }
+    moveDrive(25, 250);
+    moveDrive(-50, 250);
+    leftMotors.move(20);
+    rightMotors.move(-20);
+    pros::delay(350);
+    leftMotors.move(0);
+    rightMotors.move(0);
+}
+
 inline void midRush() {
     chassis.setPose(-48, -16, 90);
     intake.setState(IntakeState::LOWINTAKE);
@@ -889,7 +923,7 @@ inline void runSelectedAuton() {
             SAWP13();
         }
         if(autonSelectionEnum == Selection::NI_SAWP) {
-            NISAWP();
+            SAWP4Goal();
         }
     }
 }
