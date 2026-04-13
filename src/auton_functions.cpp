@@ -639,6 +639,10 @@ inline void startAutoWing() {
     onSecondStep = false;
 }
 
+inline void frontClearParkZone() {
+    
+}
+
 inline void autoWing() {
     if(getGyroValue) {
         gyroValue = inertial_sensor.get_rotation();

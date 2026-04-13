@@ -720,15 +720,14 @@ inline void skillsAuton(){
     //-----------------------Park zone + Middle Goal 7-----------------------
     chassis.setPose(-55, 0, -90);
     odomLift.setState(true);
-    tongue.setState(true);
+    // tongue.setState(true);
     intake.setState(IntakeState::INTAKE);
     moveDrive(15, 300);
-    tongue.setState(false);
-    pros::delay(400);
-    moveDrive(70, 400);
-    moveDrive(-60, 75);
-    moveDrive(60, 75);
-    intakeShake(1100);
+    // tongue.setState(false);
+    pros::delay(600);
+    moveDrive(50, 400);
+    moveDrive(0, 1100);
+    // intakeShake(1100);
     moveDrive(-60, 800);
     turnToHeading(-90);
     odomLift.setState(false);

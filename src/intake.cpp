@@ -214,7 +214,7 @@ class Intake {
                } else {
                   if (pros::millis() - immediateScoreMidStartTime > 225) {
                      moveLower(127);
-                     moveUpper(100);
+                     moveUpper(70);
                   } else {
                      moveLower(0);
                      moveUpper(0);
