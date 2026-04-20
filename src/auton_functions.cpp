@@ -7,6 +7,7 @@
 #include "lemlib/pid.hpp"
 #include "lemlib/pose.hpp"
 #include "lemlib/timer.hpp"
+#include "piston.cpp"
 #include "pros/distance.hpp"
 #include "pros/rtos.hpp"
 #include "pros/screen.h"
@@ -640,7 +641,19 @@ inline void startAutoWing() {
 }
 
 inline void frontClearParkZone() {
-    
+    intake.setState(IntakeState::INTAKE);
+    odomLift.setState(true);
+    moveDrive(45, 350);
+    moveDrive(60, 450);
+    pros::delay(1000);
+    moveDrive(50, 400);
+    moveDrive(0, 1100);
+    moveDrive(-60, 800);
+    turnToHeading(90);
+    odomLift.setState(false);
+    resetPos();
+    // leftResetPos();
+    rightResetPos();
 }
 
 inline void autoWing() {

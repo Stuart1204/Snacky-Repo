@@ -72,12 +72,12 @@ inline void intakeControls() {
     }
 }
 
-inline void activatePistons() {
-    uint32_t activateTongueStartTime;
-    uint32_t activateDoinkerStartTime;
-    bool activateTongue;
-    bool activateDoinkers;
+inline uint32_t activateTongueStartTime = 0;
+inline uint32_t activateDoinkerStartTime = 0;
+inline bool activateTongue = true;
+inline bool activateDoinkers = true;
 
+inline void activatePistons() {
     if (controller.get_digital_new_press(Buttons::Y)) {
         intakeLift.toggle();
     }
@@ -93,9 +93,15 @@ inline void activatePistons() {
         }
     }
     if (controller.get_digital_new_press(Buttons::B)) {
-        rightDoinker.toggle();
-        leftDoinker.toggle();
-        tongue.setState(false);
+        if(tongue.getState()) {
+            activateDoinkers = false;
+            activateDoinkerStartTime = pros::millis();
+            tongue.setState(false);
+        } else {
+            leftDoinker.toggle();
+            rightDoinker.toggle();
+            activateDoinkers = true;
+        }
     }
     // double park macro uses activate park to extened pistons
     // if(activatePark) {
@@ -106,9 +112,16 @@ inline void activatePistons() {
         middleDescore.toggle();
     }
     if(!activateTongue) {
-        if(pros::millis() > activateTongueStartTime + 200) {
+        if(pros::millis() > (activateTongueStartTime + 350)) {
             tongue.setState(true);
             activateTongue = true;
+        }
+    }
+    if(!activateDoinkers) {
+        if(pros::millis() > (activateDoinkerStartTime + 500)) {
+            leftDoinker.setState(true);
+            rightDoinker.setState(true);
+            activateDoinkers = true;
         }
     }
 }

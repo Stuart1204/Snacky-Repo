@@ -798,27 +798,13 @@ inline void skillsAuton(){
     currentPose = chassis.getPose();
     chassis.setPose(28, currentPose.y, currentPose.theta);
     // --------------- GOING TO CLEAR PARK ZONE
-    moveToPoint(62, 36, true, false, true);
-    intake.setState(IntakeState::INTAKE);
-    turnToHeading(168);
-    moveDrive(60, 550);
-    moveDrive(-2, 200);
-    skillsClearParkZone();
-	// tongue.setState(true);
+    turnToHeading(150, true);
+    moveToPoint(36, 18, true, false, true);
+    turnToHeading(-180, true);
     leftResetPos();
-    leftMotors.move(40);
-    rightMotors.move(55);
-    pros::delay(380);
-    leftMotors.move(0);
-    rightMotors.move(0);
-    moveDrive(-70, 150);
-	chassis.turnToHeading(145, 500, {.minSpeed = 80, .earlyExitRange = 20});
-    turnToHeading(-165, true);
-	leftResetPos();
     resetPos();
-	moveToPoint(27, -19.5, true, true, false, 80);
-	moveToPoint(17, 18, true, true, false, 80);
-	moveToPoint(12, 12, true, true, true, 80);
+    moveToPoint(36, 0, true, false, false);
+    turnToHeading(90, true);
      //-----------------------Score 7 Low -----------------------
     intakeLift.setState(true);
     intake.setState(IntakeState::SCORELOW);
