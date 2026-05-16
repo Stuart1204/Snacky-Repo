@@ -47,29 +47,29 @@ inline void intakeControls() {
     //     }
     // }
 
-    if(controller.get_digital_new_press(Buttons::RIGHT)) {
-        if(intake.getState() == IntakeState::SCOREMID) {
-            slowMidGoal = !slowMidGoal;
-            if(slowMidGoal) {
-                controller.rumble(".."); 
-            } else {
-                controller.rumble(".");
-            }
-        }
-        if(intake.getState() == IntakeState::SCORELOW) {
-            slowLowGoal = !slowLowGoal;
-            if(slowLowGoal) {
-                controller.rumble(".."); 
-            } else {
-                controller.rumble(".");
-            }
-        }
-        if(slowLowGoal) {
-           controller.rumble(".."); 
-        } else {
-            controller.rumble(".");
-        }
-    }
+    // if(controller.get_digital_new_press(Buttons::RIGHT)) {
+    //     if(intake.getState() == IntakeState::SCOREMID) {
+    //         slowMidGoal = !slowMidGoal;
+    //         if(slowMidGoal) {
+    //             controller.rumble(".."); 
+    //         } else {
+    //             controller.rumble(".");
+    //         }
+    //     }
+    //     if(intake.getState() == IntakeState::SCORELOW) {
+    //         slowLowGoal = !slowLowGoal;
+    //         if(slowLowGoal) {
+    //             controller.rumble(".."); 
+    //         } else {
+    //             controller.rumble(".");
+    //         }
+    //     }
+    //     if(slowLowGoal) {
+    //        controller.rumble(".."); 
+    //     } else {
+    //         controller.rumble(".");
+    //     }
+    // }
 }
 
 inline uint32_t activateTongueStartTime = 0;
@@ -98,8 +98,13 @@ inline void activatePistons() {
             activateDoinkerStartTime = pros::millis();
             tongue.setState(false);
         } else {
-            leftDoinker.toggle();
-            rightDoinker.toggle();
+            if(leftDoinker.getState() && rightDoinker.getState()) {
+                leftDoinker.setState(false);
+                rightDoinker.setState(false);
+            } else {
+                leftDoinker.setState(true);
+                rightDoinker.setState(true);
+            }
             activateDoinkers = true;
         }
     }
@@ -124,6 +129,12 @@ inline void activatePistons() {
             activateDoinkers = true;
         }
     }
+    if(controller.get_digital_new_press(Buttons::LEFT)) {
+        leftDoinker.toggle();
+    }
+    if(controller.get_digital_new_press(Buttons::RIGHT)) {
+        rightDoinker.toggle();
+    }
 }
 
 inline int matchloadShakeCounter = 0;
@@ -145,15 +156,15 @@ inline void drivetrainControls() {
         chassis.arcade(leftY, rightX, false, 0.5);
     }
     // auto wing code
-if(controller.get_digital_new_press(Buttons::LEFT) && autonSelectionEnum != Selection::SKILLS) {
-        startAutoWing();
-    }
-    if(enableAutoWing) {
-        if(abs(leftY) > 17 || abs(rightX) > 17) {
-            enableAutoWing = false;
-        }
-    }
-    autoWing();
+// if(controller.get_digital_new_press(Buttons::LEFT) && autonSelectionEnum != Selection::SKILLS) {
+//         startAutoWing();
+//     }
+//     if(enableAutoWing) {
+//         if(abs(leftY) > 17 || abs(rightX) > 17) {
+//             enableAutoWing = false;
+//         }
+//     }
+//     autoWing();
 }
 
 inline void displayData() {
@@ -275,8 +286,8 @@ inline void autonSelection() {
 
         button longControlButton(0, 15, 120, 180, pros::Color::sky_blue, "LG");
         button longAndCenterButton(120, 15, 240, 180, pros::Color::sky_blue, "LG+C");
-        button SAWPButton(240, 15, 360, 180, pros::Color::sky_blue, "SAWP");
-        button NISAWPButton(360, 15, 480, 180, pros::Color::sky_blue, "4-Goal");
+        button SAWPButton(240, 15, 360, 180, pros::Color::sky_blue, "SAWP or Both Mid");
+        button NISAWPButton(360, 15, 480, 180, pros::Color::sky_blue, "4-Goal or UpMid Rush");
 
         if(allianceColour == AllianceColour::RED) {
             if(startingSide == Selection::LEFT) {
@@ -325,10 +336,10 @@ inline void autonSelection() {
                     button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Red, Left, LG+C");
                 }
                 if(autonSelectionEnum == Selection::SOLO_AWP) {
-                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Bad!");
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "both mid rush");
                 }
                 if(autonSelectionEnum == Selection::NI_SAWP) {
-                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Bad!");
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "up mid rush");
                 }
             }
             if(startingSide == Selection::RIGHT) {
@@ -355,10 +366,10 @@ inline void autonSelection() {
                     button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Blue, Left, LG+C");
                 }
                 if(autonSelectionEnum == Selection::SOLO_AWP) {
-                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Bad!");
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "both mid rush");
                 }
                 if(autonSelectionEnum == Selection::NI_SAWP) {
-                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Bad!");
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "up mid rush");
                 }
             }
             if(startingSide == Selection::RIGHT) {

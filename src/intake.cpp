@@ -180,7 +180,7 @@ class Intake {
                   moveUpper(127);
                } else {
                   moveLower(0);
-                  moveUpper(0);
+                  moveUpper(-40);
                }
             }
             break;
@@ -206,15 +206,15 @@ class Intake {
          case IntakeState::SCOREMID:
             if(autonSelectionEnum == Selection::SKILLS) {
                moveLower(127);
-               moveUpper(60);
+               moveUpper(76);
             } else {
                if(pros::competition::is_autonomous()) {
                   moveLower(127);
-                  moveUpper(80);
+                  moveUpper(85);
                } else {
                   if (pros::millis() - immediateScoreMidStartTime > 225) {
                      moveLower(127);
-                     moveUpper(70);
+                     moveUpper(127);
                   } else {
                      moveLower(0);
                      moveUpper(0);
@@ -222,7 +222,7 @@ class Intake {
                }
             }
             if(slowMidGoal && autonSelectionEnum == Selection::SKILLS) {
-               moveUpper(60);
+               moveUpper(63);
             } 
             break;
          case IntakeState::SCORELOW: // meaning the robot is tryna score 7 on low
@@ -247,7 +247,7 @@ class Intake {
                }
                lowOuttakeJiggleCounter++;
             } else {
-               moveLower(-85);
+               moveLower(-90);
                moveUpper(-127);
             }
             if(slowLowGoal && autonSelectionEnum == Selection::SKILLS) {
@@ -267,7 +267,7 @@ class Intake {
             break;
          case IntakeState::UPPEROUTTAKE:
             moveUpper(-100);
-            moveLower(-20);
+            moveLower(60);
             break;
          case IntakeState::INTAKEWITHEJECT:
             moveLower(127);

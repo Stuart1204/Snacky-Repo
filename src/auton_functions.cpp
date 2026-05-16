@@ -691,16 +691,16 @@ inline void autonAutoWing() {
     }
     if(enableAutoWing) {
         if(onFirstStep) {
-            if(inertial_sensor.get_rotation() > gyroValue - 38) {
-                leftMotors.move(-80);
-                rightMotors.move(80);
+            if(inertial_sensor.get_rotation() > gyroValue - 40) {
+                leftMotors.move(-83);
+                rightMotors.move(83);
             } else {
                 onFirstStep = false;
                 onSecondStep = true;
             }
         }
         if(onSecondStep) {
-            if(inertial_sensor.get_rotation() < gyroValue - 38) {
+            if(inertial_sensor.get_rotation() < gyroValue - 40) {
                 leftMotors.move(90);
                 rightMotors.move(10);
             } else {

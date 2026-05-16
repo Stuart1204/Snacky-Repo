@@ -41,6 +41,8 @@ void autonomous() {
 } 
 
 void opcontrol() {
+	leftMotors.set_current_limit_all(2250);
+	rightMotors.set_current_limit_all(2250);
 	leftDoinker.setState(false);
 	rightDoinker.setState(false);
 	odomLift.setState(true);

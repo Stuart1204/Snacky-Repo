@@ -22,10 +22,13 @@ inline void autonWingMacro() {
     leftMotors.move(7);
     rightMotors.move(-7);
     pros::delay(300);
-    leftMotors.move(-70);
-    rightMotors.move(-60);
-    pros::delay(500);
-    leftMotors.move(-15);
+    leftMotors.move(-90);
+    rightMotors.move(-80);
+    pros::delay(250);
+    leftMotors.move(-35);
+    rightMotors.move(-80);
+    pros::delay(250);
+    leftMotors.move(-10);
     rightMotors.move(-30);
     pros::delay(1000);
     leftMotors.move(20);
@@ -129,7 +132,7 @@ inline void leftGrab7() {
     rightResetPos();
     moveToPoint(-56, 48, true, false, true);
     turnToHeading(-90, true);
-    moveDrive(50, 600);
+    moveDrive(50, 300);
     waitAtMatchload();
 }
 
@@ -201,7 +204,7 @@ inline void left7BlockWing() {
 
 inline void rightLGAndCRush() { // 1010g auto
     chassis.setPose(-48, -18, 0);
-    moveToPoint(-48, -46, false, false, true, 90);
+    moveToPoint(-48, -47.5, false, false, true, 90);
     tongue.setState(true);
     turnToHeading(-90, true);
     leftResetPos();
@@ -222,15 +225,16 @@ inline void rightLGAndCRush() { // 1010g auto
     moveToPoint(-24, -26, true, false, true, 90);
     // tongue.setState(true);
     moveToPoint(-17, -17, true, false, true, 50);
+    pros::delay(100); 
     intake.setState(IntakeState::UPPEROUTTAKE);
     // tongue.setState(false);
     moveToPoint(-12, -11, true, false, true, 70);
     intake.setState(IntakeState::SCORELOW);
     intakeLift.setState(true);
-    pros::delay(750);
+    pros::delay(1000);
     // pros::delay(500); // extra delay
-    intakeLift.setState(false);
-    chassis.moveToPoint(-19, -29, 1000, {.forwards = false, .minSpeed = 90, .earlyExitRange = 5});
+    intakeLift.setState(false); // below was -29 before
+    chassis.moveToPoint(-20, -31, 1000, {.forwards = false, .minSpeed = 90, .earlyExitRange = 5});
     chassis.waitUntilDone();
     intake.setState(IntakeState::IDLE);
     turnToHeading(90, true);
@@ -244,7 +248,7 @@ inline void rightLGAndCRush() { // 1010g auto
 
 inline void leftLGAndCRush() { //1010g auto
     chassis.setPose(-48, 18, 180);
-    moveToPoint(-48, 44, false, false, true, 90);
+    moveToPoint(-48, 47, false, false, true, 90);
     tongue.setState(true);
     turnToHeading(-90, true);
     rightResetPos();
@@ -267,15 +271,16 @@ inline void leftLGAndCRush() { //1010g auto
     moveToPoint(-12, 12, false, true, true, 60);
     intake.setState(IntakeState::SCOREMID);
     pros::delay(750);
-    chassis.moveToPoint(-25, 31, 1000, {.minSpeed = 70, .earlyExitRange = 5});
-    chassis.waitUntilDone();
-    intake.setState(IntakeState::IDLE);
-    turnToHeading(-110, true);
-    wing.setState(false);
-    currentPose = chassis.getPose();
-    moveToPoint(-16, currentPose.y, false, false, true, 50);
-    rightMotors.move(-35);
-    leftMotors.move(3);
+    tongue.setState(false);
+    // chassis.moveToPoint(-25, 34, 1000, {.minSpeed = 80, .earlyExitRange = 5});
+    // chassis.waitUntilDone();
+    // intake.setState(IntakeState::IDLE);
+    // turnToHeading(-110, true);
+    // wing.setState(false);
+    // currentPose = chassis.getPose();
+    // moveToPoint(-15, currentPose.y, false, false, true, 50);
+    // rightMotors.move(-35);
+    // leftMotors.move(3);
 }
 
 inline void rightLGAndC() {
@@ -438,7 +443,7 @@ inline void SAWP13() {
 
 inline void SAWP4Goal() {
     chassis.setPose(-48, -18, 0);
-    moveToPoint(-48, -46, false, false, true, 90);
+    moveToPoint(-48, -47.5, false, false, true, 90);
     tongue.setState(true);
     turnToHeading(-90, true);
     leftResetPos();
@@ -538,7 +543,8 @@ inline void midRush() {
     moveToPoint(-12, -9, true, false, true, 70);
     intake.setState(IntakeState::SCORELOW);
     intakeLift.setState(true);
-    pros::delay(850);
+    pros::delay(1000);
+    pros::delay(2100);
     intakeLift.setState(false);
     moveToPoint(-24, -15, false, false, true, 80);
     intake.setState(IntakeState::INTAKE);
@@ -546,15 +552,16 @@ inline void midRush() {
     tongue.setState(true);
     moveToPoint(-21, 22, true, false, true, 55);
     turnToHeading(-45, true);
-    moveToPoint(-12, 12, false, false, true);
+    tongue.setState(false);
+    moveToPoint(-12, 11, false, false, true);
     intake.setState(IntakeState::SCOREMID);
     leftDoinker.setState(true);
     driveToGoal(false, 35);
     pros::delay(800);
     middleDescore.setState(true);
     driveDistance(6);
-    driveToGoal(false);
-    leftMotors.move(-40);
+    driveToGoal(false, 30);
+    leftMotors.move(-15);
     rightMotors.move(-5);
 }
 
@@ -661,7 +668,9 @@ inline void sugarSkillsAuton() {
     driveToGoal(false, 40);
     tongue.setState(true);
     intake.setState(IntakeState::SCOREMID);
-    pros::delay(4100);
+    pros::delay(2500);
+    slowMidGoal = true;
+    pros::delay(1500);
     intake.setState(IntakeState::IDLE);
     middleGoal.setState(true); ////////////////////// SCORED 7
     moveToPoint(38, -48, true, false);
@@ -879,8 +888,8 @@ inline void skillsAuton(){
 
 inline void runSelectedAuton() {
     if(autonSelectionEnum == Selection::SKILLS) {
-        skillsAuton();
-        // sugarSkillsAuton();
+        // skillsAuton();
+        sugarSkillsAuton();
         allianceColour = AllianceColour::RED;
         enableColourSort = false;
     }
@@ -892,6 +901,12 @@ inline void runSelectedAuton() {
         if(autonSelectionEnum == Selection::LONG_AND_CENTER) {
             // leftLGAndC_CenterLast();
             leftLGAndCRush();
+        }
+        if(autonSelectionEnum == Selection::SOLO_AWP) {
+            midRush();
+        }
+        if(autonSelectionEnum == Selection::NI_SAWP) {
+            upperMidRush();
         }
     }
     if(startingSide == Selection::RIGHT) {
