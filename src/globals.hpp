@@ -17,16 +17,18 @@
 // -- Defined Ports -- //
 
 //motor ports
-#define lBPort -20
-#define lMPort -12
-#define lFPort -1
+#define lBPort 18
+#define lMPort 20
+#define lFPort -19
 
-#define rBPort 11
-#define rMPort 18
-#define rFPort 17
+#define rBPort -4
+#define rMPort -6
+#define rFPort -5
 
-#define lowIntakePort 15
-#define upperIntakePort -14
+#define intakePort 1
+
+#define rightElePort 15
+#define leftElePort 16
 
 //sensor ports
 #define imuPort 16
@@ -36,7 +38,7 @@
 #define rightDistPort 13
 #define frontDistPort 6
 
-#define verticalEncoderPort 4
+#define verticalEncoderPort 17
 
 //solenoids
 #define rightWingPort 'E'
@@ -159,11 +161,10 @@ namespace MotorConfigs {
 inline pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 // motors
-inline pros::Motor lowerIntake(lowIntakePort, pros::v5::MotorGears::rpm_600);
-inline pros::Motor upperIntake(upperIntakePort, pros::v5::MotorGears::rpm_600);
+inline pros::Motor intakeMotor(intakePort, pros::v5::MotorGears::rpm_600);
 
-inline pros::MotorGroup leftMotors({lBPort, lMPort, lFPort}, pros::v5::MotorGears::rpm_600);
-inline pros::MotorGroup rightMotors({rBPort, rMPort, rFPort}, pros::v5::MotorGears::rpm_600);
+inline pros::MotorGroup leftMotors({lBPort, lMPort, lFPort});
+inline pros::MotorGroup rightMotors({rBPort, rMPort, rFPort});
 
 // pneumatics
 inline pros::adi::DigitalOut wingPiston(rightWingPort, LOW);

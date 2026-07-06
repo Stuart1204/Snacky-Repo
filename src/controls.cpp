@@ -152,6 +152,12 @@ inline void drivetrainControls() {
 	rightMotors.set_brake_mode(MotorConfigs::BRAKE);
     int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
     int rightX = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+    if(abs(leftY) < 20) {
+        leftY = 0;
+    }
+    if(abs(rightX) < 20) {
+        rightX = 0;
+    }
     if(!enableAutoWing) {
         chassis.arcade(leftY, rightX, false, 0.5);
     }
