@@ -33,7 +33,6 @@
 //sensor ports
 #define imuPort 16
 #define colourSortPort 9
-#define parkSensorPort 3
 #define leftDistPort 5
 #define rightDistPort 13
 #define frontDistPort 6
@@ -41,18 +40,13 @@
 #define verticalEncoderPort 17
 
 //solenoids
-#define rightWingPort 'E'
-#define tonguePort 'C'
-#define leftDoinkerPort 'A'
-#define rightDoinkerPort 'D'
 #define intakeLiftPort 'F'
-#define odomLiftPort 'B'
-#define middleGoalPort 'H'
-#define middleDescorePort 'G'
+#define clawPort 'B'
+#define stickPort 'H'
 
 //drivetrain specs
 #define driveTrackWidth 11.375
-#define driveWheelType lemlib::Omniwheel::NEW_325
+#define driveWheelType lemlib::Omniwheel::NEW_275
 #define driveRPM 450
 
 // auton selection variable
@@ -61,12 +55,7 @@ inline int startingSide;
 
 //global variables
 inline int allianceColour;
-inline int scoreHeight; //1 for long goal, 2 for middle goal
-inline int blockCounter = 0;
 inline bool enableColourSort = false;
-inline bool slowLowGoal = false;
-inline bool slowMidGoal = false;
-inline bool enableAutoWing = false;
 
 // global constants
 const inline float FRONT_DIST_OFFSET = 5.5;
@@ -76,29 +65,17 @@ const inline float MM_TO_INCHES = 0.03937007874;
 const inline float CENTIDEG_TO_INCHES = 0.00017889624;
 const inline float DEG_TO_RAD = (M_PI / 180.0);
 
-// used for communicating between intake and park piston
-inline bool activatePark = false;
-
-// used for communicating between drivetrain and buttons
-inline bool matchloadShake = false;
-
 // intake states enum
 enum IntakeState {
     IDLE = 0,
     INTAKE = 1,
     OUTTAKE = 2,
-    SCOREHIGH = 3,
-    SCOREMID = 4,
-    SCORELOW = 5,
-    PARK = 6,
-    LOWINTAKE = 7,
-    LOWOUTTAKE = 8,
-    INTAKEWITHEJECT = 9,
-    STOPMID = 10,
-    SCOREHIGHSLOW = 11,
-    UPPEROUTTAKE = 12,
-    SLOWOUTTAKE = 13,
-    LOWINTAKEUPOUTTAKE = 14
+};
+
+enum ElevatorState {
+    STOW = 0,
+    MIDDLE = 1,
+    BOTTOM = 2,
 };
 
 // aliance colour
@@ -113,12 +90,8 @@ enum Selection {
     MATCH = 2,
     LEFT = 3,
     RIGHT = 4,
-    LONG_CONTROL = 5,
-    LONG_AND_CENTER = 6,
-    SOLO_AWP = 7,
-    NI_SAWP = 8,
-    MATCHLOAD_SCORE = 9,
-    NOTHING = 10
+    SOLO_AWP = 5,
+    NOTHING = 6
 };
 
 // -- Namespace Configurations -- //
@@ -136,13 +109,6 @@ namespace Buttons {
     constexpr auto DOWN = pros::E_CONTROLLER_DIGITAL_DOWN;
     constexpr auto LEFT = pros::E_CONTROLLER_DIGITAL_LEFT;
     constexpr auto RIGHT = pros::E_CONTROLLER_DIGITAL_RIGHT;
-
-    // controller buttons specific
-    // constexpr auto wing = Buttons::X;
-    // constexpr auto park = Buttons::B;
-    // constexpr auto tongue = Buttons::A;
-    // constexpr auto intakeLift = Buttons::Y;
-    // constexpr auto colourSort = Buttons::RIGHT;
 }
 
 namespace MotorConfigs {
@@ -166,21 +132,18 @@ inline pros::Motor intakeMotor(intakePort, pros::v5::MotorGears::rpm_600);
 inline pros::MotorGroup leftMotors({lBPort, lMPort, lFPort});
 inline pros::MotorGroup rightMotors({rBPort, rMPort, rFPort});
 
+inline pros::Motor leftElevator(leftElePort, pros::v5::MotorGears::rpm_600);
+inline pros::Motor rightElevator(rightElePort, pros::v5::MotorGears::rpm_600);
+
 // pneumatics
-inline pros::adi::DigitalOut wingPiston(rightWingPort, LOW);
-inline pros::adi::DigitalOut tonguePiston(tonguePort, LOW);
-inline pros::adi::DigitalOut leftDoinkerPiston(leftDoinkerPort, LOW);
-inline pros::adi::DigitalOut rightDoinkerPiston(rightDoinkerPort, LOW);
 inline pros::adi::DigitalOut intakeLiftPiston(intakeLiftPort, LOW);
-inline pros::adi::DigitalOut odomLiftPiston(odomLiftPort, LOW);
-inline pros::adi::DigitalOut middleGoalPiston(middleGoalPort, HIGH);
-inline pros::adi::DigitalOut middleDescorePiston(middleDescorePort, LOW);
+inline pros::adi::DigitalOut clawPiston(clawPort, LOW);
+inline pros::adi::DigitalOut stickPiston(stickPort, LOW);
 
 
 // Inertial Sensor on port
 inline pros::Imu inertial_sensor(imuPort);
 inline pros::Optical colourSortSensor(colourSortPort);
-inline pros::Optical parkSensor(parkSensorPort);
 inline pros::Distance leftDistSensor(leftDistPort);
 inline pros::Distance rightDistSensor(rightDistPort);
 inline pros::Distance frontDistSensor(frontDistPort);
@@ -204,7 +167,7 @@ inline lemlib::OdomSensors sensors{
 	nullptr,			  
 	nullptr, 
 	nullptr,			  
-	&inertial_sensor	  // inertial sensor
+	&inertial_sensor
 };
 
 // lateral motion controller

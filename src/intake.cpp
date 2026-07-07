@@ -13,9 +13,6 @@ class Intake {
    private:
       int currentState = IntakeState::IDLE;
       int lastState = IntakeState::IDLE;
-      int lowerPower = 0;
-      int upperPower = 0;
-      int rollerPower = 0;
    public:
       Intake(){} // constructor
 

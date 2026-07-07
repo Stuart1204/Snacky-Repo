@@ -11,7 +11,7 @@
 
 void initialize() {
 	chassis.calibrate();
-	// parkSensor.set_led_pwm(100);
+
 	pros::Task intakeTask([]{
 		while (true) {
 			intake.run();
@@ -20,8 +20,8 @@ void initialize() {
 	});
 
 	allianceColour = AllianceColour::RED;
-	startingSide = Selection::LONG_AND_CENTER;
-	autonSelectionEnum = Selection::LONG_AND_CENTER;
+	startingSide = Selection::MATCH;
+	autonSelectionEnum = Selection::MATCH;
 
 	// autonSelection();
 
@@ -31,6 +31,7 @@ void initialize() {
 		enableColourSort = true;
 	}
 }
+
 void disabled() {}
 
 void competition_initialize() {}
@@ -42,9 +43,6 @@ void autonomous() {
 void opcontrol() {
 	leftMotors.set_current_limit_all(2250);
 	rightMotors.set_current_limit_all(2250);
-	leftDoinker.setState(false);
-	rightDoinker.setState(false);
-	odomLift.setState(true);
     while (true) {
 		// intake has its own thread
 		drivetrainControls();

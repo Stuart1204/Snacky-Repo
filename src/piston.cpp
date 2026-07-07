@@ -29,13 +29,8 @@ class Piston {
 };
 
 // pistons
-inline Piston wing(wingPiston);
-inline Piston tongue(tonguePiston);
-inline Piston leftDoinker(leftDoinkerPiston);
-inline Piston rightDoinker(rightDoinkerPiston);
 inline Piston intakeLift(intakeLiftPiston);
-inline Piston odomLift(odomLiftPiston);
-inline Piston middleGoal(middleGoalPiston);
-inline Piston middleDescore(middleDescorePiston);
+inline Piston claw(clawPiston);
+inline Piston stick(stickPiston);
 
 #endif
