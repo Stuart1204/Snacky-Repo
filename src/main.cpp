@@ -2,6 +2,7 @@
 #include "globals.hpp"
 #include "autons.cpp"
 #include "intake.cpp"
+#include "elevator.cpp"
 #include "controls.cpp"
 #include "lemlib/chassis/chassis.hpp"
 #include "lemlib/pose.hpp"
@@ -15,9 +16,11 @@ void initialize() {
 	pros::Task intakeTask([]{
 		while (true) {
 			intake.run();
-			pros::delay(20);
+			//elevator.run();
+			pros::delay(50);
 		}
 	});
+	elevator.elevatorReset();
 
 	allianceColour = AllianceColour::RED;
 	startingSide = Selection::MATCH;

@@ -5,6 +5,7 @@
 #include "other_functions.cpp"
 #include "auton_functions.cpp"
 #include "intake.cpp"
+#include "elevator.cpp"
 #include "piston.cpp"
 #include "pros/colors.hpp"
 #include "pros/screen.h"
@@ -12,45 +13,93 @@
 #include <cstring>
 #include <iostream>
 
-inline void intakeControls() {
-    if(controller.get_digital(Buttons::L1)) {
+inline void intakeControls()
+{
+    if (controller.get_digital(Buttons::L1))
+    {
         intake.setState(IntakeState::INTAKE);
-    } else if(controller.get_digital(Buttons::L2)) {
+    }
+    else if (controller.get_digital(Buttons::L2))
+    {
         intake.setState(IntakeState::OUTTAKE);
+    } else {
+        intake.setState(IntakeState::IDLE);
     }
 }
-inline void activatePistons() {
-    if (controller.get_digital_new_press(Buttons::Y)) {
+inline void activatePistons()
+{
+    if (controller.get_digital_new_press(Buttons::Y))
+    {
         intakeLift.toggle();
     }
-    if (controller.get_digital_new_press(Buttons::X)) {
+    if (controller.get_digital_new_press(Buttons::X))
+    {
         stick.toggle();
     }
 }
 
 inline int matchloadShakeCounter = 0;
 inline bool matchloadShakeDirection = false;
+inline void diffyElevatorControls()
+{
+    bool manualInput =
+        controller.get_digital(Buttons::UP) ||
+        controller.get_digital(Buttons::DOWN) ||
+        controller.get_digital(Buttons::LEFT) ||
+        controller.get_digital(Buttons::RIGHT);
 
-inline void subsystemControls() {
-    intakeControls(); 
+    if (manualInput && elevator.getState() != ElevatorState::MANUAL)
+    {
+        elevator.setState(ElevatorState::MANUAL);
+    }
+
+    if (controller.get_digital(Buttons::UP))
+    {
+        elevator.changeElevatorTarget(0.5);
+    }
+    else if (controller.get_digital(Buttons::DOWN))
+    {
+        elevator.changeElevatorTarget(-0.5);
+    }
+
+    if (controller.get_digital(Buttons::LEFT))
+    {
+        elevator.changeWristTarget(-10);
+    }
+    else if (controller.get_digital(Buttons::RIGHT))
+    {
+        elevator.changeWristTarget(10);
+    }
+    if (controller.get_digital_new_press(Buttons::A)) {
+        elevator.setState(ElevatorState::SCORE_LOW);
+    }
+}
+inline void subsystemControls()
+{
+    intakeControls();
+    diffyElevatorControls();
     activatePistons();
 }
 
-inline void drivetrainControls() {
+inline void drivetrainControls()
+{
     leftMotors.set_brake_mode(MotorConfigs::BRAKE);
-	rightMotors.set_brake_mode(MotorConfigs::BRAKE);
+    rightMotors.set_brake_mode(MotorConfigs::BRAKE);
     int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
     int rightX = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
-    if(abs(leftY) < 20) {
+    if (abs(leftY) < 20)
+    {
         leftY = 0;
     }
-    if(abs(rightX) < 20) {
+    if (abs(rightX) < 20)
+    {
         rightX = 0;
     }
     chassis.arcade(leftY, rightX, false, 0.5);
 }
 
-inline void displayData() {
+inline void displayData()
+{
     float frontCurrentDistance = (frontDistSensor.get_distance() * MM_TO_INCHES) + FRONT_DIST_OFFSET;
     float leftCurrentDistance = (leftDistSensor.get_distance() * MM_TO_INCHES) + LEFT_DIST_OFFSET;
     float rightCurrentDistance = (rightDistSensor.get_distance() * MM_TO_INCHES) + RIGHT_DIST_OFFSET;
@@ -58,9 +107,10 @@ inline void displayData() {
     lemlib::Pose pose = chassis.getPose();
     // pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %f", rightCurrentDistance);
 
-    pros::screen::print(TEXT_LARGE_CENTER, 1, "x: %f", pose.x);
-    pros::screen::print(TEXT_LARGE_CENTER, 3, "y: %f", pose.y);
-    pros::screen::print(TEXT_LARGE_CENTER, 5, "heading: %f", pose.theta);
+    pros::screen::print(TEXT_LARGE_CENTER, 1, "elevatorPos: %f", elevator.getElevatorPosition());
+    pros::screen::print(TEXT_LARGE_CENTER, 3, "wristPos: %f", elevator.getWristPosition());
+    pros::screen::print(TEXT_LARGE_CENTER, 5, "elevatorTarget: %f", elevator.getElevatorTarget());
+    pros::screen::print(TEXT_LARGE_CENTER, 7, "wristTarget: %f", elevator.getWristTarget());
 }
 
 class button
@@ -75,23 +125,25 @@ public:
     const float characterToOffset = 8.75;
     int textOffset;
     bool pressed = false;
-    button(double x, double y, double x2, double y2, pros::Color colour, const char* text) : x(x), y(y), x2(x2), y2(y2), 
-        colour(colour), text(text) {
-        
+    button(double x, double y, double x2, double y2, pros::Color colour, const char *text) : x(x), y(y), x2(x2), y2(y2),
+                                                                                             colour(colour), text(text)
+    {
+
         pros::screen::set_pen(colour);
-	    pros::screen::fill_rect(x,y,x2,y2);
+        pros::screen::fill_rect(x, y, x2, y2);
         pros::screen::set_pen(pros::Color::black);
         pros::screen::draw_rect(x, y, x2, y2);
         textOffset = std::strlen(text) * characterToOffset;
         pros::screen::set_pen(pros::Color::white);
         pros::screen::print(pros::E_TEXT_LARGE, (x + x2) / 2 - textOffset, (y + y2) / 2, text);
     }
-    bool isPressed() {
+    bool isPressed()
+    {
         pros::screen_touch_status_s_t currentTouch = pros::screen::touch_status();
-        
+
         // Check if touch is within button bounds and is a press
-        if (currentTouch.touch_status == pros::E_TOUCH_PRESSED && 
-            currentTouch.x >= x && currentTouch.x <= x2 && 
+        if (currentTouch.touch_status == pros::E_TOUCH_PRESSED &&
+            currentTouch.x >= x && currentTouch.x <= x2 &&
             currentTouch.y >= y && currentTouch.y <= y2)
         {
             return true;
@@ -100,7 +152,8 @@ public:
     }
 };
 
-inline void clearScreen() {
+inline void clearScreen()
+{
     pros::screen::set_pen(pros::Color::black);
     pros::screen::erase();
     pros::screen::set_pen(pros::Color::white);
@@ -149,11 +202,11 @@ inline void clearScreen() {
 //         button rightSideButton(250, 15, 455, 180, pros::Color::sky_blue, "Right");
 //         if(allianceColour == AllianceColour::RED) {
 //             pros::screen::print(pros::E_TEXT_MEDIUM, 10, "Selected: Red");
-//         } 
+//         }
 //         if(allianceColour == AllianceColour::BLUE) {
 //             pros::screen::print(pros::E_TEXT_MEDIUM, 10, "Selected: Blue");
 //         }
-        
+
 //         while(true) {
 //             if(leftSideButton.isPressed()) {
 //                 startingSide = Selection::LEFT;
@@ -180,7 +233,7 @@ inline void clearScreen() {
 //                 pros::screen::print(pros::E_TEXT_MEDIUM, 10, "Selected: Red, Right");
 //             }
 //         }
-//         if(allianceColour == AllianceColour::BLUE) {    
+//         if(allianceColour == AllianceColour::BLUE) {
 //             if(startingSide == Selection::LEFT) {
 //                 pros::screen::print(pros::E_TEXT_MEDIUM, 10, "Selected: Blue, Left");
 //             }

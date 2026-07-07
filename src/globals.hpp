@@ -25,12 +25,13 @@
 #define rMPort -6
 #define rFPort -5
 
-#define intakePort 1
+#define intakePort -1
 
-#define rightElePort 15
-#define leftElePort 16
+#define rightElePort -15
+#define leftElePort -16
 
 //sensor ports
+#define wristPort -14
 #define imuPort 16
 #define colourSortPort 9
 #define leftDistPort 5
@@ -69,13 +70,14 @@ const inline float DEG_TO_RAD = (M_PI / 180.0);
 enum IntakeState {
     IDLE = 0,
     INTAKE = 1,
-    OUTTAKE = 2,
+    OUTTAKE = 2
 };
 
 enum ElevatorState {
     STOW = 0,
-    MIDDLE = 1,
-    BOTTOM = 2,
+    SCORE_LOW = 1,
+    SCORE_HIGH = 2,
+    MANUAL = 4
 };
 
 // aliance colour
@@ -148,7 +150,7 @@ inline pros::Distance leftDistSensor(leftDistPort);
 inline pros::Distance rightDistSensor(rightDistPort);
 inline pros::Distance frontDistSensor(frontDistPort);
 
-
+inline pros::Rotation wrist_rotation(wristPort);
 inline pros::Rotation vertical_rotation(verticalEncoderPort); 
 inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_rotation, 2.05, 0);
 
