@@ -17,7 +17,11 @@ inline void intakeControls()
 {
     if (controller.get_digital(Buttons::L1))
     {
-        intake.setState(IntakeState::INTAKE);
+        if(intakeLift.getState()) {
+            intake.setState(IntakeState::INTAKEHIGH);
+        } else {
+            intake.setState(IntakeState::INTAKE);
+        }
     }
     else if (controller.get_digital(Buttons::L2))
     {
@@ -40,45 +44,35 @@ inline void activatePistons()
 
 inline int matchloadShakeCounter = 0;
 inline bool matchloadShakeDirection = false;
-inline void diffyElevatorControls()
+inline void elevatorControls()
 {
-    bool manualInput =
-        controller.get_digital(Buttons::UP) ||
-        controller.get_digital(Buttons::DOWN) ||
-        controller.get_digital(Buttons::LEFT) ||
-        controller.get_digital(Buttons::RIGHT);
-
-    if (manualInput && elevator.getState() != ElevatorState::MANUAL)
-    {
-        elevator.setState(ElevatorState::MANUAL);
-    }
-
-    if (controller.get_digital(Buttons::UP))
-    {
-        elevator.changeElevatorTarget(0.5);
-    }
-    else if (controller.get_digital(Buttons::DOWN))
-    {
-        elevator.changeElevatorTarget(-0.5);
+    if(controller.get_digital(Buttons::R1)) {
+        elevator.setElevatorTarget(100);
+    } else if(controller.get_digital(Buttons::B)) {
+        elevator.setElevatorTarget(-100);
+    } else {
+        elevator.setElevatorTarget(elevator.getElevatorPosition());
     }
 
     if (controller.get_digital(Buttons::LEFT))
     {
-        elevator.changeWristTarget(-10);
+        elevator.setWristTarget(-90);
     }
     else if (controller.get_digital(Buttons::RIGHT))
     {
-        elevator.changeWristTarget(10);
+        elevator.setWristTarget(-270);
+    }
+    else if (controller.get_digital(Buttons::UP))
+    {
+        elevator.setWristTarget(0);
+    }
+    else if (controller.get_digital(Buttons::DOWN))
+    {
+        elevator.setWristTarget(-180);
     }
     if (controller.get_digital_new_press(Buttons::A)) {
-        elevator.setState(ElevatorState::SCORE_LOW);
+        elevator.setWristTarget(-30);
     }
-}
-inline void subsystemControls()
-{
-    intakeControls();
-    diffyElevatorControls();
-    activatePistons();
 }
 
 inline void drivetrainControls()
@@ -96,6 +90,13 @@ inline void drivetrainControls()
         rightX = 0;
     }
     chassis.arcade(leftY, rightX, false, 0.5);
+}
+
+inline void subsystemControls()
+{
+    intakeControls();
+    elevatorControls();
+    activatePistons();
 }
 
 inline void displayData()

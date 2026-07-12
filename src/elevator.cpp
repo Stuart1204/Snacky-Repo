@@ -31,7 +31,7 @@ namespace ElevatorConfig
 
    // PID gains  { kP, kI, kD, windupRange }
    constexpr double ELEV_KP = 45, ELEV_KI = 0.0, ELEV_KD = 0;
-   constexpr double WRIST_KP = 1.5, WRIST_KI = 0.0, WRIST_KD = 1;
+   constexpr double WRIST_KP = 1.4, WRIST_KI = 0.0, WRIST_KD = 1;
 
    // Settle threshold
    constexpr double ELEV_SETTLE_IN = 0.15;  // inches
@@ -151,7 +151,11 @@ public:
 
    double getWristPosition()
    {
-      return wrist_rotation.get_position() / 100.0;
+      double pos = wristRotation.get_angle() / 100.0;
+      if(pos > 45) {
+         pos -= 360;
+      }
+      return pos;
    }
 
    void changeWristTarget(double delta)
@@ -162,16 +166,16 @@ public:
    // Direct target setters — use in autonomous
    void setElevatorTarget(double inches)
    {
-      elevatorTarget = clampD(inches,
-                              ElevatorConfig::ELEVATOR_MIN,
-                              ElevatorConfig::ELEVATOR_MAX);
+      elevatorTarget = inches;
    }
 
    void setWristTarget(double degrees)
    {
-      wristTarget = clampD(degrees,
-                           ElevatorConfig::WRIST_MIN,
-                           ElevatorConfig::WRIST_MAX);
+      if(degrees > 45) {
+         wristTarget = degrees - 360;
+      } else {
+         wristTarget = degrees;
+      }
    }
 
    // Freeze targets at current sensor readings
@@ -188,7 +192,6 @@ public:
    {
       leftElevator.tare_position();
       rightElevator.tare_position();
-      wrist_rotation.reset_position();
       elevatorTarget = 0;
       wristTarget = 0;
       elevatorPID.reset();

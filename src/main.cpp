@@ -16,7 +16,7 @@ void initialize() {
 	pros::Task intakeTask([]{
 		while (true) {
 			intake.run();
-			//elevator.run();
+			elevator.run();
 			pros::delay(50);
 		}
 	});
@@ -46,11 +46,29 @@ void autonomous() {
 void opcontrol() {
 	leftMotors.set_current_limit_all(2250);
 	rightMotors.set_current_limit_all(2250);
+	// leftElevator.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	// rightElevator.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
     while (true) {
 		// intake has its own thread
 		drivetrainControls();
 		subsystemControls();
 		displayData();
+		// if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
+		// 	leftElevator.move(127);
+		// 	rightElevator.move(-127);
+		// } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
+		// 	leftElevator.move(-127);
+		// 	rightElevator.move(127);
+		// } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
+		// 	leftElevator.move(-127);
+		// 	rightElevator.move(-127);
+		// } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+		// 	leftElevator.move(127);
+		// 	rightElevator.move(127);
+		// } else {
+		// 	leftElevator.move(0);
+		// 	rightElevator.move(0);
+		// }
 		pros::delay(20);
     }
 }

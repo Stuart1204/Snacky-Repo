@@ -28,6 +28,8 @@ class Intake {
             break;
          case IntakeState::OUTTAKE:
             break;
+         case IntakeState::INTAKEHIGH:
+            break;
       }
       }
    }
@@ -41,12 +43,17 @@ class Intake {
          case IntakeState::IDLE: 
             move(0);
             break;
-
          case IntakeState::INTAKE:
+            if (checkColour(toggleSensor) == allianceColour && toggleSensor.get_proximity() > 200) {
+               setState(IntakeState::IDLE);
+            }
             move(127);
             break;
          case IntakeState::OUTTAKE:
             move(-127);
+            break;
+         case IntakeState::INTAKEHIGH:
+            move(70);
             break;
       }
    }

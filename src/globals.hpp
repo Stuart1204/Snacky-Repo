@@ -27,13 +27,14 @@
 
 #define intakePort -1
 
-#define rightElePort -15
+#define rightElePort -12
 #define leftElePort -16
 
 //sensor ports
-#define wristPort -14
+#define wristPort 14
 #define imuPort 16
 #define colourSortPort 9
+#define toggleSensorPort 21
 #define leftDistPort 5
 #define rightDistPort 13
 #define frontDistPort 6
@@ -41,9 +42,9 @@
 #define verticalEncoderPort 17
 
 //solenoids
-#define intakeLiftPort 'F'
-#define clawPort 'B'
-#define stickPort 'H'
+#define intakeLiftPort 'C'
+#define clawPort 'E'
+#define stickPort 'D'
 
 //drivetrain specs
 #define driveTrackWidth 11.375
@@ -70,7 +71,8 @@ const inline float DEG_TO_RAD = (M_PI / 180.0);
 enum IntakeState {
     IDLE = 0,
     INTAKE = 1,
-    OUTTAKE = 2
+    OUTTAKE = 2,
+    INTAKEHIGH = 3,
 };
 
 enum ElevatorState {
@@ -146,11 +148,12 @@ inline pros::adi::DigitalOut stickPiston(stickPort, LOW);
 // Inertial Sensor on port
 inline pros::Imu inertial_sensor(imuPort);
 inline pros::Optical colourSortSensor(colourSortPort);
+inline pros::Optical toggleSensor(toggleSensorPort);
 inline pros::Distance leftDistSensor(leftDistPort);
 inline pros::Distance rightDistSensor(rightDistPort);
 inline pros::Distance frontDistSensor(frontDistPort);
 
-inline pros::Rotation wrist_rotation(wristPort);
+inline pros::Rotation wristRotation(wristPort);
 inline pros::Rotation vertical_rotation(verticalEncoderPort); 
 inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_rotation, 2.05, 0);
 
