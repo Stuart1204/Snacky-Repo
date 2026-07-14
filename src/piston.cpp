@@ -30,7 +30,7 @@ class Piston {
 
 // pistons
 inline Piston intakeLift(intakeLiftPiston);
-inline Piston claw(clawPiston);
+inline Piston clamp(clampPiston);
 inline Piston stick(stickPiston);
 
 #endif

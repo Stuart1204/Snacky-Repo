@@ -19,8 +19,10 @@ inline void intakeControls()
     {
         if(intakeLift.getState()) {
             intake.setState(IntakeState::INTAKEHIGH);
+            elevator.setState(ElevatorState::MATCHLOAD);
         } else {
             intake.setState(IntakeState::INTAKE);
+            elevator.setState(ElevatorState::LOAD);
         }
     }
     else if (controller.get_digital(Buttons::L2))
@@ -40,6 +42,10 @@ inline void activatePistons()
     {
         stick.toggle();
     }
+    if (controller.get_digital_new_press(Buttons::A))
+    {
+        clamp.toggle();
+    }
 }
 
 inline int matchloadShakeCounter = 0;
@@ -47,32 +53,36 @@ inline bool matchloadShakeDirection = false;
 inline void elevatorControls()
 {
     if(controller.get_digital(Buttons::R1)) {
-        elevator.setElevatorTarget(100);
+        if(elevator.getState() == ElevatorState::LOAD) {
+            elevator.setState(ElevatorState::PICKUP);
+        } else {
+           elevator.setElevatorTarget(100);
+        }
     } else if(controller.get_digital(Buttons::B)) {
         elevator.setElevatorTarget(-100);
+    } else if(controller.get_digital(Buttons::R2)) {
+        elevator.setState(ElevatorState::SCORE);
     } else {
         elevator.setElevatorTarget(elevator.getElevatorPosition());
     }
 
     if (controller.get_digital(Buttons::LEFT))
     {
-        elevator.setWristTarget(-90);
+        elevator.setState(ElevatorState::STOW);
     }
     else if (controller.get_digital(Buttons::RIGHT))
     {
-        elevator.setWristTarget(-270);
+        elevator.setState(ElevatorState::LOAD);
     }
     else if (controller.get_digital(Buttons::UP))
     {
-        elevator.setWristTarget(0);
+        elevator.setState(ElevatorState::PICKUP);
     }
     else if (controller.get_digital(Buttons::DOWN))
     {
-        elevator.setWristTarget(-180);
+        elevator.setState(ElevatorState::RESET);
     }
-    if (controller.get_digital_new_press(Buttons::A)) {
-        elevator.setWristTarget(-30);
-    }
+
 }
 
 inline void drivetrainControls()
@@ -108,10 +118,10 @@ inline void displayData()
     lemlib::Pose pose = chassis.getPose();
     // pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %f", rightCurrentDistance);
 
-    pros::screen::print(TEXT_LARGE_CENTER, 1, "elevatorPos: %f", elevator.getElevatorPosition());
-    pros::screen::print(TEXT_LARGE_CENTER, 3, "wristPos: %f", elevator.getWristPosition());
-    pros::screen::print(TEXT_LARGE_CENTER, 5, "elevatorTarget: %f", elevator.getElevatorTarget());
-    pros::screen::print(TEXT_LARGE_CENTER, 7, "wristTarget: %f", elevator.getWristTarget());
+    // pros::screen::print(TEXT_LARGE_CENTER, 1, "elevatorPos: %f", elevator.getElevatorPosition());
+    // pros::screen::print(TEXT_LARGE_CENTER, 3, "wristPos: %f", elevator.getWristPosition());
+    // pros::screen::print(TEXT_LARGE_CENTER, 5, "elevatorTarget: %f", elevator.getElevatorTarget());
+    pros::screen::print(TEXT_LARGE_CENTER, 7, "wristTarget: %f", fabs(fabs(leftElevator.get_actual_velocity()) + fabs(leftElevator.get_actual_velocity())) / 2);
 }
 
 class button

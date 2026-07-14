@@ -43,7 +43,7 @@
 
 //solenoids
 #define intakeLiftPort 'C'
-#define clawPort 'E'
+#define clampPort 'E'
 #define stickPort 'D'
 
 //drivetrain specs
@@ -77,9 +77,13 @@ enum IntakeState {
 
 enum ElevatorState {
     STOW = 0,
-    SCORE_LOW = 1,
-    SCORE_HIGH = 2,
-    MANUAL = 4
+    SCORE = 1,
+    MANUAL = 2,
+    REST = 3,
+    RESET = 4,
+    LOAD = 5,
+    PICKUP = 6,
+    MATCHLOAD = 7
 };
 
 // aliance colour
@@ -141,7 +145,7 @@ inline pros::Motor rightElevator(rightElePort, pros::v5::MotorGears::rpm_600);
 
 // pneumatics
 inline pros::adi::DigitalOut intakeLiftPiston(intakeLiftPort, LOW);
-inline pros::adi::DigitalOut clawPiston(clawPort, LOW);
+inline pros::adi::DigitalOut clampPiston(clampPort, LOW);
 inline pros::adi::DigitalOut stickPiston(stickPort, LOW);
 
 

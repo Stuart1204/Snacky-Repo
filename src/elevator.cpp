@@ -25,17 +25,19 @@ namespace ElevatorConfig
 
    // ── Macro target positions ──────────────────────────────
    // { elevatorInches, wristDegrees }
-   constexpr double STOW_ELEV = 0.0, STOW_WRIST = 0.0;
-   constexpr double SCORE_LOW_ELEV = 8.0, SCORE_LOW_WRIST = 30.0;
-   constexpr double SCORE_HIGH_ELEV = 20.0, SCORE_HIGH_WRIST = 45.0;
+   constexpr double STOW_ELEV = 17.0, STOW_WRIST = -5.0;
+   constexpr double SCORE_ELEV = -10, SCORE_WRIST = -70.0;
+   constexpr double RESET_ELEV = 7, RESET_WRIST = -80.0;
+   constexpr double LOAD_ELEV = 3, LOAD_WRIST = -80.0;
+   constexpr double PICKUP_ELEV = 15, PICKUP_WRIST = -200.0;
 
    // PID gains  { kP, kI, kD, windupRange }
    constexpr double ELEV_KP = 45, ELEV_KI = 0.0, ELEV_KD = 0;
-   constexpr double WRIST_KP = 1.4, WRIST_KI = 0.0, WRIST_KD = 1;
+   constexpr double WRIST_KP = 2, WRIST_KI = 0.0, WRIST_KD = 1;
 
    // Settle threshold
-   constexpr double ELEV_SETTLE_IN = 0.15;  // inches
-   constexpr double WRIST_SETTLE_DEG = 1.5; // degrees
+   constexpr double ELEV_SETTLE_IN = 3;  // inches
+   constexpr double WRIST_SETTLE_DEG = 10; // degrees
 }
 
 class Elevator
@@ -49,10 +51,12 @@ private:
        ElevatorConfig::WRIST_KP,
        ElevatorConfig::WRIST_KI,
        ElevatorConfig::WRIST_KD, 0};
-   int currentState = ElevatorState::STOW;
-   int lastState = ElevatorState::STOW;
+   int currentState = ElevatorState::REST;
+   int lastState = ElevatorState::REST;
    double elevatorTarget = 0.0; // inches
    double wristTarget = 0.0;    // degrees
+   bool reachedSpeed = false;
+   int reachedSpeedThreshold = 200;
 
    static double clampD(double v, double lo, double hi)
    {
@@ -96,28 +100,39 @@ public:
       lastState = currentState;
       currentState = state;
 
+      leftElevator.move(0);
+      rightElevator.move(0);
+
       switch (currentState)
       {
       case ElevatorState::STOW:
-         applyMacro(ElevatorState::STOW,
-                    ElevatorConfig::STOW_ELEV,
-                    ElevatorConfig::STOW_WRIST);
+         setWristTarget(ElevatorConfig::STOW_WRIST);
+         setElevatorTarget(ElevatorConfig::STOW_ELEV);
          break;
-
-      case ElevatorState::SCORE_LOW:
-         applyMacro(ElevatorState::SCORE_LOW,
-                    ElevatorConfig::SCORE_LOW_ELEV,
-                    ElevatorConfig::SCORE_LOW_WRIST);
+      case ElevatorState::SCORE:
+         setWristTarget(ElevatorConfig::SCORE_WRIST);
+         elevatorTarget = getElevatorPosition();
+         reachedSpeed = false;
          break;
-
-      case ElevatorState::SCORE_HIGH:
-         applyMacro(ElevatorState::SCORE_HIGH,
-                    ElevatorConfig::SCORE_HIGH_ELEV,
-                    ElevatorConfig::SCORE_HIGH_WRIST);
+      case ElevatorState::REST:
+         // setElevatorTarget(getElevatorPosition());
+         // setWristTarget(getWristPosition());
          break;
-
-      case ElevatorState::MANUAL:
-         holdCurrent();
+      case ElevatorState::RESET:
+         setWristTarget(ElevatorConfig::RESET_WRIST);
+         setElevatorTarget(ElevatorConfig::RESET_ELEV);
+         reachedSpeed = false;
+         break;
+      case ElevatorState::LOAD:
+         setWristTarget(ElevatorConfig::LOAD_WRIST);
+         setElevatorTarget(ElevatorConfig::LOAD_ELEV);
+         reachedSpeed = false;
+         break;
+      case ElevatorState::PICKUP:
+         setWristTarget(getWristPosition());
+         setElevatorTarget(ElevatorConfig::PICKUP_ELEV);
+         clamp.setState(false);
+         reachedSpeed = false;
          break;
       }
    }
@@ -192,11 +207,8 @@ public:
    {
       leftElevator.tare_position();
       rightElevator.tare_position();
-      elevatorTarget = 0;
-      wristTarget = 0;
       elevatorPID.reset();
       wristPID.reset();
-      currentState = ElevatorState::STOW;
    }
 
    // ── Settle check (useful in auton waits) ───────────────
@@ -230,6 +242,65 @@ public:
    // ══════════════════════════════════════════════════════
    void run()
    {
+      switch (currentState)
+      {
+      case ElevatorState::REST:
+         leftElevator.move(0);
+         rightElevator.move(0);
+         return;
+         break;
+      case ElevatorState::STOW:
+         break;
+      case ElevatorState::SCORE:
+         if(fabs(wristTarget - getWristPosition()) < 15) {
+            elevatorTarget = ElevatorConfig::SCORE_ELEV;
+         }
+         if(elevatorTarget == ElevatorConfig::SCORE_ELEV) {
+            if(reachedSpeed == false && fabs(fabs(leftElevator.get_actual_velocity()) + fabs(leftElevator.get_actual_velocity())) / 2 > reachedSpeedThreshold) {
+            reachedSpeed = true;
+            }
+            if(reachedSpeed && fabs(fabs(leftElevator.get_actual_velocity()) + fabs(leftElevator.get_actual_velocity())) / 2 < reachedSpeedThreshold) {
+               setState(ElevatorState::REST);
+               reachedSpeed = false;
+            }
+         }
+         break;
+      case ElevatorState::RESET:
+         if(fabs(wristTarget - getWristPosition()) < ElevatorConfig::WRIST_SETTLE_DEG) {
+            elevatorTarget = -20;
+         }
+         if(elevatorTarget == -20) {
+            if(reachedSpeed == false && fabs(fabs(leftElevator.get_actual_velocity()) + fabs(leftElevator.get_actual_velocity())) / 2 > reachedSpeedThreshold) {
+            reachedSpeed = true;
+            }
+            if(reachedSpeed && fabs(fabs(leftElevator.get_actual_velocity()) + fabs(leftElevator.get_actual_velocity())) / 2 < reachedSpeedThreshold) {
+               setState(ElevatorState::LOAD);
+               reachedSpeed = false;
+               elevatorReset();
+            }
+         }
+         break;
+      case ElevatorState::PICKUP:
+         if(fabs(elevatorTarget - getElevatorPosition()) < ElevatorConfig::ELEV_SETTLE_IN) {
+            setWristTarget(ElevatorConfig::PICKUP_WRIST);
+         }
+         if(fabs(ElevatorConfig::PICKUP_WRIST - getWristPosition()) < ElevatorConfig::WRIST_SETTLE_DEG) {
+            elevatorTarget = 4;
+         }
+         if(elevatorTarget == 4) {
+            if(reachedSpeed == false && fabs(fabs(leftElevator.get_actual_velocity()) + fabs(leftElevator.get_actual_velocity())) / 2 > reachedSpeedThreshold) {
+            reachedSpeed = true;
+            }
+            if(reachedSpeed && fabs(fabs(leftElevator.get_actual_velocity()) + fabs(leftElevator.get_actual_velocity())) / 2 < reachedSpeedThreshold) {
+               reachedSpeed = false;
+               clamp.setState(true);
+               pros::delay(500);
+               setState(ElevatorState::STOW);
+            }
+         }
+         break;
+      }
+
       double elevPos = getElevatorPosition();
       double wristPos = getWristPosition();
 
@@ -248,6 +319,9 @@ public:
 
       leftElevator.move(leftPower);
       rightElevator.move(rightPower);
+
+      pros::screen::print(TEXT_LARGE_CENTER, 1, "leftPower: %f", leftPower);
+      pros::screen::print(TEXT_LARGE_CENTER, 3, "rightPower: %f", rightPower);
    }
 };
 

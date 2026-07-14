@@ -13,11 +13,10 @@
 void initialize() {
 	chassis.calibrate();
 
-	pros::Task intakeTask([]{
+	pros::Task elevatorTask([]{
 		while (true) {
-			intake.run();
 			elevator.run();
-			pros::delay(50);
+			pros::delay(40);
 		}
 	});
 	elevator.elevatorReset();
@@ -53,22 +52,7 @@ void opcontrol() {
 		drivetrainControls();
 		subsystemControls();
 		displayData();
-		// if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
-		// 	leftElevator.move(127);
-		// 	rightElevator.move(-127);
-		// } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
-		// 	leftElevator.move(-127);
-		// 	rightElevator.move(127);
-		// } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
-		// 	leftElevator.move(-127);
-		// 	rightElevator.move(-127);
-		// } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) {
-		// 	leftElevator.move(127);
-		// 	rightElevator.move(127);
-		// } else {
-		// 	leftElevator.move(0);
-		// 	rightElevator.move(0);
-		// }
+		intake.run();
 		pros::delay(20);
     }
 }
