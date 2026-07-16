@@ -89,7 +89,8 @@ enum ElevatorState {
 // aliance colour
 enum AllianceColour {
     RED = 1,
-    BLUE = 2
+    BLUE = 2,
+    YELLOW = 3
 };
 
 // auton selector enum

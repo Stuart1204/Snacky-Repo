@@ -48,6 +48,45 @@ inline void activatePistons()
     }
 }
 
+inline bool toggleFlipActive = false;
+inline bool toggleFlipColourSeen = false;
+
+inline void setToggle() {
+    if (controller.get_digital_new_press(Buttons::B)) {
+        toggleFlipActive = !toggleFlipActive;
+        toggleFlipColourSeen = false;
+
+        if (toggleFlipActive) {
+            toggleSensor.set_integration_time(10);
+        } else {
+            toggleSensor.set_integration_time(712);
+            intake.setState(IntakeState::IDLE);
+            return;
+        }
+    }
+
+    if (!toggleFlipActive) {
+        return;
+    }
+
+    int detectedColour = checkColour(toggleSensor);
+    bool allianceColourSeen = detectedColour == allianceColour && toggleSensor.get_proximity() > 160;
+
+    if (!allianceColourSeen) {
+        if (toggleFlipColourSeen) {
+            toggleFlipActive = false;
+            toggleFlipColourSeen = false;
+            toggleSensor.set_integration_time(712);
+            intake.setState(IntakeState::IDLE);
+        } else {
+            intake.setState(IntakeState::INTAKE);
+        }
+    } else {
+        toggleFlipColourSeen = true;
+        intake.setState(IntakeState::INTAKEHIGH);
+    }
+}
+
 inline int matchloadShakeCounter = 0;
 inline bool matchloadShakeDirection = false;
 inline void elevatorControls()
@@ -123,7 +162,10 @@ inline void drivetrainControls()
 
 inline void subsystemControls()
 {
-    intakeControls();
+    setToggle();
+    if (!toggleFlipActive) {
+        intakeControls();
+    }
     elevatorControls();
     activatePistons();
 }
@@ -138,6 +180,7 @@ inline void displayData()
     pros::screen::print(TEXT_LARGE_CENTER, 1, "X: %f", pose.x);
     pros::screen::print(TEXT_LARGE_CENTER, 3, "Y: %f", pose.y);
     pros::screen::print(TEXT_LARGE_CENTER, 5, "Theta: %f", pose.theta);
+    pros::screen::print(TEXT_LARGE_CENTER, 7, "Colour: %i", checkColour(toggleSensor));
     // pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %f", rightCurrentDistance);
 
     // pros::screen::print(TEXT_LARGE_CENTER, 1, "elevatorPos: %f", elevator.getElevatorPosition());

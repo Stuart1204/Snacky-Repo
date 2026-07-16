@@ -44,11 +44,11 @@ class Intake {
             move(0);
             break;
          case IntakeState::INTAKE:
-            if (checkColour(toggleSensor) == allianceColour && toggleSensor.get_proximity() > 80) {
-               move(0);
-            } else {
-               move(127);
-            }
+            // if (checkColour(toggleSensor) == allianceColour && toggleSensor.get_proximity() > 80) {
+            //    move(0);
+            // } else {
+            move(127);
+            // }
             break;
          case IntakeState::OUTTAKE:
             move(-127);

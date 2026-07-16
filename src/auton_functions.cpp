@@ -1,7 +1,7 @@
-// #ifndef auton_functions_cpp
-// #define auton_functions_cpp
+#ifndef auton_functions_cpp
+#define auton_functions_cpp
 
-// #include "globals.hpp"
+#include "globals.hpp"
 // #include "other_functions.cpp"
 // #include "intake.cpp"
 // #include "lemlib/pid.hpp"
@@ -15,6 +15,152 @@
 // #include <cmath>
 // #include <iostream>
 
+#include <cmath>
+// Define a simple struct for goal coordinates
+struct Point {int x; int y; };
+
+// Array of all 9 goals on the Override field
+const Point GOALS[9] = {
+    {0, 0},           // Center Goal
+    {-48, 24},        // Neutral Red 1
+    {-48, -24},       // Red 1
+    {-24, -48},       // Red 2
+    {24, -48},        // Neutral Red 2
+    {48, -24},        // Neutral Blue 1
+    {48, 24},         // Blue 1
+    {24, 48},         // Blue 2
+    {-24, 48}         // Neutral Blue 2
+};
+
+inline void goalReset() {
+    // --- MOVEMENT PARAMETERS ---
+    const float SPEED_THRESHOLD = 100; // RPM. Much lower than 100 to ensure we actually hit the wall
+    const int MOTOR_SPEED = -40;       // NEGATIVE because we are backing up
+    const int STARTUP_DELAY = 300;     // Time to let motors spin up before checking velocity
+    const int TIMEOUT = 2000;
+    // --- PHYSICAL PARAMETERS ---
+    const float GOAL_CENTER_TO_FACE = 2.805; // inches
+    const float ROBOT_BACK_TO_CENTER = 4;  // inches
+    const float OFFSET = GOAL_CENTER_TO_FACE + ROBOT_BACK_TO_CENTER; // Total distance from center of goal to center of bot
+    float avgSpeed = 0;
+    uint32_t startTime = pros::millis();
+
+    // 1. Drive backwards until we hit the goal (or timeout)
+    while (true) {
+        uint32_t elapsedTime = pros::millis() - startTime;
+
+        // Timeout fallback
+        if (elapsedTime > TIMEOUT) {
+            break;
+        }
+
+        // Only check for collision AFTER the startup delay
+        if (elapsedTime > STARTUP_DELAY) {
+            // Get absolute speed to handle negative (backwards) RPMs
+            float leftVel = fabs(leftMotors.get_actual_velocity());
+            float rightVel = fabs(rightMotors.get_actual_velocity());
+            
+            // Average speed of the drivetrain
+            avgSpeed = (leftVel + rightVel) / 2.0;
+
+            if (avgSpeed < SPEED_THRESHOLD) {
+                break; // We hit the solid object!
+            }
+        }
+        if (avgSpeed < SPEED_THRESHOLD) {
+            // We hit it! Now apply a gentle squaring force.
+            leftMotors.move_voltage(-15);  // gentle push backwards
+            rightMotors.move_voltage(-15);
+            pros::delay(200);      // Give it 200ms to flatten against the goal
+            break; 
+        }
+        else {
+            leftMotors.move_voltage(MOTOR_SPEED);
+            rightMotors.move_voltage(MOTOR_SPEED);
+        } 
+
+        pros::delay(20);
+    }
+    
+    // Brake motors after hitting the goal
+    leftMotors.brake();
+    rightMotors.brake();
+
+    // 2. Figure out WHICH goal we hit based on current odometry
+    lemlib::Pose currentPose = chassis.getPose(); // Assuming 'chassis' is your lemlib object
+    
+    Point closestGoal = GOALS[0];
+    float minDistance = 9999.0; // Arbitrary large number
+
+    for (int i = 0; i < 9; i++) {
+        float dx = currentPose.x - GOALS[i].x;
+        float dy = currentPose.y - GOALS[i].y;
+        float dist = sqrt(dx*dx + dy*dy); // Euclidean distance
+        
+        if (dist < minDistance) {
+            minDistance = dist;
+            closestGoal = GOALS[i];
+        }
+    }
+
+    // 3. Figure out WHICH FACE of the goal we hit
+    // LemLib heading standard: 0° is North (Y+), 90° is East (X+), 180° is South (Y-), 270° is West (X-)
+    
+    // Normalize current heading to [0, 360)
+    float heading = fmod(currentPose.theta, 360.0);
+    if (heading < 0) heading += 360.0;
+
+    // Snap to the nearest 90 degrees
+    int snappedHeading = round(heading / 90.0) * 90;
+    if (snappedHeading == 360) snappedHeading = 0;
+
+    // Prepare variables for the new snapped position
+    float newX = currentPose.x;
+    float newY = currentPose.y;
+
+    // Determine coordinate reset based on snapped heading
+    if (snappedHeading == 0) {
+        // Robot facing North. Back is against North face of goal.
+        // Robot is physically located *above* the goal.
+        newY = closestGoal.y + OFFSET;
+    } 
+    else if (snappedHeading == 90) {
+        // Robot facing East. Back is against East face of goal.
+        // Robot is physically located *right* of the goal.
+        newX = closestGoal.x + OFFSET;
+    } 
+    else if (snappedHeading == 180) {
+        // Robot facing South. Back is against South face of goal.
+        // Robot is physically located *below* the goal.
+        newY = closestGoal.y - OFFSET;
+    } 
+    else if (snappedHeading == 270) {
+        // Robot facing West. Back is against West face of goal.
+        // Robot is physically located *left* of the goal.
+        newX = closestGoal.x - OFFSET;
+    }
+
+    // 4. Reset the Odometry position!
+    // We update the X and Y coordinate, but leave the IMU theta exactly as it is 
+    // so we don't lose the precise rotational tracking.
+    printf("reset");
+    printf("reset");
+    printf("reset");
+    printf("reset");
+    printf("reset");
+    printf("reset");
+    printf("reset\n");
+    printf("GoalX: %i\n",closestGoal.x);
+    printf("GoalY: %i\n",closestGoal.y);
+    printf("currX: %f\n",currentPose.x);
+    printf("currY: %f\n",currentPose.y);
+    printf("currTheta: %f\n",currentPose.theta);
+    printf("newX: %f\n",newX);
+    printf("newY: %f\n",newY);
+    chassis.setPose(newX, newY, currentPose.theta);
+    
+    
+}
 // inline lemlib::PID angularPID(4.0, 0.0, 17.0, 0, false);
 // inline lemlib::PID linearPID(7.5, 0.0, 26.0, 0, false);
 
@@ -740,6 +886,6 @@
 //     }
 // }
 
-// #endif
+#endif
 
 

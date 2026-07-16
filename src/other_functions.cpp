@@ -9,6 +9,9 @@ inline int checkColour(pros::Optical opticalSensor) {
 	if (opticalSensor.get_hue() > 160 && opticalSensor.get_hue() < 320 && opticalSensor.get_proximity() > 160) {
 		return AllianceColour::BLUE; //blue
 	}
+	else if (opticalSensor.get_hue() > 40 && opticalSensor.get_hue() < 150 && opticalSensor.get_proximity() > 160) {
+		return AllianceColour::YELLOW; //yellow
+	}
 	else if ((opticalSensor.get_hue() < 30 || opticalSensor.get_hue() > 330) && opticalSensor.get_proximity() > 160){
 		return AllianceColour::RED; //red
 	} else {
