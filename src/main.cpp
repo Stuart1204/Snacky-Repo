@@ -15,7 +15,7 @@ void initialize() {
 
 	pros::Task elevatorTask([]{
 		while (true) {
-			elevator.run();
+			// elevator.run();
 			pros::delay(40);
 		}
 	});
@@ -24,6 +24,8 @@ void initialize() {
 	allianceColour = AllianceColour::RED;
 	startingSide = Selection::MATCH;
 	autonSelectionEnum = Selection::MATCH;
+
+	toggleSensor.set_led_pwm(80);
 
 	// autonSelection();
 

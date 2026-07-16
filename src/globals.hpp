@@ -32,14 +32,14 @@
 
 //sensor ports
 #define wristPort 14
-#define imuPort 16
+#define imuPort 13
 #define colourSortPort 9
-#define toggleSensorPort 21
+#define toggleSensorPort 7
 #define leftDistPort 5
 #define rightDistPort 13
 #define frontDistPort 6
 
-#define verticalEncoderPort 17
+#define verticalEncoderPort -17
 
 //solenoids
 #define intakeLiftPort 'C'
@@ -159,7 +159,7 @@ inline pros::Distance frontDistSensor(frontDistPort);
 
 inline pros::Rotation wristRotation(wristPort);
 inline pros::Rotation vertical_rotation(verticalEncoderPort); 
-inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_rotation, 2.05, 0);
+inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_rotation, 2.05, -.1875);
 
 // drivetrain settings
 inline lemlib::Drivetrain drivetrain(&leftMotors, // left motor group

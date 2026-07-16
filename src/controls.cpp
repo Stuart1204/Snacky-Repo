@@ -52,37 +52,56 @@ inline int matchloadShakeCounter = 0;
 inline bool matchloadShakeDirection = false;
 inline void elevatorControls()
 {
-    if(controller.get_digital(Buttons::R1)) {
-        if(elevator.getState() == ElevatorState::LOAD) {
-            elevator.setState(ElevatorState::PICKUP);
-        } else {
-           elevator.setElevatorTarget(100);
-        }
-    } else if(controller.get_digital(Buttons::B)) {
-        elevator.setElevatorTarget(-100);
-    } else if(controller.get_digital(Buttons::R2)) {
-        elevator.setState(ElevatorState::SCORE);
-    } else {
-        elevator.setElevatorTarget(elevator.getElevatorPosition());
-    }
+    // if(elevator.getState() == ElevatorState::STOW) {
+    //     if(controller.get_digital(Buttons::R1)) {
+    //        elevator.setElevatorTarget(100);
+    //     } else if(controller.get_digital(Buttons::B)) {
+    //         elevator.setElevatorTarget(-100);
+    //     } 
+    // }
+    // if(controller.get_digital_new_press(Buttons::R1)) {
+    //     if(elevator.getState() == ElevatorState::LOAD) {
+    //         elevator.setState(ElevatorState::PICKUP);
+    //     }
+    // } else if(controller.get_digital(Buttons::R2)) {
+    //     elevator.setState(ElevatorState::SCORE);
+    // } else {
+    //     // elevator.setElevatorTarget(elevator.getElevatorPosition());
+    // }
 
-    if (controller.get_digital(Buttons::LEFT))
-    {
-        elevator.setState(ElevatorState::STOW);
-    }
-    else if (controller.get_digital(Buttons::RIGHT))
-    {
-        elevator.setState(ElevatorState::LOAD);
-    }
-    else if (controller.get_digital(Buttons::UP))
-    {
-        elevator.setState(ElevatorState::PICKUP);
-    }
-    else if (controller.get_digital(Buttons::DOWN))
-    {
-        elevator.setState(ElevatorState::RESET);
-    }
+    // if (controller.get_digital(Buttons::LEFT))
+    // {
+    //     elevator.setState(ElevatorState::STOW);
+    // }
+    // else if (controller.get_digital(Buttons::RIGHT))
+    // {
+    //     elevator.setState(ElevatorState::LOAD);
+    // }
+    // else if (controller.get_digital(Buttons::UP))
+    // {
+    //     elevator.setState(ElevatorState::PICKUP);
+    // }
+    // else if (controller.get_digital(Buttons::DOWN))
+    // {
+    //     elevator.setState(ElevatorState::RESET);
+    // }
 
+    if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
+			leftElevator.move(127);
+			rightElevator.move(-127);
+		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
+			leftElevator.move(-127);
+			rightElevator.move(127);
+		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
+			leftElevator.move(-127);
+			rightElevator.move(-127);
+		} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+			leftElevator.move(127);
+			rightElevator.move(127);
+		} else {
+			leftElevator.move(0);
+			rightElevator.move(0);
+		}
 }
 
 inline void drivetrainControls()
@@ -116,12 +135,17 @@ inline void displayData()
     float rightCurrentDistance = (rightDistSensor.get_distance() * MM_TO_INCHES) + RIGHT_DIST_OFFSET;
     // display lemlib pose
     lemlib::Pose pose = chassis.getPose();
+    pros::screen::print(TEXT_LARGE_CENTER, 1, "X: %f", pose.x);
+    pros::screen::print(TEXT_LARGE_CENTER, 3, "Y: %f", pose.y);
+    pros::screen::print(TEXT_LARGE_CENTER, 5, "Theta: %f", pose.theta);
     // pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %f", rightCurrentDistance);
 
     // pros::screen::print(TEXT_LARGE_CENTER, 1, "elevatorPos: %f", elevator.getElevatorPosition());
     // pros::screen::print(TEXT_LARGE_CENTER, 3, "wristPos: %f", elevator.getWristPosition());
     // pros::screen::print(TEXT_LARGE_CENTER, 5, "elevatorTarget: %f", elevator.getElevatorTarget());
-    pros::screen::print(TEXT_LARGE_CENTER, 7, "wristTarget: %f", fabs(fabs(leftElevator.get_actual_velocity()) + fabs(leftElevator.get_actual_velocity())) / 2);
+    // pros::screen::print(TEXT_LARGE_CENTER, 7, "wristTarget: %f", fabs(fabs(leftElevatorvator.get_actual_velocity()) + fabs(leftElevatorvator.get_actual_velocity())) / 2);
+
+
 }
 
 class button

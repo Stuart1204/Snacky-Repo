@@ -6,6 +6,7 @@
 #include "piston.cpp"
 #include "pros/adi.hpp"
 #include "pros/misc.hpp"
+#include "pros/rtos.hpp"
 namespace ElevatorConfig
 {
    // Encoder ticks (motor degrees) per inch of elevator travel.
@@ -28,16 +29,16 @@ namespace ElevatorConfig
    constexpr double STOW_ELEV = 17.0, STOW_WRIST = -5.0;
    constexpr double SCORE_ELEV = -10, SCORE_WRIST = -70.0;
    constexpr double RESET_ELEV = 7, RESET_WRIST = -80.0;
-   constexpr double LOAD_ELEV = 3, LOAD_WRIST = -80.0;
-   constexpr double PICKUP_ELEV = 15, PICKUP_WRIST = -200.0;
+   constexpr double LOAD_ELEV = 2.3, LOAD_WRIST = -80.0;
+   constexpr double PICKUP_ELEV = 10, PICKUP_WRIST = -200.0;
 
    // PID gains  { kP, kI, kD, windupRange }
    constexpr double ELEV_KP = 45, ELEV_KI = 0.0, ELEV_KD = 0;
-   constexpr double WRIST_KP = 2, WRIST_KI = 0.0, WRIST_KD = 1;
+   constexpr double WRIST_KP = 3, WRIST_KI = 0.0, WRIST_KD = 1;
 
    // Settle threshold
    constexpr double ELEV_SETTLE_IN = 3;  // inches
-   constexpr double WRIST_SETTLE_DEG = 10; // degrees
+   constexpr double WRIST_SETTLE_DEG = 15; // degrees
 }
 
 class Elevator
@@ -57,6 +58,7 @@ private:
    double wristTarget = 0.0;    // degrees
    bool reachedSpeed = false;
    int reachedSpeedThreshold = 200;
+   uint32_t startTime = 0;
 
    static double clampD(double v, double lo, double hi)
    {
@@ -113,6 +115,7 @@ public:
          setWristTarget(ElevatorConfig::SCORE_WRIST);
          elevatorTarget = getElevatorPosition();
          reachedSpeed = false;
+         startTime = pros::millis();
          break;
       case ElevatorState::REST:
          // setElevatorTarget(getElevatorPosition());
@@ -122,6 +125,7 @@ public:
          setWristTarget(ElevatorConfig::RESET_WRIST);
          setElevatorTarget(ElevatorConfig::RESET_ELEV);
          reachedSpeed = false;
+         startTime = pros::millis();
          break;
       case ElevatorState::LOAD:
          setWristTarget(ElevatorConfig::LOAD_WRIST);
@@ -227,6 +231,17 @@ public:
       return isElevatorSettled() && isWristSettled();
    }
 
+   bool isElevatorStalled() {
+      if(reachedSpeed == false && (pros::millis() - startTime > 1000 || fabs(fabs(leftElevator.get_actual_velocity()) + fabs(leftElevator.get_actual_velocity())) / 2 > reachedSpeedThreshold)) {
+         reachedSpeed = true;
+      }
+      if(reachedSpeed && fabs(fabs(leftElevator.get_actual_velocity()) + fabs(leftElevator.get_actual_velocity())) / 2 < reachedSpeedThreshold) {
+         reachedSpeed = false;
+         return true;
+      }
+      return false;
+   }
+
    // Blocking wait — call in autonomous tasks only
    void waitUntilSettled(uint32_t timeoutMs = 2000)
    {
@@ -267,13 +282,10 @@ public:
          break;
       case ElevatorState::RESET:
          if(fabs(wristTarget - getWristPosition()) < ElevatorConfig::WRIST_SETTLE_DEG) {
-            elevatorTarget = -20;
+            elevatorTarget = -100;
          }
-         if(elevatorTarget == -20) {
-            if(reachedSpeed == false && fabs(fabs(leftElevator.get_actual_velocity()) + fabs(leftElevator.get_actual_velocity())) / 2 > reachedSpeedThreshold) {
-            reachedSpeed = true;
-            }
-            if(reachedSpeed && fabs(fabs(leftElevator.get_actual_velocity()) + fabs(leftElevator.get_actual_velocity())) / 2 < reachedSpeedThreshold) {
+         if(elevatorTarget == -100) {
+            if(isElevatorStalled()) {
                setState(ElevatorState::LOAD);
                reachedSpeed = false;
                elevatorReset();
@@ -310,8 +322,8 @@ public:
       double elevOut = elevatorPID.update(elevErr);
       double wristOut = wristPID.update(wristErr);
 
-      int leftPower = clamp127(wristOut + elevOut);
-      int rightPower = clamp127(wristOut - elevOut);
+      int leftPower = clamp127(-wristOut + elevOut);
+      int rightPower = clamp127(-wristOut - elevOut);
       printf("leftPower:%d\n ", leftPower);
       printf("rightPower:%d\n ", rightPower);
       printf("elevatorPosition:%d\n ", int(elevPos));
