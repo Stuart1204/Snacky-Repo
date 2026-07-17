@@ -13,6 +13,8 @@ class Intake {
    private:
       int currentState = IntakeState::IDLE;
       int lastState = IntakeState::IDLE;
+      bool toggleFlipColourSeen = false;
+      uint32_t toggleStartTime = pros::millis();
    public:
       Intake(){} // constructor
 
@@ -25,6 +27,7 @@ class Intake {
          case IntakeState::IDLE: 
             break;
          case IntakeState::INTAKE:
+            toggleFlipColourSeen = false;
             break;
          case IntakeState::OUTTAKE:
             break;
@@ -44,11 +47,22 @@ class Intake {
             move(0);
             break;
          case IntakeState::INTAKE:
-            // if (checkColour(toggleSensor) == allianceColour && toggleSensor.get_proximity() > 80) {
-            //    move(0);
-            // } else {
-            move(127);
-            // }
+            if(toggleSensor.get_proximity() > 100) {
+               move(100);
+               if(checkColour(toggleSensor) == allianceColour) {
+                  toggleFlipColourSeen = true;
+                  move(75);
+               }
+               if(checkColour(toggleSensor) != allianceColour && toggleFlipColourSeen) {
+                  toggleFlipColourSeen = false;
+                  toggleStartTime = pros::millis();
+               }
+               if(pros::millis() - toggleStartTime < 1000) {
+                  move(0);
+               }
+            } else {
+               move(127);
+            }
             break;
          case IntakeState::OUTTAKE:
             move(-127);

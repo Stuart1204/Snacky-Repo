@@ -13,13 +13,13 @@
 void initialize() {
 	chassis.calibrate();
 
+	elevator.elevatorReset();
 	pros::Task elevatorTask([]{
 		while (true) {
-			// elevator.run();
+			elevator.run();
 			pros::delay(40);
 		}
 	});
-	elevator.elevatorReset();
 
 	allianceColour = AllianceColour::RED;
 	startingSide = Selection::MATCH;

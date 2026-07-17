@@ -11,7 +11,7 @@ namespace ElevatorConfig
 {
    // Encoder ticks (motor degrees) per inch of elevator travel.
    //
-   constexpr double TICKS_PER_INCH = 62.5;
+   constexpr double TICKS_PER_INCH = 57.5;
 
    // Wrist rotation sensor: degrees reported per degree of actual wrist rotation.
    constexpr double SENSOR_DEG_PER_WRIST_DEG = 1.0;
@@ -29,16 +29,16 @@ namespace ElevatorConfig
    constexpr double STOW_ELEV = 17.0, STOW_WRIST = -5.0;
    constexpr double SCORE_ELEV = -10, SCORE_WRIST = -70.0;
    constexpr double RESET_ELEV = 7, RESET_WRIST = -80.0;
-   constexpr double LOAD_ELEV = 2.3, LOAD_WRIST = -80.0;
-   constexpr double PICKUP_ELEV = 10, PICKUP_WRIST = -200.0;
+   constexpr double LOAD_ELEV = 1.4, LOAD_WRIST = -80.0;
+   constexpr double PICKUP_ELEV = 10, PICKUP_WRIST = -186.0;
 
    // PID gains  { kP, kI, kD, windupRange }
    constexpr double ELEV_KP = 45, ELEV_KI = 0.0, ELEV_KD = 0;
    constexpr double WRIST_KP = 3, WRIST_KI = 0.0, WRIST_KD = 1;
 
    // Settle threshold
-   constexpr double ELEV_SETTLE_IN = 3;  // inches
-   constexpr double WRIST_SETTLE_DEG = 15; // degrees
+   constexpr double ELEV_SETTLE_IN = 2.5;  // inches
+   constexpr double WRIST_SETTLE_DEG = 9; // degrees
 }
 
 class Elevator
@@ -59,6 +59,9 @@ private:
    bool reachedSpeed = false;
    int reachedSpeedThreshold = 200;
    uint32_t startTime = 0;
+
+   int leftPower = 0;
+   int rightPower = 0;
 
    static double clampD(double v, double lo, double hi)
    {
@@ -252,6 +255,14 @@ public:
       }
    }
 
+   int getLeftPower() {
+      return leftPower;
+   }
+
+   int getRightPower() {
+      return rightPower;
+   }
+
    // ══════════════════════════════════════════════════════
    //  RUN  — called every ~10 ms from a dedicated thread
    // ══════════════════════════════════════════════════════
@@ -293,22 +304,18 @@ public:
          }
          break;
       case ElevatorState::PICKUP:
-         if(fabs(elevatorTarget - getElevatorPosition()) < ElevatorConfig::ELEV_SETTLE_IN) {
+         if(isElevatorSettled()) {
             setWristTarget(ElevatorConfig::PICKUP_WRIST);
          }
-         if(fabs(ElevatorConfig::PICKUP_WRIST - getWristPosition()) < ElevatorConfig::WRIST_SETTLE_DEG) {
-            elevatorTarget = 4;
+         if(fabs(getWristPosition() - ElevatorConfig::PICKUP_WRIST) < ElevatorConfig::WRIST_SETTLE_DEG) {
+            elevatorTarget = 0;
          }
-         if(elevatorTarget == 4) {
-            if(reachedSpeed == false && fabs(fabs(leftElevator.get_actual_velocity()) + fabs(leftElevator.get_actual_velocity())) / 2 > reachedSpeedThreshold) {
-            reachedSpeed = true;
-            }
-            if(reachedSpeed && fabs(fabs(leftElevator.get_actual_velocity()) + fabs(leftElevator.get_actual_velocity())) / 2 < reachedSpeedThreshold) {
-               reachedSpeed = false;
+         if(elevatorTarget == 0) {
+            if(isElevatorStalled()) {
                clamp.setState(true);
                pros::delay(500);
                setState(ElevatorState::STOW);
-            }
+            }            
          }
          break;
       }
@@ -322,18 +329,19 @@ public:
       double elevOut = elevatorPID.update(elevErr);
       double wristOut = wristPID.update(wristErr);
 
-      int leftPower = clamp127(-wristOut + elevOut);
-      int rightPower = clamp127(-wristOut - elevOut);
+      leftPower = clamp127(-wristOut + elevOut);
+      rightPower = clamp127(-wristOut - elevOut);
       printf("leftPower:%d\n ", leftPower);
       printf("rightPower:%d\n ", rightPower);
       printf("elevatorPosition:%d\n ", int(elevPos));
       printf("wristPosition:%d\n ", int(wristPos));
+      if (isSettled()) {
+         leftPower = 0;
+         rightPower = 0;
+      }
 
       leftElevator.move(leftPower);
       rightElevator.move(rightPower);
-
-      pros::screen::print(TEXT_LARGE_CENTER, 1, "leftPower: %f", leftPower);
-      pros::screen::print(TEXT_LARGE_CENTER, 3, "rightPower: %f", rightPower);
    }
 };
 
