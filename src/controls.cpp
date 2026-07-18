@@ -37,6 +37,11 @@ inline void activatePistons()
     if (controller.get_digital_new_press(Buttons::Y))
     {
         intakeLift.toggle();
+        if(intakeLift.getState()) {
+            elevator.setState(ElevatorState::MATCHLOAD);
+        } else {
+            elevator.setState(ElevatorState::LOAD);
+        }
     }
     if (controller.get_digital_new_press(Buttons::X))
     {
@@ -51,57 +56,62 @@ inline void activatePistons()
 inline bool toggleFlipActive = false;
 inline bool toggleFlipColourSeen = false;
 
-inline void setToggle() {
-    if (controller.get_digital_new_press(Buttons::B)) {
-        toggleFlipActive = !toggleFlipActive;
+// inline void setToggle() {
+//     if (controller.get_digital_new_press(Buttons::B)) {
+//         toggleFlipActive = !toggleFlipActive;
 
-        if (toggleFlipActive) {
-            toggleSensor.set_integration_time(7);
-        } else {
-            toggleSensor.set_integration_time(20);
-            intake.setState(IntakeState::IDLE);
-            return;
-        }
-    }
+//         if (toggleFlipActive) {
+//             toggleSensor.set_integration_time(7);
+//         } else {
+//             toggleSensor.set_integration_time(20);
+//             intake.setState(IntakeState::IDLE);
+//             return;
+//         }
+//     }
 
-    if (!toggleFlipActive) {
-        return;
-    }
+//     if (!toggleFlipActive) {
+//         return;
+//     }
 
-    int detectedColour = checkColour(toggleSensor);
-    bool allianceColourSeen = detectedColour == allianceColour;
+//     int detectedColour = checkColour(toggleSensor);
+//     bool allianceColourSeen = detectedColour == allianceColour;
 
-    if (!allianceColourSeen) {
-        if (toggleFlipColourSeen) {
-            toggleFlipActive = false;
-            toggleFlipColourSeen = false;
-            toggleSensor.set_integration_time(20);
-            intake.setState(IntakeState::IDLE);
-        } else {
-            intake.setState(IntakeState::INTAKE);
-        }
-    } else {
-        toggleFlipColourSeen = true;
-        intake.setState(IntakeState::INTAKEHIGH);
-    }
+//     if (!allianceColourSeen) {
+//         if (toggleFlipColourSeen) {
+//             toggleFlipActive = false;
+//             toggleFlipColourSeen = false;
+//             toggleSensor.set_integration_time(20);
+//             intake.setState(IntakeState::IDLE);
+//         } else {
+//             intake.setState(IntakeState::INTAKE);
+//         }
+//     } else {
+//         toggleFlipColourSeen = true;
+//         intake.setState(IntakeState::INTAKEHIGH);
+//     }
 
-    pros::screen::print(TEXT_LARGE_CENTER, 1, "seen: %i", allianceColourSeen);
-}
+//     pros::screen::print(TEXT_LARGE_CENTER, 1, "seen: %i", allianceColourSeen);
+// }
 
 inline int matchloadShakeCounter = 0;
 inline bool matchloadShakeDirection = false;
 inline void elevatorControls()
 {
-    if(elevator.getState() == ElevatorState::STOW) {
+    if(elevator.getState() == ElevatorState::MANUAL) {
         if(controller.get_digital(Buttons::R1)) {
            elevator.setElevatorTarget(100);
         } else if(controller.get_digital(Buttons::B)) {
             elevator.setElevatorTarget(-100);
-        } 
+        } else {
+            elevator.setElevatorTarget(elevator.getElevatorPosition());
+        }
     }
     if(controller.get_digital_new_press(Buttons::R1)) {
-        if(elevator.getState() == ElevatorState::LOAD) {
+        if(elevator.getState() == ElevatorState::LOAD || elevator.getState() == ElevatorState::MATCHLOAD) {
             elevator.setState(ElevatorState::PICKUP);
+        }
+        if(elevator.getState() == ElevatorState::STOW) {
+            elevator.setState(ElevatorState::MANUAL);
         }
     } else if(controller.get_digital(Buttons::R2)) {
         elevator.setState(ElevatorState::SCORE);
@@ -166,7 +176,7 @@ inline void drivetrainControls()
 
 inline void subsystemControls()
 {
-    setToggle();
+    // setToggle();
     if (!toggleFlipActive) {
         intakeControls();
     }
@@ -189,7 +199,7 @@ inline void displayData()
 
     pros::screen::print(TEXT_LARGE_CENTER, 1, "elevatorPos: %f", elevator.getElevatorPosition());
     pros::screen::print(TEXT_LARGE_CENTER, 3, "wristPos: %f", elevator.getWristPosition());
-    // pros::screen::print(TEXT_LARGE_CENTER, 5, "elevatorTarget: %f", elevator.getElevatorTarget());
+    pros::screen::print(TEXT_LARGE_CENTER, 9, "elevatorTarget: %f", elevator.getElevatorTarget());
     // pros::screen::print(TEXT_LARGE_CENTER, 7, "ele: %f", (leftElevator.get_position() - rightElevator.get_position()) / 2.0);
     pros::screen::print(TEXT_LARGE_CENTER, 5, "leftPower: %i", elevator.getLeftPower());
     pros::screen::print(TEXT_LARGE_CENTER, 7, "rightPower: %i", elevator.getRightPower());

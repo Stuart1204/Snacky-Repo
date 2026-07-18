@@ -68,7 +68,7 @@ class Intake {
             move(-127);
             break;
          case IntakeState::INTAKEHIGH:
-            move(115);
+            move(127);
             break;
       }
    }

@@ -26,19 +26,21 @@ namespace ElevatorConfig
 
    // ── Macro target positions ──────────────────────────────
    // { elevatorInches, wristDegrees }
-   constexpr double STOW_ELEV = 17.0, STOW_WRIST = -5.0;
+   constexpr double STOW_ELEV = 15.0, STOW_WRIST = -5.0;
    constexpr double SCORE_ELEV = -10, SCORE_WRIST = -70.0;
    constexpr double RESET_ELEV = 7, RESET_WRIST = -80.0;
    constexpr double LOAD_ELEV = 1.4, LOAD_WRIST = -80.0;
-   constexpr double PICKUP_ELEV = 10, PICKUP_WRIST = -186.0;
+   constexpr double MATCHLOAD_ELEV = 5, MATCHLOAD_WRIST = -140.0;
+   constexpr double PICKUP_ELEV = 10, PICKUP_WRIST = -189.0;
+   constexpr double MANUAL_ELEV = 10, MANUAL_WRIST = -5.0;
 
    // PID gains  { kP, kI, kD, windupRange }
    constexpr double ELEV_KP = 45, ELEV_KI = 0.0, ELEV_KD = 0;
-   constexpr double WRIST_KP = 3, WRIST_KI = 0.0, WRIST_KD = 1;
+   constexpr double WRIST_KP = 4.5, WRIST_KI = 0.0, WRIST_KD = 1.7;
 
    // Settle threshold
    constexpr double ELEV_SETTLE_IN = 2.5;  // inches
-   constexpr double WRIST_SETTLE_DEG = 9; // degrees
+   constexpr double WRIST_SETTLE_DEG = 20; // degrees
 }
 
 class Elevator
@@ -54,6 +56,7 @@ private:
        ElevatorConfig::WRIST_KD, 0};
    int currentState = ElevatorState::REST;
    int lastState = ElevatorState::REST;
+   int pickUpPhase = 0;
    double elevatorTarget = 0.0; // inches
    double wristTarget = 0.0;    // degrees
    bool reachedSpeed = false;
@@ -93,8 +96,8 @@ private:
 public:
    Elevator()
    {
-      // leftElevator.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-      // rightElevator.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+      leftElevator.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+      rightElevator.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
    }
 
    void setState(int state)
@@ -111,7 +114,7 @@ public:
       switch (currentState)
       {
       case ElevatorState::STOW:
-         setWristTarget(ElevatorConfig::STOW_WRIST);
+         setWristTarget(-180);
          setElevatorTarget(ElevatorConfig::STOW_ELEV);
          break;
       case ElevatorState::SCORE:
@@ -126,7 +129,7 @@ public:
          break;
       case ElevatorState::RESET:
          setWristTarget(ElevatorConfig::RESET_WRIST);
-         setElevatorTarget(ElevatorConfig::RESET_ELEV);
+         setElevatorTarget(getElevatorPosition());
          reachedSpeed = false;
          startTime = pros::millis();
          break;
@@ -139,7 +142,14 @@ public:
          setWristTarget(getWristPosition());
          setElevatorTarget(ElevatorConfig::PICKUP_ELEV);
          clamp.setState(false);
+         pickUpPhase = 0;
          reachedSpeed = false;
+         break;
+      case ElevatorState::MANUAL:
+         setWristTarget(ElevatorConfig::MANUAL_WRIST);
+      case ElevatorState::MATCHLOAD:
+         setWristTarget(ElevatorConfig::MATCHLOAD_WRIST);
+         setElevatorTarget(ElevatorConfig::MATCHLOAD_ELEV);
          break;
       }
    }
@@ -235,14 +245,33 @@ public:
    }
 
    bool isElevatorStalled() {
-      if(reachedSpeed == false && (pros::millis() - startTime > 1000 || fabs(fabs(leftElevator.get_actual_velocity()) + fabs(leftElevator.get_actual_velocity())) / 2 > reachedSpeedThreshold)) {
-         reachedSpeed = true;
+      // if(reachedSpeed == false && (pros::millis() - startTime > 1000 || fabs(fabs(leftElevator.get_actual_velocity()) + fabs(leftElevator.get_actual_velocity())) / 2 > reachedSpeedThreshold)) {
+      //    reachedSpeed = true;
+      // }
+      // if(reachedSpeed && fabs(fabs(leftElevator.get_actual_velocity()) + fabs(leftElevator.get_actual_velocity())) / 2 < reachedSpeedThreshold) {
+      //    reachedSpeed = false;
+      //    return true;
+      // }
+      // return false;
+      double avgVelocity = (fabs(leftElevator.get_actual_velocity()) + fabs(rightElevator.get_actual_velocity())) / 2;
+      double avgCurrent = (fabs(leftElevator.get_current_draw())+fabs(rightElevator.get_current_draw())) / 2;
+      if (pros::millis() - startTime < 200) {
+         return false;
       }
-      if(reachedSpeed && fabs(fabs(leftElevator.get_actual_velocity()) + fabs(leftElevator.get_actual_velocity())) / 2 < reachedSpeedThreshold) {
-         reachedSpeed = false;
-         return true;
+      return ((avgVelocity < 10 && avgCurrent > 1800) || pros::millis() - startTime > 1000);
+   }
+
+   bool isStalled() {
+      static uint32_t noProgressStart = 0;
+      static double lastPos = 0;
+      double currentPos = getElevatorPosition();
+      bool isMoving = fabs(currentPos - lastPos) > 0.2;
+      if (isMoving) {
+         noProgressStart = pros::millis();
+         lastPos = currentPos;
+         return false;
       }
-      return false;
+      return (pros::millis()-noProgressStart)>2000;
    }
 
    // Blocking wait — call in autonomous tasks only
@@ -276,16 +305,19 @@ public:
          return;
          break;
       case ElevatorState::STOW:
+         if(isElevatorSettled()) {
+            setWristTarget(ElevatorConfig::STOW_WRIST);
+         }
+         else if(fabs(getWristPosition() - ElevatorConfig::STOW_WRIST) < ElevatorConfig::WRIST_SETTLE_DEG) {
+            setState(ElevatorState::MANUAL);
+         }
          break;
       case ElevatorState::SCORE:
-         if(fabs(wristTarget - getWristPosition()) < 15) {
+         if(fabs(wristTarget - getWristPosition()) < ElevatorConfig::WRIST_SETTLE_DEG) {
             elevatorTarget = ElevatorConfig::SCORE_ELEV;
          }
          if(elevatorTarget == ElevatorConfig::SCORE_ELEV) {
-            if(reachedSpeed == false && fabs(fabs(leftElevator.get_actual_velocity()) + fabs(leftElevator.get_actual_velocity())) / 2 > reachedSpeedThreshold) {
-            reachedSpeed = true;
-            }
-            if(reachedSpeed && fabs(fabs(leftElevator.get_actual_velocity()) + fabs(leftElevator.get_actual_velocity())) / 2 < reachedSpeedThreshold) {
+            if(isElevatorStalled()) {
                setState(ElevatorState::REST);
                reachedSpeed = false;
             }
@@ -304,22 +336,49 @@ public:
          }
          break;
       case ElevatorState::PICKUP:
-         if(isElevatorSettled()) {
-            setWristTarget(ElevatorConfig::PICKUP_WRIST);
-         }
-         if(fabs(getWristPosition() - ElevatorConfig::PICKUP_WRIST) < ElevatorConfig::WRIST_SETTLE_DEG) {
-            elevatorTarget = 0;
-         }
-         if(elevatorTarget == 0) {
-            if(isElevatorStalled()) {
-               clamp.setState(true);
-               pros::delay(500);
-               setState(ElevatorState::STOW);
-            }            
-         }
+         // if(isElevatorSettled()) {
+         //    setWristTarget(ElevatorConfig::PICKUP_WRIST);
+         // }
+         // if(fabs(getWristPosition() - ElevatorConfig::PICKUP_WRIST) < ElevatorConfig::WRIST_SETTLE_DEG) {
+         //    elevatorTarget = -100;
+         // }
+         // if(elevatorTarget == -100) {
+         //    if(isElevatorStalled()) {
+         //       controller.rumble(".");
+         //       pros::delay(300);
+         //       clamp.setState(true);
+         //       pros::delay(300);
+         //       setState(ElevatorState::STOW);
+         //    }            
+         // }
+         switch(pickUpPhase) {
+            case(0):
+               if (isElevatorSettled()) {
+                  setWristTarget(ElevatorConfig::PICKUP_WRIST);
+                  pickUpPhase = 1;
+               }
+               break;
+            case(1):
+               if (isWristSettled()) {
+                  elevatorTarget = 1;
+                  startTime = pros::millis();
+                  pickUpPhase = 2;
+               }
+               break;
+            case(2):
+               if(isElevatorStalled()) {
+                  leftElevator.move(0);
+                  rightElevator.move(0);
+                  clamp.setState(true);
+                  pros::delay(300);
+                  setState(ElevatorState::STOW);
+                  return;
+               }
+               break;
+            
+         } 
          break;
       }
-
       double elevPos = getElevatorPosition();
       double wristPos = getWristPosition();
 
@@ -339,6 +398,11 @@ public:
          leftPower = 0;
          rightPower = 0;
       }
+      // if (isStalled()){
+      //    leftPower = 0;
+      //    rightPower = 0;
+      // }
+      
 
       leftElevator.move(leftPower);
       rightElevator.move(rightPower);
