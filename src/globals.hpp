@@ -34,7 +34,6 @@
 #define wristPort 14
 #define imuPort 13
 #define colourSortPort 9
-#define toggleSensorPort 7
 #define leftDistPort 5
 #define rightDistPort 13
 #define frontDistPort 6
@@ -75,15 +74,28 @@ enum IntakeState {
     INTAKEHIGH = 3,
 };
 
-enum ElevatorState {
-    STOW = 0,
-    SCORE = 1,
-    MANUAL = 2,
-    REST = 3,
-    RESET = 4,
-    LOAD = 5,
+// enum ElevatorState {
+//     STOW = 0,
+//     SCORE = 1,
+//     MANUAL = 2,
+//     REST = 3,
+//     RESET = 4,
+//     LOAD = 5,
+//     PICKUP = 6,
+//     MATCHLOAD = 7
+// };
+
+enum ElevatorState
+{
+    REST = 0,
+    STOW = 1,
+    SCORE = 2,
+    RESET = 3,
+    LOAD = 4,
+    MATCHLOAD = 5,
     PICKUP = 6,
-    MATCHLOAD = 7
+    MANUAL = 7,
+    ESTOP = 8 // emergency stop from stall protection
 };
 
 // aliance colour
@@ -153,7 +165,6 @@ inline pros::adi::DigitalOut stickPiston(stickPort, LOW);
 // Inertial Sensor on port
 inline pros::Imu inertial_sensor(imuPort);
 inline pros::Optical colourSortSensor(colourSortPort);
-inline pros::Optical toggleSensor(toggleSensorPort);
 inline pros::Distance leftDistSensor(leftDistPort);
 inline pros::Distance rightDistSensor(rightDistPort);
 inline pros::Distance frontDistSensor(frontDistPort);

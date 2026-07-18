@@ -47,22 +47,7 @@ class Intake {
             move(0);
             break;
          case IntakeState::INTAKE:
-            if(toggleSensor.get_proximity() > 100) {
-               move(100);
-               if(checkColour(toggleSensor) == allianceColour) {
-                  toggleFlipColourSeen = true;
-                  move(75);
-               }
-               if(checkColour(toggleSensor) != allianceColour && toggleFlipColourSeen) {
-                  toggleFlipColourSeen = false;
-                  toggleStartTime = pros::millis();
-               }
-               if(pros::millis() - toggleStartTime < 1000) {
-                  move(0);
-               }
-            } else {
-               move(127);
-            }
+            move(127);
             break;
          case IntakeState::OUTTAKE:
             move(-127);

@@ -93,52 +93,50 @@ inline bool toggleFlipColourSeen = false;
 //     pros::screen::print(TEXT_LARGE_CENTER, 1, "seen: %i", allianceColourSeen);
 // }
 
-inline int matchloadShakeCounter = 0;
-inline bool matchloadShakeDirection = false;
-inline void elevatorControls()
-{
-    if(elevator.getState() == ElevatorState::MANUAL) {
-        if(controller.get_digital(Buttons::R1)) {
-           elevator.setElevatorTarget(100);
-        } else if(controller.get_digital(Buttons::B)) {
-            elevator.setElevatorTarget(-100);
-        } else {
-            elevator.setElevatorTarget(elevator.getElevatorPosition());
-        }
-    }
-    if(controller.get_digital_new_press(Buttons::R1)) {
-        if(elevator.getState() == ElevatorState::LOAD || elevator.getState() == ElevatorState::MATCHLOAD) {
-            elevator.setState(ElevatorState::PICKUP);
-        }
-        if(elevator.getState() == ElevatorState::STOW) {
-            elevator.setState(ElevatorState::MANUAL);
-        }
-    } else if(controller.get_digital(Buttons::R2)) {
-        elevator.setState(ElevatorState::SCORE);
-    } else {
-        // elevator.setElevatorTarget(elevator.getElevatorPosition());
-    }
+// inline void elevatorControls()
+// {
+//     if(elevator.getState() == ElevatorState::MANUAL) {
+//         if(controller.get_digital(Buttons::R1)) {
+//            elevator.setElevatorTarget(100);
+//         } else if(controller.get_digital(Buttons::B)) {
+//             elevator.setElevatorTarget(-100);
+//         } else {
+//             elevator.setElevatorTarget(elevator.getElevatorPosition());
+//         }
+//     }
+//     if(controller.get_digital_new_press(Buttons::R1)) {
+//         if(elevator.getState() == ElevatorState::LOAD || elevator.getState() == ElevatorState::MATCHLOAD) {
+//             elevator.setState(ElevatorState::PICKUP);
+//         }
+//         if(elevator.getState() == ElevatorState::STOW) {
+//             elevator.setState(ElevatorState::MANUAL);
+//         }
+//     } else if(controller.get_digital(Buttons::R2)) {
+//         elevator.setState(ElevatorState::SCORE);
+//     } else {
+//         // elevator.setElevatorTarget(elevator.getElevatorPosition());
+//     }
 
-    if (controller.get_digital(Buttons::LEFT))
-    {
-        elevator.setState(ElevatorState::STOW);
-    }
-    else if (controller.get_digital(Buttons::RIGHT))
-    {
-        elevator.setState(ElevatorState::LOAD);
-    }
-    else if (controller.get_digital(Buttons::UP))
-    {
-        elevator.setState(ElevatorState::PICKUP);
-    }
-    else if (controller.get_digital(Buttons::DOWN))
-    {
-        elevator.setState(ElevatorState::RESET);
-    }
+//     if (controller.get_digital(Buttons::LEFT))
+//     {
+//         elevator.setState(ElevatorState::STOW);
+//     }
+//     else if (controller.get_digital(Buttons::RIGHT))
+//     {
+//         elevator.setState(ElevatorState::LOAD);
+//     }
+//     else if (controller.get_digital(Buttons::UP))
+//     {
+//         elevator.setState(ElevatorState::PICKUP);
+//     }
+//     else if (controller.get_digital(Buttons::DOWN))
+//     {
+//         elevator.setState(ElevatorState::RESET);
+//     }
     // else {
     //     elevator.setState(ElevatorState::REST);
     // }
-
+//}
     // if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
 	// 		leftElevator.move(127);
 	// 		rightElevator.move(-127);
@@ -155,7 +153,74 @@ inline void elevatorControls()
 	// 		leftElevator.move(0);
 	// 		rightElevator.move(0);
 	// 	}
+
+inline void elevatorControls()
+{
+    int state = elevator.getState();
+
+    // ═══════════════════════════════════════════════════════
+    //  R1: INTAKE BUTTON
+    //  - From LOAD/MATCHLOAD → initiate PICKUP sequence
+    //  - From STOW (complete) → go to MANUAL for fine adjustment
+    //  - In MANUAL → drive elevator with held button
+    // ═══════════════════════════════════════════════════════
+
+    if(elevator.getState() == ElevatorState::MANUAL) {
+        if(controller.get_digital(Buttons::R1)) {
+           elevator.setElevatorTarget(100);
+        } else if(controller.get_digital(Buttons::B)) {
+            elevator.setElevatorTarget(-100);
+        } else {
+            elevator.setElevatorTarget(elevator.getElevatorPosition());
+        }
+    }
+    if(controller.get_digital_new_press(Buttons::R1)) {
+        if(elevator.getState() == ElevatorState::LOAD || elevator.getState() == ElevatorState::MATCHLOAD) {
+            elevator.setState(ElevatorState::PICKUP);
+        }
+        if(elevator.getState() == ElevatorState::STOW) {
+            elevator.setState(ElevatorState::MANUAL);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //  R2: SCORE — held to score, releases back to REST
+    // ═══════════════════════════════════════════════════════
+    if (controller.get_digital_new_press(Buttons::R2))
+    {
+        elevator.setState(ElevatorState::SCORE);
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //  D-PAD: DIRECT STATE SELECTION
+    // ═══════════════════════════════════════════════════════
+    if (controller.get_digital_new_press(Buttons::LEFT))
+    {
+        elevator.setState(ElevatorState::STOW);
+    }
+    else if (controller.get_digital_new_press(Buttons::RIGHT))
+    {
+        elevator.setState(ElevatorState::LOAD);
+    }
+    else if (controller.get_digital_new_press(Buttons::UP))
+    {
+        elevator.setState(ElevatorState::MATCHLOAD);
+    }
+    else if (controller.get_digital_new_press(Buttons::DOWN))
+    {
+        elevator.setState(ElevatorState::RESET);
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //  ESTOP RECOVERY: Press A to go back to REST from ESTOP
+    // ═══════════════════════════════════════════════════════
+    if (state == ElevatorState::ESTOP)
+    {
+        controller.rumble("-");
+        elevator.setState(ElevatorState::REST);
+    }
 }
+
 
 inline void drivetrainControls()
 {

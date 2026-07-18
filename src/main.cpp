@@ -25,7 +25,6 @@ void initialize() {
 	startingSide = Selection::MATCH;
 	autonSelectionEnum = Selection::MATCH;
 
-	toggleSensor.set_led_pwm(80);
 
 	// autonSelection();
 
