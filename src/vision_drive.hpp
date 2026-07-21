@@ -5,7 +5,8 @@
 #include <optional>
 #include <cstdint>
 
-enum class GameObjectType : uint8_t {
+enum class GameObjectType : uint8_t
+{
     BLUE_BLUE_PIN,
     RED_RED_PIN,
     BLUE_YELLOW_PIN,
@@ -14,7 +15,8 @@ enum class GameObjectType : uint8_t {
     ANY_PIN,
 };
 
-enum class DriveToResult : uint8_t {
+enum class DriveToResult : uint8_t
+{
     SUCCESS,
     OBJECT_NOT_FOUND,
     OBJECT_LOST,
@@ -22,79 +24,91 @@ enum class DriveToResult : uint8_t {
     ABORTED,
 };
 
-struct VisionDriveConfig {
+struct TagReading
+{
+    int id;
+    double distance;       // In whatever unit kTagSize is set to
+    double bearing_deg;    // Positive = right of center
+    double elevation_deg;  // Positive = above center
+    double global_heading; // IMU heading + bearing
+};
+
+struct VisionDriveConfig
+{
     // Steering PID
-    double lateral_kP = 5.6;
+    double lateral_kP = 0.4;
     double lateral_kI = 0.00;
-    double lateral_kD = 29;
+    double lateral_kD = 1;
 
     // Forward speeds (0-127)
-    double approach_speed      = 70.0;
-    double slow_approach_speed = 50.0;
-    double creep_speed         = 30.0;
+    double approach_speed = 80.0;
+    double slow_approach_speed = 60.0;
+    double creep_speed = 35.0;
 
     // Object height thresholds (pixels) — bigger = closer
-    double far_threshold     =  50.0;
-    double mid_threshold     = 100.0;
-    double close_threshold   = 160.0;
+    double far_threshold = 50.0;
+    double mid_threshold = 100.0;
+    double close_threshold = 160.0;
     double arrival_threshold = 190.0;
 
     // Steering
-    int frame_center_x     = 160;
-    int centering_deadband =  12;
+    int frame_center_x = 160;
+    int centering_deadband = 12;
 
     // Timeouts
-    int timeout_ms             = 8000;
+    int timeout_ms = 8000;
     int lost_object_timeout_ms = 500;
-    int settle_time_ms         = 300;
+    int settle_time_ms = 300;
 
     // How close odometry gets before vision takes over (inches)
-    double switch_to_vision_distance = 12.0;
+    double switch_to_vision_distance = 15.0;
 
     // Reject tiny noise detections
     double min_object_area = 80.0;
+
+    // Toggle rejection — W/H >= 6.0 is a wall toggle, not a pin
+    double toggle_min_wh_ratio = 4.0;
 };
 
-class VisionDriveController {
+class VisionDriveController
+{
 public:
-    /**
-     * @param chassis      LemLib chassis
-     * @param ai_vision    PROS AIVision sensor
-     * @param intake_motor Intake motor
-     * @param cam_fwd_in   Camera forward offset from tracking center (inches)
-     * @param cam_height_in Camera height above ground (inches)
-     * @param cam_pitch_deg Camera pitch (negative = looking down)
-     * @param config       Tuning parameters
-     */
     VisionDriveController(
-        lemlib::Chassis&   chassis,
-        pros::AIVision&    ai_vision,
-        pros::Motor&       intake_motor,
-        double             cam_fwd_in    =  5.0,
-        double             cam_height_in =  8.0,
-        double             cam_pitch_deg = -30.0,
-        VisionDriveConfig  config        = {}
-    );
+        lemlib::Chassis &chassis,
+        pros::AIVision &ai_vision,
+        pros::Imu &imu,
+        pros::Motor &intake_motor,
+        double cam_fwd_in = 5.0,
+        double cam_height_in = 8.0,
+        double cam_pitch_deg = -30.0,
+        VisionDriveConfig config = {});
 
-    /// Register all color signatures and codes. Call once in initialize().
-    void setupSensorColors();
+    /// Register colors, codes, and tag family. Call once in initialize().
+    void setupSensor();
 
     /// Drive to a known game piece at (target_x, target_y) on the field.
     DriveToResult driveToObject(
-        double         target_x,
-        double         target_y,
+        double target_x,
+        double target_y,
         GameObjectType object_type,
-        bool           run_intake = true
-    );
+        bool run_intake = true);
+
+    /**
+     * Get distance/bearing to a visible AprilTag.
+     * @param tag_id  If >= 0, only match this tag. If -1, return closest.
+     * @return        TagReading if found, std::nullopt otherwise.
+     */
+    std::optional<TagReading> getTagReading(int tag_id = -1);
 
     void abort();
-    void setConfig(const VisionDriveConfig& config);
+    void setConfig(const VisionDriveConfig &config);
     bool isRunning() const;
 
 private:
-    lemlib::Chassis&   m_chassis;
-    pros::AIVision&    m_ai_vision;
-    pros::Motor&       m_intake_motor;
+    lemlib::Chassis &m_chassis;
+    pros::AIVision &m_ai_vision;
+    pros::Imu &m_imu;
+    pros::Motor &m_intake_motor;
 
     double m_cam_fwd_in;
     double m_cam_height_in;
@@ -102,27 +116,15 @@ private:
 
     VisionDriveConfig m_config;
 
-    bool m_running    = false;
+    bool m_running = false;
     bool m_abort_flag = false;
 
-    /// Vision tracking loop — steer to keep object centered, drive forward
     DriveToResult visionApproachLoop(GameObjectType object_type, bool run_intake);
-
-    /// Find largest matching object in current frame
     std::optional<pros::AIVision::Object> findBestTarget(GameObjectType type);
-
-    /// Does this detection match the requested game object?
-    bool matchesTarget(const pros::AIVision::Object& obj, GameObjectType type) const;
-
-    /// Reject noise / garbage detections
-    bool isValidDetection(const pros::AIVision::Object& obj) const;
-
-    /// Forward speed interpolated from object apparent height
-    double calculateApproachSpeed(const pros::AIVision::Object& obj) const;
-
-    /// Direct arcade-style drive output for vision control
+    bool matchesTarget(const pros::AIVision::Object &obj, GameObjectType type) const;
+    bool isValidDetection(const pros::AIVision::Object &obj) const;
+    bool isProbablyToggle(const pros::AIVision::Object &obj) const;
+    double calculateApproachSpeed(const pros::AIVision::Object &obj) const;
     void arcadeDrive(double throttle, double turn);
-
-    /// Stop chassis motion immediately
     void stopDrive();
 };

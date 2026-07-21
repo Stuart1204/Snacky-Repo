@@ -41,9 +41,9 @@
 #define verticalEncoderPort -17
 
 //solenoids
-#define intakeLiftPort 'C'
+#define intakeLiftPort 'D'
 #define clampPort 'E'
-#define stickPort 'D'
+#define stickPort 'C'
 
 //drivetrain specs
 #define driveTrackWidth 11.375
