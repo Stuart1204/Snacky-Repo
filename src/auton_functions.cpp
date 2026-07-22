@@ -161,6 +161,10 @@ inline void goalReset() {
     
     
 }
+
+inline void acquireGamePiece(int x, int y) {
+
+}
 // inline lemlib::PID angularPID(4.0, 0.0, 17.0, 0, false);
 // inline lemlib::PID linearPID(7.5, 0.0, 26.0, 0, false);
 

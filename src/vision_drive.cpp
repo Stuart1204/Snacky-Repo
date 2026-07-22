@@ -1,4 +1,7 @@
 #include "vision_drive.hpp"
+#include "globals.hpp"
+#include "elevator.cpp"
+#include "piston.cpp"
 #include <algorithm>
 #include <cmath>
 
@@ -256,62 +259,6 @@ std::optional<TagReading> VisionDriveController::getTagReading(int tag_id)
     return best;
 }
 
-// ============================================================================
-// DRIVE TO OBJECT AT KNOWN COORDINATES
-// ============================================================================
-
-DriveToResult VisionDriveController::driveToObject(
-    double target_x,
-    double target_y,
-    GameObjectType object_type,
-    bool run_intake)
-{
-    m_running = true;
-    m_abort_flag = false;
-
-    // Phase 1 — Odometry approach
-    // Camera is m_cam_fwd_in ahead of tracking center, so stop short enough
-    // that the CAMERA is switch_to_vision_distance from target
-    lemlib::Pose cur = m_chassis.getPose();
-    double dx = target_x - cur.x;
-    double dy = target_y - cur.y;
-    double dist = std::sqrt(dx * dx + dy * dy);
-
-    double stop_short = m_config.switch_to_vision_distance + m_cam_fwd_in;
-
-    if (dist > stop_short)
-    {
-        double ratio = (dist - stop_short) / dist;
-        double wp_x = cur.x + dx * ratio;
-        double wp_y = cur.y + dy * ratio;
-
-        int timeout = static_cast<int>(dist / 20.0 * 1000.0) + 2000;
-
-        m_chassis.moveToPoint(wp_x, wp_y, timeout, {.forwards = true, .maxSpeed = static_cast<float>(m_config.approach_speed), .minSpeed = 0.0f, .earlyExitRange = static_cast<float>(stop_short * 0.3)});
-
-        if (m_abort_flag)
-        {
-            stopDrive();
-            m_running = false;
-            return DriveToResult::ABORTED;
-        }
-    }
-
-    // Phase 2 — Face target
-    m_chassis.turnToPoint(target_x, target_y, 1500, {.forwards = true, .minSpeed = 0});
-
-    if (m_abort_flag)
-    {
-        stopDrive();
-        m_running = false;
-        return DriveToResult::ABORTED;
-    }
-
-    // Phase 3 — Vision approach
-    DriveToResult result = visionApproachLoop(object_type, run_intake);
-    m_running = false;
-    return result;
-}
 
 // ============================================================================
 // VISION APPROACH LOOP
@@ -444,7 +391,225 @@ DriveToResult VisionDriveController::visionApproachLoop(
         pros::delay(20);
     }
 }
+DriveToResult VisionDriveController::acquireAlliancePin(
+    int x,
+    int y,
+    int visionSwitchDistance,
+    bool pivotIntake,
+    int timeout)
+{
+    m_running = true;
+    m_abort_flag = false;
 
+    uint32_t routineStart = pros::millis();
+    bool intakeModeStarted = false;
+    bool everFound = false;
+    intakeLift.setState(true);
+    // Resolve target type from alliance colour
+    GameObjectType type;
+    if (allianceColour == 1)
+        type = GameObjectType::RED_YELLOW_PIN;
+    else
+        type = GameObjectType::BLUE_YELLOW_PIN;
+
+    // =========================================================================
+    // Phase 1 — Odometry approach
+    // =========================================================================
+    lemlib::Pose cur = m_chassis.getPose();
+    double dx = static_cast<double>(x) - cur.x;
+    double dy = static_cast<double>(y) - cur.y;
+    double dist = std::sqrt(dx * dx + dy * dy);
+
+    double stopShort = static_cast<double>(visionSwitchDistance) + m_cam_fwd_in;
+
+    if (dist > stopShort)
+    {
+        double ratio = (dist - stopShort) / dist;
+        double wp_x = cur.x + dx * ratio;
+        double wp_y = cur.y + dy * ratio;
+
+        int timeLeft = timeout - static_cast<int>(pros::millis() - routineStart);
+        if (timeLeft <= 0)
+        {
+            stopDrive();
+            m_intake_motor.move(0);
+            m_running = false;
+            return DriveToResult::TIMEOUT;
+        }
+
+        int moveTimeout = std::min(
+            timeLeft,
+            static_cast<int>(dist / 20.0 * 1000.0) + 1500);
+
+        m_chassis.moveToPoint(
+            wp_x,
+            wp_y,
+            moveTimeout,
+            {.forwards = true,
+             .maxSpeed = static_cast<float>(m_config.approach_speed),
+             .minSpeed = 0.0f,
+             .earlyExitRange = static_cast<float>(std::max(2.0, stopShort * 0.3))});
+
+        if (m_abort_flag)
+        {
+            stopDrive();
+            m_intake_motor.move(0);
+            m_running = false;
+            return DriveToResult::ABORTED;
+        }
+    }
+
+    // =========================================================================
+    // Phase 2 — Face target
+    // =========================================================================
+    {
+        int timeLeft = timeout - static_cast<int>(pros::millis() - routineStart);
+        if (timeLeft <= 0)
+        {
+            stopDrive();
+            m_intake_motor.move(0);
+            m_running = false;
+            return DriveToResult::TIMEOUT;
+        }
+
+        m_chassis.turnToPoint(
+            x,
+            y,
+            std::min(timeLeft, 1200),
+            {.forwards = true, .minSpeed = 0});
+    }
+
+    if (m_abort_flag)
+    {
+        stopDrive();
+        m_intake_motor.move(0);
+        m_running = false;
+        return DriveToResult::ABORTED;
+    }
+
+    // =========================================================================
+    // Phase 3 — Start intake + elevator intake position
+    // =========================================================================
+    clamp.setState(false);
+    elevator.setState(ElevatorState::LOAD);
+    m_intake_motor.move(127);
+    intakeModeStarted = true;
+
+    // =========================================================================
+    // Phase 4 — Vision approach and acquire
+    // =========================================================================
+    uint32_t lastSeenMs = pros::millis();
+    double prevError = 0.0;
+    double integral = 0.0;
+
+    while (true)
+    {
+        if (m_abort_flag)
+        {
+            stopDrive();
+            m_intake_motor.move(0);
+            if (intakeModeStarted)
+                elevator.setState(ElevatorState::STOW);
+            m_running = false;
+            return DriveToResult::ABORTED;
+        }
+
+        if (pros::millis() - routineStart > static_cast<uint32_t>(timeout))
+        {
+            stopDrive();
+            m_intake_motor.move(0);
+            if (intakeModeStarted)
+                elevator.setState(ElevatorState::STOW);
+            m_running = false;
+            return everFound ? DriveToResult::TIMEOUT : DriveToResult::OBJECT_NOT_FOUND;
+        }
+
+        // Piece detected in the intake
+        if (colourSortSensor.get_proximity() > 100)
+        {
+            stopDrive();
+            elevator.setState(ElevatorState::PICKUP);
+            m_intake_motor.move(0);
+            m_running = false;
+            return DriveToResult::SUCCESS;
+        }
+
+        auto target = findBestTarget(type);
+
+        if (target.has_value())
+        {
+            const auto &obj = target.value();
+            everFound = true;
+            lastSeenMs = pros::millis();
+
+            // Horizontal centering PID
+            double error = static_cast<double>(getObjectX(obj)) - m_config.frame_center_x;
+
+            integral += error;
+            integral = std::clamp(integral, -500.0, 500.0);
+
+            if ((error > 0.0 && prevError < 0.0) ||
+                (error < 0.0 && prevError > 0.0))
+            {
+                integral = 0.0;
+            }
+
+            double deriv = error - prevError;
+            prevError = error;
+
+            double turn =
+                m_config.lateral_kP * error +
+                m_config.lateral_kI * integral +
+                m_config.lateral_kD * deriv;
+
+            turn = std::clamp(turn, -60.0, 60.0);
+
+            double forward = calculateApproachSpeed(obj);
+            double obj_h = static_cast<double>(getObjectHeight(obj));
+
+            if (obj_h >= m_config.arrival_threshold)
+            {
+                arcadeDrive(m_config.creep_speed, turn * 0.4);
+            }
+            else
+            {
+                if (std::abs(error) <= m_config.centering_deadband)
+                {
+                    arcadeDrive(forward, 0.0);
+                }
+                else
+                {
+                    double scale = 1.0 - std::min(std::abs(turn) / 60.0, 0.6);
+                    arcadeDrive(forward * scale, turn);
+                }
+            }
+        }
+        else
+        {
+            if (everFound)
+            {
+                if (pros::millis() - lastSeenMs >
+                    static_cast<uint32_t>(m_config.lost_object_timeout_ms))
+                {
+                    stopDrive();
+                    m_intake_motor.move(0);
+                    if (intakeModeStarted)
+                        elevator.setState(ElevatorState::STOW);
+                    m_running = false;
+                    return DriveToResult::OBJECT_LOST;
+                }
+
+                arcadeDrive(m_config.creep_speed, 0.0);
+            }
+            else
+            {
+                arcadeDrive(0.0, 20.0);
+            }
+        }
+
+        pros::delay(20);
+    }
+}
 // ============================================================================
 // FIND BEST TARGET
 // ============================================================================

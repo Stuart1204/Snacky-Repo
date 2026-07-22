@@ -264,7 +264,7 @@ inline void displayData()
 
     pros::screen::print(TEXT_LARGE_CENTER, 1, "elevatorPos: %f", elevator.getElevatorPosition());
     pros::screen::print(TEXT_LARGE_CENTER, 3, "wristPos: %f", elevator.getWristPosition());
-    pros::screen::print(TEXT_LARGE_CENTER, 9, "elevatorTarget: %f", elevator.getElevatorTarget());
+    pros::screen::print(TEXT_LARGE_CENTER, 9, "Proximity: %iu", colourSortSensor.get_proximity());
     // pros::screen::print(TEXT_LARGE_CENTER, 7, "ele: %f", (leftElevator.get_position() - rightElevator.get_position()) / 2.0);
     pros::screen::print(TEXT_LARGE_CENTER, 5, "leftPower: %i", elevator.getLeftPower());
     pros::screen::print(TEXT_LARGE_CENTER, 7, "rightPower: %i", elevator.getRightPower());

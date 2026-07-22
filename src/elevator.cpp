@@ -6,6 +6,7 @@
 #include "piston.cpp"
 #include "pros/adi.hpp"
 #include "pros/misc.hpp"
+#include "intake.cpp"
 #include "pros/rtos.hpp"
 
 // ═══════════════════════════════════════════════════════════
@@ -34,7 +35,7 @@ namespace ElevatorConfig
    constexpr double RESET_WRIST = -180.0;      // level wrist before driving down
    constexpr double RESET_ELEV_SEEK = -100.0; // drive into hard stop
 
-   constexpr double LOAD_ELEV = 1;
+   constexpr double LOAD_ELEV = 2;
    constexpr double LOAD_WRIST = -180.0;
 
    constexpr double MATCHLOAD_ELEV = 5.0;
@@ -53,7 +54,7 @@ namespace ElevatorConfig
    constexpr double WRIST_KP = 2.5, WRIST_KI = 0.1, WRIST_KD = 1.9;
 
    // Settle thresholds
-   constexpr double ELEV_SETTLE_IN = 2.5;    // inches
+   constexpr double ELEV_SETTLE_IN = 1;    // inches
    constexpr double WRIST_SETTLE_DEG = 12.0; // degrees
 
    // Stall detection
@@ -373,13 +374,29 @@ private:
       switch (phase)
       {
       case 0:
-         if(pros::millis() - motionStartTime > 300) {
-            stateComplete = true;
-            setState(ElevatorState::STOW);
+         intake.setState(IntakeState::INTAKE);
+         elevatorTarget = 0.5;
+         if (isElevatorSettled() || isMotionStalled()) {
+            phase = 1;
          }
          break;
+      case 1:
+         wristTarget = -180;
+         if (isWristSettled()||isMotionStalled()) {
+            phase = 2;
+         }
+         break;
+      case 2:
+         clamp.setState(true);
+         if(pros::millis() - motionStartTime > 300) {
+            stateComplete = true;
+            intake.setState(IntakeState::IDLE);
+            setState(ElevatorState::STOW);
+
+         }
       }
    }
+
 
    void runManual()
    {
@@ -527,6 +544,7 @@ public:
       return fabs(getElevatorPosition() - elevatorTarget) < ElevatorConfig::ELEV_SETTLE_IN;
    }  
 
+
    bool wristInZone = false;
    bool isWristSettled()
    {
@@ -548,6 +566,10 @@ public:
    bool isSettled()
    {
       return isElevatorSettled() && isWristSettled();
+   }
+
+   bool hasGamePiece() {
+      return colourSortSensor.get_proximity() > 100;
    }
 
    // ═══════════════════════════════════════════════════════
@@ -681,8 +703,8 @@ public:
       // ── Differential mixing ──
       // Left motor: -wrist + elevator
       // Right motor: -wrist - elevator
-      leftPower = clamp127(-wristOut + elevOut);
-      rightPower = clamp127(-wristOut - elevOut);
+      leftPower = -wristOut + elevOut;
+      rightPower = -wristOut - elevOut;
 
       // ── Zero motors when settled (prevents oscillation and heat) ──
       if ((fabs(getWristPosition() - wristTarget) < ElevatorConfig::WRIST_SETTLE_DEG && isElevatorSettled()) && stateComplete)
@@ -697,3 +719,5 @@ public:
 };
 
 inline Elevator elevator;
+
+

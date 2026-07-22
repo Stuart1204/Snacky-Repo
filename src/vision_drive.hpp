@@ -47,8 +47,8 @@ struct VisionDriveConfig
 
     // Object height thresholds (pixels) — bigger = closer
     double far_threshold = 50.0;
-    double mid_threshold = 100.0;
-    double close_threshold = 160.0;
+    double mid_threshold = 110.0;
+    double close_threshold = 170.0;
     double arrival_threshold = 190.0;
 
     // Steering
@@ -87,12 +87,13 @@ public:
     void setupSensor();
 
     /// Drive to a known game piece at (target_x, target_y) on the field.
-    DriveToResult driveToObject(
-        double target_x,
-        double target_y,
-        GameObjectType object_type,
-        bool run_intake = true);
 
+    DriveToResult acquireAlliancePin(
+    int x,
+    int y,
+    int visionSwitchDistance,
+    bool pivotIntake,
+    int timeout);
     /**
      * Get distance/bearing to a visible AprilTag.
      * @param tag_id  If >= 0, only match this tag. If -1, return closest.

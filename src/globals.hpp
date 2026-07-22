@@ -33,7 +33,7 @@
 //sensor ports
 #define wristPort 14
 #define imuPort 13
-#define colourSortPort 9
+#define colourSortPort 7
 #define leftDistPort 5
 #define rightDistPort 13
 #define frontDistPort 6

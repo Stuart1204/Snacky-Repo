@@ -59,9 +59,10 @@ void competition_initialize() {}
 void autonomous()
 {
 	runSelectedAuton();
+	allianceColour=1;
 	chassis.setPose(0, 0, 0);
 	intakeLift.setState(true);
-	vdc->driveToObject(0.0, 24.0, GameObjectType::BLUE_YELLOW_PIN, true);
+	vdc->acquireAlliancePin(0, 24, 12, true, 3000);
 }
 
 void opcontrol()
