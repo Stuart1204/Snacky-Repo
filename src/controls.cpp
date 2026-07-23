@@ -182,6 +182,11 @@ inline void elevatorControls()
             elevator.setState(ElevatorState::MANUAL);
         }
     }
+    if(controller.get_digital_new_press(Buttons::B)) {
+        if(elevator.getState() == ElevatorState::STOW) {
+            elevator.setState(ElevatorState::MANUAL);
+        }
+    }
 
     // ═══════════════════════════════════════════════════════
     //  R2: SCORE — held to score, releases back to REST
@@ -220,7 +225,7 @@ inline void elevatorControls()
         elevator.setState(ElevatorState::REST);
     }
 
-    
+
 }
 
 
