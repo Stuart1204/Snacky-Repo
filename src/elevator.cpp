@@ -20,26 +20,26 @@ namespace ElevatorConfig
 
    // Soft limits
    constexpr double ELEVATOR_MIN = -200.0; // generous to allow stall-seeking
-   constexpr double ELEVATOR_MAX = 40.0;
+   constexpr double ELEVATOR_MAX = 100.0;
    constexpr double WRIST_MIN = -300.0;
    constexpr double WRIST_MAX = 90.0;
 
    // ── Macro target positions { elevatorInches, wristDegrees } ──
-   constexpr double STOW_ELEV = 15.0;
-   constexpr double STOW_WRIST = -5.0;
+   constexpr double STOW_ELEV = 10.0;
+   constexpr double STOW_WRIST = -90.0;
 
    constexpr double SCORE_ELEV = -10.0;
-   constexpr double SCORE_WRIST = -70.0;
+   constexpr double SCORE_WRIST = -90.0;
 
    constexpr double RESET_ELEV = 10;
    constexpr double RESET_WRIST = -180.0;      // level wrist before driving down
    constexpr double RESET_ELEV_SEEK = -100.0; // drive into hard stop
 
    constexpr double LOAD_ELEV = 2;
-   constexpr double LOAD_WRIST = -180.0;
+   constexpr double LOAD_WRIST = -184.0;
 
-   constexpr double MATCHLOAD_ELEV = 5.0;
-   constexpr double MATCHLOAD_WRIST = -140.0;
+   constexpr double MATCHLOAD_ELEV = 2.0;
+   constexpr double MATCHLOAD_WRIST = -176.0;
 
    // Pickup sequence targets
    constexpr double PICKUP_APPROACH_ELEV = 10.0;    // phase 0: move above game piece
@@ -47,7 +47,7 @@ namespace ElevatorConfig
    constexpr double PICKUP_SEEK_ELEV = 2;           // phase 2: drive down to stall
    constexpr double PICKUP_SWEEP_WRIST = -170.0;    // phase 3: sweep to consolidate
 
-   constexpr double MANUAL_WRIST = -5.0;
+   constexpr double MANUAL_WRIST = STOW_WRIST;
 
    // PID gains { kP, kI, kD }
    constexpr double ELEV_KP = 45.0, ELEV_KI = 0.0, ELEV_KD = 0.0;
@@ -97,6 +97,8 @@ private:
    // ── Targets ──
    double elevatorTarget = 0.0;
    double wristTarget = 0.0;
+
+   int maxSpeed = 127;
 
    // ── Motor output (for telemetry) ──
    int leftPower = 0;
@@ -245,6 +247,7 @@ private:
          {
             phase = 2;
             stateComplete = true;
+            elevatorTarget = getElevatorPosition();
          }
          break;
       case 2:
@@ -277,6 +280,7 @@ private:
             if (isWristSettled())
             {
                elevatorTarget = ElevatorConfig::SCORE_ELEV;
+               maxSpeed = 60;
                beginMotion();
                phase = 1;
             }
@@ -299,10 +303,16 @@ private:
          {
             clamp.setState(false);
             phase = 2;
+            elevatorTarget = getElevatorPosition() + 4;
+            wristTarget = -40;
+            maxSpeed = 127;
+         }
+         break;
+      case 2:
+         if(isWristSettled()) {
             stateComplete = true;
             setState(ElevatorState::REST);
          }
-         break;
       }
    }
 
@@ -392,7 +402,6 @@ private:
             stateComplete = true;
             intake.setState(IntakeState::IDLE);
             setState(ElevatorState::STOW);
-
          }
       }
    }
@@ -427,6 +436,7 @@ public:
       currentState = state;
       phase = 0;
       stateComplete = false;
+      maxSpeed = 127;
 
       // Stop motors during transition
       leftElevator.move(0);
@@ -449,13 +459,15 @@ public:
          break;
       case ElevatorState::LOAD:
          clamp.setState(false);
+         hood.setState(true);
          break;
       case ElevatorState::MATCHLOAD:
          clamp.setState(false);
+         hood.setState(false);
          break;
       case ElevatorState::PICKUP:
-         clamp.setState(true);
          motionStartTime = pros::millis();
+         hood.setState(false);
          break;
       case ElevatorState::MANUAL:
          elevatorTarget = getElevatorPosition();
@@ -548,19 +560,20 @@ public:
    bool wristInZone = false;
    bool isWristSettled()
    {
-      if(fabs(getWristPosition() - wristTarget) < ElevatorConfig::WRIST_SETTLE_DEG) {
-         wristInZone = true;
-      } else {
-         wristInZone = false;
-      }
-      if(!wristInZone) {
-         settleStartTime = pros::millis();
-      }
-      if(pros::millis() - settleStartTime > 300) {
-         return true;
-      } else {
-         return false; 
-      }
+      // if(fabs(getWristPosition() - wristTarget) < ElevatorConfig::WRIST_SETTLE_DEG) {
+      //    wristInZone = true;
+      // } else {
+      //    wristInZone = false;
+      // }
+      // if(!wristInZone) {
+      //    settleStartTime = pros::millis();
+      // }
+      // if(pros::millis() - settleStartTime > 300) {
+      //    return true;
+      // } else {
+      //    return false; 
+      // }
+      return fabs(getWristPosition() - wristTarget) < ElevatorConfig::WRIST_SETTLE_DEG;
    }
 
    bool isSettled()
@@ -707,11 +720,14 @@ public:
       rightPower = -wristOut - elevOut;
 
       // ── Zero motors when settled (prevents oscillation and heat) ──
-      if ((fabs(getWristPosition() - wristTarget) < ElevatorConfig::WRIST_SETTLE_DEG && isElevatorSettled()) && stateComplete)
+      if (isSettled() && stateComplete)
       {
          leftPower = 0;
          rightPower = 0;
       }
+
+      leftPower = clampD(leftPower, -maxSpeed, maxSpeed);
+      rightPower = clampD(rightPower, -maxSpeed, maxSpeed);
 
       leftElevator.move(leftPower);
       rightElevator.move(rightPower);

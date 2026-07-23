@@ -45,7 +45,7 @@ inline void activatePistons()
     }
     if (controller.get_digital_new_press(Buttons::X))
     {
-        stick.toggle();
+        hood.toggle();
     }
     if (controller.get_digital_new_press(Buttons::A))
     {
@@ -219,6 +219,8 @@ inline void elevatorControls()
         controller.rumble("-");
         elevator.setState(ElevatorState::REST);
     }
+
+    
 }
 
 

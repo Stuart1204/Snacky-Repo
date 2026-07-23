@@ -43,7 +43,7 @@
 //solenoids
 #define intakeLiftPort 'D'
 #define clampPort 'E'
-#define stickPort 'C'
+#define hoodPort 'C'
 
 //drivetrain specs
 #define driveTrackWidth 11.375
@@ -159,7 +159,7 @@ inline pros::Motor rightElevator(rightElePort, pros::v5::MotorGears::rpm_600);
 // pneumatics
 inline pros::adi::DigitalOut intakeLiftPiston(intakeLiftPort, LOW);
 inline pros::adi::DigitalOut clampPiston(clampPort, LOW);
-inline pros::adi::DigitalOut stickPiston(stickPort, LOW);
+inline pros::adi::DigitalOut hoodPiston(hoodPort, LOW);
 
 
 // Inertial Sensor on port
