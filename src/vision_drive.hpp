@@ -4,7 +4,6 @@
 #include "lemlib/api.hpp"
 #include <optional>
 #include <cstdint>
-
 enum class GameObjectType : uint8_t
 {
     BLUE_BLUE_PIN,
@@ -12,9 +11,11 @@ enum class GameObjectType : uint8_t
     BLUE_YELLOW_PIN,
     RED_YELLOW_PIN,
     YELLOW_YELLOW_PIN,
+    HALF_BLUE_PIN,    // <-- new
+    HALF_RED_PIN,     // <-- new
+    HALF_YELLOW_PIN,  // <-- new
     ANY_PIN,
 };
-
 enum class DriveToResult : uint8_t
 {
     SUCCESS,
@@ -36,20 +37,20 @@ struct TagReading
 struct VisionDriveConfig
 {
     // Steering PID
-    double lateral_kP = 0.4;
+    double lateral_kP = 0.5;
     double lateral_kI = 0.00;
     double lateral_kD = 1;
 
     // Forward speeds (0-127)
-    double approach_speed = 80.0;
-    double slow_approach_speed = 60.0;
-    double creep_speed = 35.0;
+    double approach_speed = 90.0;
+    double slow_approach_speed = 50.0;
+    double creep_speed = 15.0;
 
     // Object height thresholds (pixels) — bigger = closer
     double far_threshold = 50.0;
     double mid_threshold = 110.0;
-    double close_threshold = 170.0;
-    double arrival_threshold = 190.0;
+    double close_threshold = 150.0;
+    double arrival_threshold = 200.0;
 
     // Steering
     int frame_center_x = 160;
@@ -61,7 +62,7 @@ struct VisionDriveConfig
     int settle_time_ms = 300;
 
     // How close odometry gets before vision takes over (inches)
-    double switch_to_vision_distance = 15.0;
+    //double switch_to_vision_distance = 15.0;
 
     // Reject tiny noise detections
     double min_object_area = 80.0;
@@ -93,7 +94,8 @@ public:
     int y,
     int visionSwitchDistance,
     bool pivotIntake,
-    int timeout);
+    int timeout,
+    bool isYellow = false);  // <-- new param
     /**
      * Get distance/bearing to a visible AprilTag.
      * @param tag_id  If >= 0, only match this tag. If -1, return closest.

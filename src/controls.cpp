@@ -133,10 +133,10 @@ inline bool toggleFlipColourSeen = false;
 //     {
 //         elevator.setState(ElevatorState::RESET);
 //     }
-    // else {
-    //     elevator.setState(ElevatorState::REST);
-    // }
-//}
+//     else {
+//         elevator.setState(ElevatorState::REST);
+//     }
+// }
     // if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
 	// 		leftElevator.move(127);
 	// 		rightElevator.move(-127);
@@ -152,8 +152,7 @@ inline bool toggleFlipColourSeen = false;
 	// 	} else {
 	// 		leftElevator.move(0);
 	// 		rightElevator.move(0);
-	// 	}
-
+    //}
 inline void elevatorControls()
 {
     int state = elevator.getState();
@@ -266,13 +265,13 @@ inline void displayData()
     // pros::screen::print(TEXT_LARGE_CENTER, 1, "X: %f", pose.x);
     // pros::screen::print(TEXT_LARGE_CENTER, 3, "Y: %f", pose.y);
     // pros::screen::print(TEXT_LARGE_CENTER, 5, "Theta: %f", pose.theta);
-    // pros::screen::print(TEXT_LARGE_CENTER, 7, "Colour: %i", checkColour(toggleSensor));
+    //pros::screen::print(TEXT_LARGE_CENTER, 7, "Colour: %i", checkColour(toggleSensor));
     // pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %f", rightCurrentDistance);
 
     pros::screen::print(TEXT_LARGE_CENTER, 1, "elevatorPos: %f", elevator.getElevatorPosition());
-    pros::screen::print(TEXT_LARGE_CENTER, 3, "wristPos: %f", elevator.getWristPosition());
-    pros::screen::print(TEXT_LARGE_CENTER, 9, "Proximity: %iu", colourSortSensor.get_proximity());
-    // pros::screen::print(TEXT_LARGE_CENTER, 7, "ele: %f", (leftElevator.get_position() - rightElevator.get_position()) / 2.0);
+    pros::screen::print(TEXT_LARGE_CENTER, 9, "wristPos: %f", elevator.getWristPosition());
+    // pros::screen::print(TEXT_LARGE_CENTER, 9, "Proximity: %iu", colourSortSensor.get_proximity());
+    // // pros::screen::print(TEXT_LARGE_CENTER, 7, "ele: %f", (leftElevator.get_position() - rightElevator.get_position()) / 2.0);
     pros::screen::print(TEXT_LARGE_CENTER, 5, "leftPower: %i", elevator.getLeftPower());
     pros::screen::print(TEXT_LARGE_CENTER, 7, "rightPower: %i", elevator.getRightPower());
 

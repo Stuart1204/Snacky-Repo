@@ -95,7 +95,8 @@ enum ElevatorState
     MATCHLOAD = 5,
     PICKUP = 6,
     MANUAL = 7,
-    ESTOP = 8 // emergency stop from stall protection
+    ESTOP = 8,// emergency stop from stall protection
+    HOLD = 9
 };
 
 // aliance colour

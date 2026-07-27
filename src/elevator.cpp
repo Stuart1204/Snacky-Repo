@@ -29,21 +29,21 @@ namespace ElevatorConfig
    constexpr double STOW_WRIST = -90.0;
 
    constexpr double SCORE_ELEV = -10.0;
-   constexpr double SCORE_WRIST = -90.0;
+   constexpr double SCORE_WRIST = -85.0;
 
    constexpr double RESET_ELEV = 10;
    constexpr double RESET_WRIST = -180.0;      // level wrist before driving down
    constexpr double RESET_ELEV_SEEK = -100.0; // drive into hard stop
 
-   constexpr double LOAD_ELEV = 2;
-   constexpr double LOAD_WRIST = -184.0;
+   constexpr double LOAD_ELEV = 0;
+   constexpr double LOAD_WRIST = -180.0;
 
-   constexpr double MATCHLOAD_ELEV = 2.0;
-   constexpr double MATCHLOAD_WRIST = -176.0;
+   constexpr double MATCHLOAD_ELEV = 1;
+   constexpr double MATCHLOAD_WRIST = -170.0;
 
    // Pickup sequence targets
    constexpr double PICKUP_APPROACH_ELEV = 10.0;    // phase 0: move above game piece
-   constexpr double PICKUP_VERTICAL_WRIST = -175.0; // phase 1: wrist vertical
+   constexpr double PICKUP_VERTICAL_WRIST = -170.0; // phase 1: wrist vertical
    constexpr double PICKUP_SEEK_ELEV = 2;           // phase 2: drive down to stall
    constexpr double PICKUP_SWEEP_WRIST = -170.0;    // phase 3: sweep to consolidate
 
@@ -51,11 +51,11 @@ namespace ElevatorConfig
 
    // PID gains { kP, kI, kD }
    constexpr double ELEV_KP = 45.0, ELEV_KI = 0.0, ELEV_KD = 0.0;
-   constexpr double WRIST_KP = 2.5, WRIST_KI = 0.1, WRIST_KD = 1.9;
+   constexpr double WRIST_KP = 2.5, WRIST_KI = 0.05, WRIST_KD = 2;
 
    // Settle thresholds
    constexpr double ELEV_SETTLE_IN = 1;    // inches
-   constexpr double WRIST_SETTLE_DEG = 12.0; // degrees
+   constexpr double WRIST_SETTLE_DEG = 8.0; // degrees
 
    // Stall detection
    constexpr double STALL_VELOCITY_THRESHOLD = 20.0;  // RPM
@@ -67,6 +67,8 @@ namespace ElevatorConfig
    constexpr uint32_t GLOBAL_STALL_DURATION_MS = 500; // stall this long → emergency stop
    constexpr double GLOBAL_STALL_VELOCITY = 20.0;
    constexpr double GLOBAL_STALL_CURRENT = 2000.0;
+      // ── Sequenced move targets ──
+   
 
    // Clamp delay
    constexpr uint32_t CLAMP_ACTIVATE_DELAY_MS = 300;
@@ -100,6 +102,10 @@ private:
 
    int maxSpeed = 127;
 
+   double holdElevTarget = 0.0;
+   double holdWristTarget = 0.0;
+   bool holdWristFirst = false;
+
    // ── Motor output (for telemetry) ──
    int leftPower = 0;
    int rightPower = 0;
@@ -129,6 +135,20 @@ private:
    static int clamp127(double v)
    {
       return static_cast<int>(clampD(v, -127.0, 127.0));
+   }
+
+   static double wrapAngleDeg(double angle)
+   {
+      while (angle > 180.0)
+         angle -= 360.0;
+      while (angle <= -180.0)
+         angle += 360.0;
+      return angle;
+   }
+
+   static double angleErrorDeg(double target, double current)
+   {
+      return wrapAngleDeg(target - current);
    }
 
    // ═══════════════════════════════════════════════════════
@@ -225,7 +245,53 @@ private:
    // ═══════════════════════════════════════════════════════
    //  PHASE RUNNERS — one per macro state
    // ═══════════════════════════════════════════════════════
+      void runHold()
+   {
+      switch (phase)
+      {
+      case 0:
+         if (holdWristFirst)
+         {
+            wristTarget = holdWristTarget;
+            elevatorTarget = getElevatorPosition(); // freeze elevator
+            if (isWristSettled())
+               phase = 1;
+         }
+         else
+         {
+            elevatorTarget = holdElevTarget;
+            wristTarget = getWristPosition(); // freeze wrist
+            if (isElevatorSettled())
+               phase = 1;
+         }
+         break;
 
+      case 1:
+         if (holdWristFirst)
+         {
+            elevatorTarget = holdElevTarget;
+            if (isElevatorSettled())
+            {
+               phase = 2;
+               stateComplete = true;
+            }
+         }
+         else
+         {
+            wristTarget = holdWristTarget;
+            if (isWristSettled())
+            {
+               phase = 2;
+               stateComplete = true;
+            }
+         }
+         break;
+
+      case 2:
+         // Hold both targets
+         break;
+      }
+   }
    void runStow()
    {
       // Phase 0: Move elevator to stow height, wrist safe
@@ -270,7 +336,7 @@ private:
          {
             wristTarget = ElevatorConfig::SCORE_WRIST;
             // Override PID output — only spin left motor for pure wrist rotation
-            double wristErr = wristTarget - getWristPosition();
+            double wristErr = angleErrorDeg(wristTarget, getWristPosition());
             double wristOut = wristPID.update(wristErr);
             leftPower = clamp127(-wristOut);
             rightPower = 0;
@@ -280,7 +346,7 @@ private:
             if (isWristSettled())
             {
                elevatorTarget = ElevatorConfig::SCORE_ELEV;
-               maxSpeed = 60;
+               maxSpeed = 100;
                beginMotion();
                phase = 1;
             }
@@ -348,7 +414,7 @@ private:
          rightElevator.move(0);
          elevatorReset();
          stateComplete = true;
-         setState(ElevatorState::LOAD);
+         //setState(ElevatorState::LOAD);
          break;
       }
    }
@@ -459,15 +525,15 @@ public:
          break;
       case ElevatorState::LOAD:
          clamp.setState(false);
-         hood.setState(true);
+         //hood.setState(true);
          break;
       case ElevatorState::MATCHLOAD:
          clamp.setState(false);
-         hood.setState(false);
+         //hood.setState(false);
          break;
       case ElevatorState::PICKUP:
          motionStartTime = pros::millis();
-         hood.setState(false);
+         //hood.setState(false);
          break;
       case ElevatorState::MANUAL:
          elevatorTarget = getElevatorPosition();
@@ -478,7 +544,9 @@ public:
          leftElevator.move(0);
          rightElevator.move(0);
          break;
-      }
+      case ElevatorState::HOLD:
+         break;
+      } 
    }
 
    int getState() const { return currentState; }
@@ -500,7 +568,9 @@ public:
       useSensorPickup = false;
       sensorDetectFunc = nullptr;
    }
-
+   bool isStateComplete() {
+      return stateComplete;
+   }
    // ═══════════════════════════════════════════════════════
    //  POSITION GETTERS
    // ═══════════════════════════════════════════════════════
@@ -513,9 +583,7 @@ public:
    double getWristPosition()
    {
       double pos = wristRotation.get_angle() / 100.0;
-      if (pos > 45.0)
-         pos -= 360.0;
-      return pos;
+      return wrapAngleDeg(pos);
    }
 
    // ═══════════════════════════════════════════════════════
@@ -523,15 +591,13 @@ public:
    // ═══════════════════════════════════════════════════════
    void setElevatorTarget(double inches)
    {
-      elevatorTarget = clampD(inches, ElevatorConfig::ELEVATOR_MIN,
-                              ElevatorConfig::ELEVATOR_MAX);
+      elevatorTarget = inches;
    }
 
    void setWristTarget(double degrees)
    {
-      if (degrees > 45.0)
-         degrees -= 360.0;
-      wristTarget = clampD(degrees, ElevatorConfig::WRIST_MIN,
+      double normalized = wrapAngleDeg(degrees);
+      wristTarget = clampD(normalized, ElevatorConfig::WRIST_MIN,
                            ElevatorConfig::WRIST_MAX);
    }
 
@@ -555,6 +621,14 @@ public:
    {
       return fabs(getElevatorPosition() - elevatorTarget) < ElevatorConfig::ELEV_SETTLE_IN;
    }  
+   void moveTo(double elevInches, double wristDeg, bool wristFirst = false)
+   {
+      holdElevTarget = elevInches;
+      holdWristTarget = wristDeg;
+      holdWristFirst = wristFirst;
+      currentState = -1;
+      setState(ElevatorState::HOLD);
+   }
 
 
    bool wristInZone = false;
@@ -573,7 +647,7 @@ public:
       // } else {
       //    return false; 
       // }
-      return fabs(getWristPosition() - wristTarget) < ElevatorConfig::WRIST_SETTLE_DEG;
+      return fabs(angleErrorDeg(wristTarget, getWristPosition())) < ElevatorConfig::WRIST_SETTLE_DEG;
    }
 
    bool isSettled()
@@ -626,6 +700,20 @@ public:
    {
       uint32_t start = pros::millis();
       while (phase < targetPhase && (pros::millis() - start) < timeoutMs)
+         pros::delay(10);
+   }
+   void waitUntilElevatorSettled(uint32_t timeoutMs = 3000)
+   {
+      uint32_t start = pros::millis();
+      while (!isElevatorSettled() && (pros::millis() - start) < timeoutMs)
+         pros::delay(10);
+   }
+
+   // Wait until wrist position is reached (ignores elevator)
+   void waitUntilWristSettled(uint32_t timeoutMs = 3000)
+   {
+      uint32_t start = pros::millis();
+      while (!isWristSettled() && (pros::millis() - start) < timeoutMs)
          pros::delay(10);
    }
 
@@ -694,8 +782,11 @@ public:
       case ElevatorState::MANUAL:
          runManual();
          break;
+      case ElevatorState::HOLD:
+   // Respect externally set targets
+         runHold();
+         break;
       }
-
       if (currentState == ElevatorState::SCORE && phase == 0 && getElevatorPosition() < 20.0)
         return;
 
@@ -708,7 +799,7 @@ public:
       double wristPos = getWristPosition();
 
       double elevErr = elevatorTarget - elevPos;
-      double wristErr = wristTarget - wristPos;
+      double wristErr = angleErrorDeg(wristTarget, wristPos);
 
       double elevOut = elevatorPID.update(elevErr);
       double wristOut = wristPID.update(wristErr);
@@ -725,10 +816,6 @@ public:
          leftPower = 0;
          rightPower = 0;
       }
-
-      leftPower = clampD(leftPower, -maxSpeed, maxSpeed);
-      rightPower = clampD(rightPower, -maxSpeed, maxSpeed);
-
       leftElevator.move(leftPower);
       rightElevator.move(rightPower);
    }

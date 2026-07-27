@@ -97,6 +97,9 @@ namespace CodeIDs
     constexpr int BLUE_YELLOW = 3;
     constexpr int BLUE_BLUE = 4;
     constexpr int RED_RED = 5;
+    constexpr int HALF_BLUE = 6;    // <-- new
+    constexpr int HALF_RED = 7;     // <-- new
+    constexpr int HALF_YELLOW = 8;  // <-- new
 }
 
 // ============================================================================
@@ -135,13 +138,12 @@ void VisionDriveController::setupSensor()
 
     pros::AIVision::Color blue = {
         .id = ColorIDs::BLUE,
-        .red = 77,
-        .green = 150,
-        .blue = 180,
-        .hue_range = 11.0,
-        .saturation_range = 0.25};
+        .red = 57,
+        .green = 176,
+        .blue = 206,
+        .hue_range = 16.0,
+        .saturation_range = 0.46};
     m_ai_vision.set_color(blue);
-
     pros::AIVision::Color yellow = {
         .id = ColorIDs::YELLOW,
         .red = 139,
@@ -150,13 +152,12 @@ void VisionDriveController::setupSensor()
         .hue_range = 26.0,
         .saturation_range = 0.33};
     m_ai_vision.set_color(yellow);
-
     pros::AIVision::Color red = {
         .id = ColorIDs::RED,
         .red = 174,
         .green = 82,
         .blue = 109,
-        .hue_range = 11.0,
+        .hue_range = 15.0,
         .saturation_range = 0.68};
     m_ai_vision.set_color(red);
 
@@ -258,7 +259,6 @@ std::optional<TagReading> VisionDriveController::getTagReading(int tag_id)
 
     return best;
 }
-
 
 // ============================================================================
 // VISION APPROACH LOOP
@@ -396,24 +396,47 @@ DriveToResult VisionDriveController::acquireAlliancePin(
     int y,
     int visionSwitchDistance,
     bool pivotIntake,
-    int timeout)
+    int timeout,
+    bool isYellow)  // <-- new parameter
 {
     m_running = true;
     m_abort_flag = false;
 
     uint32_t routineStart = pros::millis();
-    bool intakeModeStarted = false;
+    uint32_t lastSeenMs = pros::millis();
+    uint32_t intakeStartMs = 0;
+
     bool everFound = false;
-    intakeLift.setState(true);
-    // Resolve target type from alliance colour
+    bool finalStopped = false;
+    bool usedFallback = false;
+
+    const double odomArrivalRadius = 2.0;
+    const double lostCloseRadius = 5.0;
+    const int sensorArmDelayMs = 300;
+
+    intakeLift.setState(pivotIntake);
+
+    // -----------------------------------------------------------------------
+    // Resolve target type based on alliance + isYellow flag
+    //
+    // isYellow = true  → look for HALF_YELLOW_PIN  (yellow-only half-pins)
+    // isYellow = false → look for alliance HALF_RED_PIN or HALF_BLUE_PIN
+    // -----------------------------------------------------------------------
     GameObjectType type;
-    if (allianceColour == 1)
-        type = GameObjectType::RED_YELLOW_PIN;
+    if (isYellow)
+    {
+        type = GameObjectType::HALF_YELLOW_PIN;
+    }
     else
-        type = GameObjectType::BLUE_YELLOW_PIN;
+    {
+        if (allianceColour == 1)
+            type = GameObjectType::HALF_RED_PIN;
+        else
+            type = GameObjectType::HALF_BLUE_PIN;
+    }
 
     // =========================================================================
-    // Phase 1 — Odometry approach
+    // Phase 1 — Odometry approach to vision handoff point
     // =========================================================================
     lemlib::Pose cur = m_chassis.getPose();
     double dx = static_cast<double>(x) - cur.x;
@@ -430,12 +453,7 @@ DriveToResult VisionDriveController::acquireAlliancePin(
 
         int timeLeft = timeout - static_cast<int>(pros::millis() - routineStart);
         if (timeLeft <= 0)
-        {
-            stopDrive();
-            m_intake_motor.move(0);
-            m_running = false;
-            return DriveToResult::TIMEOUT;
-        }
+            timeLeft = 500;
 
         int moveTimeout = std::min(
             timeLeft,
@@ -447,8 +465,8 @@ DriveToResult VisionDriveController::acquireAlliancePin(
             moveTimeout,
             {.forwards = true,
              .maxSpeed = static_cast<float>(m_config.approach_speed),
-             .minSpeed = 0.0f,
-             .earlyExitRange = static_cast<float>(std::max(2.0, stopShort * 0.3))});
+             .minSpeed = 20,
+             .earlyExitRange = static_cast<float>(std::max(3.0, stopShort * 0.3))});
 
         if (m_abort_flag)
         {
@@ -465,18 +483,13 @@ DriveToResult VisionDriveController::acquireAlliancePin(
     {
         int timeLeft = timeout - static_cast<int>(pros::millis() - routineStart);
         if (timeLeft <= 0)
-        {
-            stopDrive();
-            m_intake_motor.move(0);
-            m_running = false;
-            return DriveToResult::TIMEOUT;
-        }
+            timeLeft = 500;
 
         m_chassis.turnToPoint(
             x,
             y,
             std::min(timeLeft, 1200),
-            {.forwards = true, .minSpeed = 0});
+            {.forwards = true, .minSpeed = 20, .earlyExitRange=3});
     }
 
     if (m_abort_flag)
@@ -491,14 +504,14 @@ DriveToResult VisionDriveController::acquireAlliancePin(
     // Phase 3 — Start intake + elevator intake position
     // =========================================================================
     clamp.setState(false);
-    elevator.setState(ElevatorState::LOAD);
+    elevator.setState(ElevatorState::MATCHLOAD);
+    elevator.waitUntilComplete();
     m_intake_motor.move(127);
-    intakeModeStarted = true;
+    intakeStartMs = pros::millis();
 
     // =========================================================================
-    // Phase 4 — Vision approach and acquire
+    // Phase 4 — Vision centers, odom decides arrival
     // =========================================================================
-    uint32_t lastSeenMs = pros::millis();
     double prevError = 0.0;
     double integral = 0.0;
 
@@ -508,30 +521,56 @@ DriveToResult VisionDriveController::acquireAlliancePin(
         {
             stopDrive();
             m_intake_motor.move(0);
-            if (intakeModeStarted)
-                elevator.setState(ElevatorState::STOW);
+            elevator.setState(ElevatorState::STOW);
             m_running = false;
             return DriveToResult::ABORTED;
         }
 
-        if (pros::millis() - routineStart > static_cast<uint32_t>(timeout))
+        lemlib::Pose pose = m_chassis.getPose();
+        double dxNow = static_cast<double>(x) - pose.x;
+        double dyNow = static_cast<double>(y) - pose.y;
+        double distToTarget = std::sqrt(dxNow * dxNow + dyNow * dyNow);
+
+        if (finalStopped)
         {
             stopDrive();
-            m_intake_motor.move(0);
-            if (intakeModeStarted)
-                elevator.setState(ElevatorState::STOW);
-            m_running = false;
-            return everFound ? DriveToResult::TIMEOUT : DriveToResult::OBJECT_NOT_FOUND;
+            intakeLift.setState(false);
+            if ((pros::millis() - intakeStartMs) > static_cast<uint32_t>(sensorArmDelayMs) &&
+                colourSortSensor.get_proximity() > 100)
+            {   
+                m_intake_motor.move(127);
+                pros::delay(750);
+                elevator.setState(ElevatorState::PICKUP);
+                m_running = false;
+                if (elevator.isStateComplete()) {
+                    m_intake_motor.move(0);
+                }
+                return DriveToResult::SUCCESS;
+            }
+
+            if (pros::millis() - routineStart > static_cast<uint32_t>(timeout))
+            {
+                intakeLift.setState(false);
+                m_intake_motor.move(127);
+                pros::delay(750);
+                elevator.setState(ElevatorState::PICKUP);
+                m_running = false;
+                if (elevator.isStateComplete()) {
+                    m_intake_motor.move(0);
+                }
+                return usedFallback ? DriveToResult::OBJECT_LOST : DriveToResult::TIMEOUT;
+            }
+
+            pros::delay(20);
+            continue;
         }
 
-        // Piece detected in the intake
-        if (colourSortSensor.get_proximity() > 100)
+        if (distToTarget <= odomArrivalRadius)
         {
+            finalStopped = true;
             stopDrive();
-            elevator.setState(ElevatorState::PICKUP);
-            m_intake_motor.move(0);
-            m_running = false;
-            return DriveToResult::SUCCESS;
+            pros::delay(20);
+            continue;
         }
 
         auto target = findBestTarget(type);
@@ -542,7 +581,6 @@ DriveToResult VisionDriveController::acquireAlliancePin(
             everFound = true;
             lastSeenMs = pros::millis();
 
-            // Horizontal centering PID
             double error = static_cast<double>(getObjectX(obj)) - m_config.frame_center_x;
 
             integral += error;
@@ -564,47 +602,109 @@ DriveToResult VisionDriveController::acquireAlliancePin(
 
             turn = std::clamp(turn, -60.0, 60.0);
 
-            double forward = calculateApproachSpeed(obj);
-            double obj_h = static_cast<double>(getObjectHeight(obj));
+            double forward;
+            if (distToTarget > 18.0)
+                forward = m_config.approach_speed;
+            else if (distToTarget > 8.0)
+                forward = m_config.slow_approach_speed;
+            else
+                forward = m_config.creep_speed;
 
-            if (obj_h >= m_config.arrival_threshold)
+            if (std::abs(error) <= m_config.centering_deadband)
             {
-                arcadeDrive(m_config.creep_speed, turn * 0.4);
+                arcadeDrive(forward, 0.0);
             }
             else
             {
-                if (std::abs(error) <= m_config.centering_deadband)
-                {
-                    arcadeDrive(forward, 0.0);
-                }
-                else
-                {
-                    double scale = 1.0 - std::min(std::abs(turn) / 60.0, 0.6);
-                    arcadeDrive(forward * scale, turn);
-                }
+                double scale = 1.0 - std::min(std::abs(turn) / 60.0, 0.6);
+                arcadeDrive(forward * scale, turn);
             }
         }
         else
         {
-            if (everFound)
+            if (everFound && distToTarget <= lostCloseRadius)
             {
-                if (pros::millis() - lastSeenMs >
-                    static_cast<uint32_t>(m_config.lost_object_timeout_ms))
+                finalStopped = true;
+                stopDrive();
+                pros::delay(20);
+                continue;
+            }
+
+            if (everFound &&
+                pros::millis() - lastSeenMs > static_cast<uint32_t>(m_config.lost_object_timeout_ms))
+            {
+                usedFallback = true;
+                stopDrive();
+
+                m_chassis.turnToPoint(
+                    x,
+                    y,
+                    1000,
+                    {.forwards = true, .minSpeed = 0, .earlyExitRange = 1});
+
+                m_chassis.moveToPoint(
+                    static_cast<double>(x),
+                    static_cast<double>(y),
+                    3000,
+                    {.forwards = true,
+                     .maxSpeed = 90,
+                     .minSpeed = 30, .earlyExitRange = 3});
+
+                m_chassis.waitUntilDone();
+                stopDrive();
+                finalStopped = true;
+                pros::delay(20);
+                continue;
+            }
+
+            if (!everFound)
+            {
+                if (pros::millis() - routineStart > 1500)
                 {
+                    usedFallback = true;
                     stopDrive();
-                    m_intake_motor.move(0);
-                    if (intakeModeStarted)
-                        elevator.setState(ElevatorState::STOW);
-                    m_running = false;
-                    return DriveToResult::OBJECT_LOST;
+
+                    m_chassis.turnToPoint(
+                        x,
+                        y,
+                        1000,
+                        {.forwards = true, .minSpeed = 0, .earlyExitRange = 3});
+
+                    m_chassis.moveToPoint(
+                        static_cast<double>(x),
+                        static_cast<double>(y),
+                        3000,
+                        {.forwards = true,
+                         .maxSpeed = 90,
+                         .minSpeed = 30, .earlyExitRange = 3});
+
+                    m_chassis.waitUntilDone();
+                    stopDrive();
+                    finalStopped = true;
+                    pros::delay(20);
+                    continue;
                 }
 
-                arcadeDrive(m_config.creep_speed, 0.0);
+                arcadeDrive(0.0, 20.0);
             }
             else
             {
-                arcadeDrive(0.0, 20.0);
+                arcadeDrive(m_config.creep_speed, 0.0);
             }
+        }
+
+        if (pros::millis() - routineStart > static_cast<uint32_t>(timeout))
+        {
+            stopDrive();
+            intakeLift.setState(false);
+            m_intake_motor.move(127);
+            pros::delay(750);
+            elevator.setState(ElevatorState::PICKUP);
+            m_running = false;
+            if (elevator.isStateComplete()) {
+                m_intake_motor.move(0);
+            }
+            return DriveToResult::TIMEOUT;
         }
 
         pros::delay(20);
@@ -652,6 +752,7 @@ bool VisionDriveController::matchesTarget(
     GameObjectType type) const
 {
     bool is_code = pros::AIVision::is_type(obj, pros::AivisionDetectType::code);
+    bool is_color = pros::AIVision::is_type(obj, pros::AivisionDetectType::color);
 
     switch (type)
     {
@@ -665,6 +766,13 @@ bool VisionDriveController::matchesTarget(
         return is_code && obj.id == CodeIDs::RED_YELLOW;
     case GameObjectType::YELLOW_YELLOW_PIN:
         return is_code && obj.id == CodeIDs::YELLOW_YELLOW;
+    case GameObjectType::HALF_BLUE_PIN:
+        // Single-color blue blob (other half is grey cup)
+        return is_color && obj.id == ColorIDs::BLUE;
+    case GameObjectType::HALF_RED_PIN:
+        return is_color && obj.id == ColorIDs::RED;
+    case GameObjectType::HALF_YELLOW_PIN:
+        return is_color && obj.id == ColorIDs::YELLOW;
     case GameObjectType::ANY_PIN:
         return is_code;
     default:
@@ -721,9 +829,9 @@ bool VisionDriveController::isValidDetection(
 
 double VisionDriveController::calculateApproachSpeed(
     const pros::AIVision::Object &obj) const
+   
 {
     double h = static_cast<double>(getObjectHeight(obj));
-
     if (h < m_config.far_threshold)
         return m_config.approach_speed;
 
@@ -738,7 +846,7 @@ double VisionDriveController::calculateApproachSpeed(
         double t = (h - m_config.mid_threshold) / (m_config.close_threshold - m_config.mid_threshold);
         return m_config.slow_approach_speed + t * (m_config.creep_speed - m_config.slow_approach_speed);
     }
-
+    printf("Size: %d\n", getObjectHeight(obj));
     return m_config.creep_speed;
 }
 
