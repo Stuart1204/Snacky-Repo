@@ -29,7 +29,7 @@ namespace ElevatorConfig
    constexpr double STOW_WRIST = -75.0;
 
    constexpr double SCORE_ELEV = -10.0;
-   constexpr double SCORE_WRIST = -80.0;
+   constexpr double SCORE_WRIST = -65.0;
 
    constexpr double RESET_ELEV = 10;
    constexpr double RESET_WRIST = -170.0;      // level wrist before driving down
@@ -38,8 +38,8 @@ namespace ElevatorConfig
    constexpr double LOAD_ELEV = 0;
    constexpr double LOAD_WRIST = -180.0;
 
-   constexpr double MATCHLOAD_ELEV = 1;
-   constexpr double MATCHLOAD_WRIST = -170.0;
+   constexpr double MATCHLOAD_ELEV = 0;
+   constexpr double MATCHLOAD_WRIST = -175.0;
 
    // Pickup sequence targets
    constexpr double PICKUP_APPROACH_ELEV = 10.0;    // phase 0: move above game piece
@@ -95,6 +95,10 @@ private:
    int lastState = ElevatorState::REST;
    int phase = 0;              // sub-phase within a macro state
    bool stateComplete = false; // set true when a macro finishes its sequence
+
+   int pendingNextState = ElevatorState::REST;
+   int pendingIntakeState = IntakeState::IDLE;
+   bool resetSequenceRequested = false;
 
    // ── Targets ──
    double elevatorTarget = 0.0;
@@ -331,26 +335,38 @@ private:
 
    void runReset()
    {
-      // Phase 0: Raise elevator to clear funnel (hold current wrist angle)
-      // Phase 1: Level the wrist
-      // Phase 2: Drive elevator down until stalled on hard stop
-      // Phase 3: Reset encoders, transition to LOAD
+      // Phase 0: Move elevator to the safe reset height if needed.
+      // Phase 1: Rotate wrist vertical if it is not already there.
+      // Phase 2: Drive down until stalled on the hard stop.
+      // Phase 3: Reset encoders and transition to the requested follow-up state.
       switch (phase)
       {
       case 0:
-         if (elevator.getElevatorPosition() < 10 && fabs(fabs(elevator.getWristPosition()) - 180) > ElevatorConfig::WRIST_SETTLE_DEG) {
-            elevatorTarget = ElevatorConfig::RESET_ELEV;
-            wristTarget = getWristPosition(); // explicitly hold current wrist angle
-            if (isElevatorSettled()) phase = 1;
-         }
-         else {
-            wristTarget = ElevatorConfig::RESET_WRIST;
-            if (isWristSettled())
+         if (fabs(angleErrorDeg(ElevatorConfig::RESET_WRIST, getWristPosition())) > ElevatorConfig::WRIST_SETTLE_DEG)
+         {
+            if (getElevatorPosition() < 10.0)
             {
-               elevatorTarget = ElevatorConfig::RESET_ELEV_SEEK;
-               beginMotion();
-               phase = 2;
+               elevatorTarget = ElevatorConfig::RESET_ELEV;
+               wristTarget = getWristPosition();
+               if (isElevatorSettled())
+                  phase = 1;
             }
+            else
+            {
+               wristTarget = ElevatorConfig::RESET_WRIST;
+               if (isWristSettled())
+               {
+                  elevatorTarget = ElevatorConfig::RESET_ELEV_SEEK;
+                  beginMotion();
+                  phase = 2;
+               }
+            }
+         }
+         else
+         {
+            elevatorTarget = ElevatorConfig::RESET_ELEV_SEEK;
+            beginMotion();
+            phase = 2;
          }
          break;
       case 1:
@@ -371,7 +387,20 @@ private:
          rightElevator.move(0);
          elevatorReset();
          stateComplete = true;
-         //setState(ElevatorState::LOAD);
+
+         if (resetSequenceRequested)
+         {
+            int nextState = pendingNextState;
+            int intakeMode = pendingIntakeState;
+            pendingNextState = ElevatorState::REST;
+            pendingIntakeState = IntakeState::IDLE;
+            resetSequenceRequested = false;
+
+            if (intakeMode != IntakeState::IDLE)
+               intake.setState(intakeMode);
+
+            setState(nextState);
+         }
          break;
       }
    }
@@ -390,11 +419,24 @@ private:
 
    void runMatchload()
    {
-      elevatorTarget = ElevatorConfig::MATCHLOAD_ELEV;
-      wristTarget = ElevatorConfig::MATCHLOAD_WRIST;
-      if (isSettled())
+      switch (phase)
       {
-         stateComplete = true;
+      case 0:
+         if(pros::millis() - motionStartTime > 300) {
+            phase = 1;
+         }
+         break;
+      case 1:
+         if(colourSortSensor.get_proximity() > 150) {
+            hood.setState(false);
+            motionStartTime = pros::millis();
+            phase = 2;
+         }
+         break;
+      case 2:
+         if(pros::millis() - motionStartTime > 500) {
+            setState(ElevatorState::PICKUP);
+         }
       }
    }
 
@@ -461,6 +503,7 @@ public:
       phase = 0;
       stateComplete = false;
       maxSpeed = 127;
+      motionStartTime = pros::millis();
 
       // Stop motors during transition
       leftElevator.move(0);
@@ -485,11 +528,16 @@ public:
          break;
       case ElevatorState::LOAD:
          clamp.setState(false);
+         hood.setState(false);
+         intakeLift.setState(false);
          //hood.setState(true);
          break;
       case ElevatorState::MATCHLOAD:
          clamp.setState(false);
-         //hood.setState(false);
+         hood.setState(true);
+         intakeLift.setState(true);
+         elevatorTarget = ElevatorConfig::MATCHLOAD_ELEV;
+         wristTarget = ElevatorConfig::MATCHLOAD_WRIST;
          break;
       case ElevatorState::PICKUP:
          motionStartTime = pros::millis();
@@ -621,6 +669,17 @@ public:
 
    bool hasGamePiece() {
       return colourSortSensor.get_proximity() > 100;
+   }
+
+   void requestResetAndIntake(int intakeMode, int nextState)
+   {
+      if (currentState == ElevatorState::RESET && !stateComplete)
+         return;
+
+      pendingNextState = nextState;
+      pendingIntakeState = intakeMode;
+      resetSequenceRequested = true;
+      setState(ElevatorState::RESET);
    }
 
    // ═══════════════════════════════════════════════════════

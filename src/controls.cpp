@@ -17,36 +17,35 @@ inline void intakeControls()
 {
     if (controller.get_digital(Buttons::L1))
     {
-        elevator.setState(ElevatorState::RESET);
-        if(intakeLift.getState()) {
-            intake.setState(IntakeState::INTAKEHIGH);
-            elevator.setState(ElevatorState::MATCHLOAD);
-        } else {
-            intake.setState(IntakeState::INTAKE);
-            elevator.setState(ElevatorState::LOAD);
+        if (controller.get_digital_new_press(Buttons::L1))
+        {
+            elevator.requestResetAndIntake(
+                intakeLift.getState() ? IntakeState::INTAKEHIGH : IntakeState::INTAKE,
+                intakeLift.getState() ? ElevatorState::MATCHLOAD : ElevatorState::LOAD);
+        }
+        else if (elevator.getState() != ElevatorState::RESET)
+        {
+            intake.setState(intakeLift.getState() ? IntakeState::INTAKEHIGH : IntakeState::INTAKE);
         }
     }
     else if (controller.get_digital(Buttons::L2))
     {
         intake.setState(IntakeState::OUTTAKE);
-    } else {
+    }
+    else if (elevator.getState() != ElevatorState::RESET)
+    {
         intake.setState(IntakeState::IDLE);
     }
 }
 inline void activatePistons()
 {
-    if (controller.get_digital_new_press(Buttons::Y))
+    if (controller.get_digital_new_press(Buttons::B))
     {
-        intakeLift.toggle();
-        if(intakeLift.getState()) {
+        if(!intakeLift.getState()) {
             elevator.setState(ElevatorState::MATCHLOAD);
         } else {
             elevator.setState(ElevatorState::LOAD);
         }
-    }
-    if (controller.get_digital_new_press(Buttons::X))
-    {
-        hood.toggle();
     }
 }
 
@@ -65,7 +64,7 @@ inline void elevatorControls()
     // ═══════════════════════════════════════════════════════
 
     if(elevator.getState() == ElevatorState::MANUAL) {
-        if(controller.get_digital(Buttons::B)) {
+        if(controller.get_digital(Buttons::R1)) {
            elevator.setElevatorTarget(100);
            elevator.setMaxSpeed(127);
         } else if(controller.get_digital(Buttons::DOWN)) {
@@ -80,11 +79,12 @@ inline void elevatorControls()
     if(controller.get_digital_new_press(Buttons::R1)) {
         if(elevator.getState() == ElevatorState::LOAD || elevator.getState() == ElevatorState::MATCHLOAD) {
             elevator.setState(ElevatorState::PICKUP);
-        } else {
-            elevator.setState(ElevatorState::RESET);
+        }
+        if(elevator.getState() == ElevatorState::STOW) {
+            elevator.setState(ElevatorState::MANUAL);
         }
     }
-    if(controller.get_digital_new_press(Buttons::B) || controller.get_digital_new_press(Buttons::DOWN)) {
+    if(controller.get_digital_new_press(Buttons::DOWN)) {
         if(elevator.getState() == ElevatorState::STOW) {
             elevator.setState(ElevatorState::MANUAL);
         }
@@ -164,8 +164,8 @@ inline void displayData()
     // pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %f", rightCurrentDistance);
 
     pros::screen::print(TEXT_LARGE_CENTER, 1, "elevatorPos: %f", elevator.getElevatorPosition());
-    pros::screen::print(TEXT_LARGE_CENTER, 9, "wristPos: %f", elevator.getWristPosition());
-    // pros::screen::print(TEXT_LARGE_CENTER, 9, "Proximity: %iu", colourSortSensor.get_proximity());
+    pros::screen::print(TEXT_LARGE_CENTER, 3, "wristPos: %f", elevator.getWristPosition());
+    pros::screen::print(TEXT_LARGE_CENTER, 9, "Proximity: %iu", colourSortSensor.get_proximity());
     // // pros::screen::print(TEXT_LARGE_CENTER, 7, "ele: %f", (leftElevator.get_position() - rightElevator.get_position()) / 2.0);
     pros::screen::print(TEXT_LARGE_CENTER, 5, "leftPower: %i", elevator.getLeftPower());
     pros::screen::print(TEXT_LARGE_CENTER, 7, "rightPower: %i", elevator.getRightPower());
