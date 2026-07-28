@@ -29,7 +29,7 @@ namespace ElevatorConfig
    constexpr double STOW_WRIST = -75.0;
 
    constexpr double SCORE_ELEV = -10.0;
-   constexpr double SCORE_WRIST = -80.0;
+   constexpr double SCORE_WRIST = -65.0;
 
    constexpr double RESET_ELEV = 10;
    constexpr double RESET_WRIST = -170.0;      // level wrist before driving down
@@ -38,8 +38,8 @@ namespace ElevatorConfig
    constexpr double LOAD_ELEV = 0;
    constexpr double LOAD_WRIST = -180.0;
 
-   constexpr double MATCHLOAD_ELEV = 1;
-   constexpr double MATCHLOAD_WRIST = -170.0;
+   constexpr double MATCHLOAD_ELEV = 0;
+   constexpr double MATCHLOAD_WRIST = -175.0;
 
    // Pickup sequence targets
    constexpr double PICKUP_APPROACH_ELEV = 10.0;    // phase 0: move above game piece
@@ -419,11 +419,24 @@ private:
 
    void runMatchload()
    {
-      elevatorTarget = ElevatorConfig::MATCHLOAD_ELEV;
-      wristTarget = ElevatorConfig::MATCHLOAD_WRIST;
-      if (isSettled())
+      switch (phase)
       {
-         stateComplete = true;
+      case 0:
+         if(pros::millis() - motionStartTime > 300) {
+            phase = 1;
+         }
+         break;
+      case 1:
+         if(colourSortSensor.get_proximity() > 150) {
+            hood.setState(false);
+            motionStartTime = pros::millis();
+            phase = 2;
+         }
+         break;
+      case 2:
+         if(pros::millis() - motionStartTime > 500) {
+            setState(ElevatorState::PICKUP);
+         }
       }
    }
 
@@ -490,6 +503,7 @@ public:
       phase = 0;
       stateComplete = false;
       maxSpeed = 127;
+      motionStartTime = pros::millis();
 
       // Stop motors during transition
       leftElevator.move(0);
@@ -514,11 +528,16 @@ public:
          break;
       case ElevatorState::LOAD:
          clamp.setState(false);
+         hood.setState(false);
+         intakeLift.setState(false);
          //hood.setState(true);
          break;
       case ElevatorState::MATCHLOAD:
          clamp.setState(false);
-         //hood.setState(false);
+         hood.setState(true);
+         intakeLift.setState(true);
+         elevatorTarget = ElevatorConfig::MATCHLOAD_ELEV;
+         wristTarget = ElevatorConfig::MATCHLOAD_WRIST;
          break;
       case ElevatorState::PICKUP:
          motionStartTime = pros::millis();
@@ -650,6 +669,17 @@ public:
 
    bool hasGamePiece() {
       return colourSortSensor.get_proximity() > 100;
+   }
+
+   void requestResetAndIntake(int intakeMode, int nextState)
+   {
+      if (currentState == ElevatorState::RESET && !stateComplete)
+         return;
+
+      pendingNextState = nextState;
+      pendingIntakeState = intakeMode;
+      resetSequenceRequested = true;
+      setState(ElevatorState::RESET);
    }
 
    // ═══════════════════════════════════════════════════════
