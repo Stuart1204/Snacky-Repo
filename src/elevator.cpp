@@ -25,11 +25,11 @@ namespace ElevatorConfig
    constexpr double SCORE_WRIST = -65.0;
 
    constexpr double RESET_ELEV = 10;
-   constexpr double RESET_WRIST = -170.0;
+   constexpr double RESET_WRIST = -165.0;
    constexpr double RESET_ELEV_SEEK = -100.0;
 
    constexpr double LOAD_ELEV = 0;
-   constexpr double LOAD_WRIST = -180.0;
+   constexpr double LOAD_WRIST = -175.0;
 
    constexpr double MATCHLOAD_ELEV = 0;
    constexpr double MATCHLOAD_WRIST = -175.0;
