@@ -25,14 +25,14 @@ namespace ElevatorConfig
    constexpr double WRIST_MAX = 90.0;
 
    // ── Macro target positions { elevatorInches, wristDegrees } ──
-   constexpr double STOW_ELEV = 10.0;
-   constexpr double STOW_WRIST = -90.0;
+   constexpr double STOW_ELEV = 6.0;
+   constexpr double STOW_WRIST = -75.0;
 
    constexpr double SCORE_ELEV = -10.0;
-   constexpr double SCORE_WRIST = -85.0;
+   constexpr double SCORE_WRIST = -80.0;
 
    constexpr double RESET_ELEV = 10;
-   constexpr double RESET_WRIST = -180.0;      // level wrist before driving down
+   constexpr double RESET_WRIST = -170.0;      // level wrist before driving down
    constexpr double RESET_ELEV_SEEK = -100.0; // drive into hard stop
 
    constexpr double LOAD_ELEV = 0;
@@ -58,8 +58,8 @@ namespace ElevatorConfig
    constexpr double WRIST_SETTLE_DEG = 8.0; // degrees
 
    // Stall detection
-   constexpr double STALL_VELOCITY_THRESHOLD = 20.0;  // RPM
-   constexpr double STALL_CURRENT_THRESHOLD = 1800.0; // mA
+   constexpr double STALL_VELOCITY_THRESHOLD = 90.0;  // RPM
+   constexpr double STALL_CURRENT_THRESHOLD = 1600.0; // mA
    constexpr uint32_t STALL_GRACE_PERIOD_MS = 300;    // ignore stall during acceleration
    constexpr uint32_t STALL_TIMEOUT_MS = 1000;        // max time before forced stop
 
@@ -324,60 +324,23 @@ private:
 
    void runScore()
    {
-      // Phase 0: Move wrist to score angle
-      //          - Below 30": single-motor wrist rotation (no elevator drift)
-      //          - Above 30": normal differential wrist control
-      // Phase 1: Drive elevator down until stall
-      // Phase 2: Release clamp, complete
       switch (phase)
       {
       case 0:
-         if (getElevatorPosition() < 30.0)
-         {
-            wristTarget = ElevatorConfig::SCORE_WRIST;
-            // Override PID output — only spin left motor for pure wrist rotation
-            double wristErr = angleErrorDeg(wristTarget, getWristPosition());
-            double wristOut = wristPID.update(wristErr);
-            leftPower = clamp127(-wristOut);
-            rightPower = 0;
-            leftElevator.move(leftPower);
-            rightElevator.move(0);
-
-            if (isWristSettled())
-            {
-               elevatorTarget = ElevatorConfig::SCORE_ELEV;
-               maxSpeed = 100;
-               beginMotion();
-               phase = 1;
-            }
-            return; // skip the normal PID output at the end of run()
-         }
-         else
-         {
-            wristTarget = ElevatorConfig::SCORE_WRIST;
-            // High enough — normal differential is fine
-            if (isWristSettled())
-            {
-               elevatorTarget = ElevatorConfig::SCORE_ELEV;
-               beginMotion();
-               phase = 1;
-            }
+         if(pros::millis() - motionStartTime > 300) {
+            phase = 1;
          }
          break;
       case 1:
-         if (isMotionStalled())
-         {
-            clamp.setState(false);
-            phase = 2;
-            elevatorTarget = getElevatorPosition() + 4;
-            wristTarget = -40;
-            maxSpeed = 127;
-         }
+         wristTarget = ElevatorConfig::SCORE_WRIST;
+         stateComplete = true;
          break;
       case 2:
-         if(isWristSettled()) {
+         clamp.setState(true);
+         if(pros::millis() - motionStartTime > 300) {
             stateComplete = true;
-            setState(ElevatorState::REST);
+            intake.setState(IntakeState::IDLE);
+            setState(ElevatorState::STOW);
          }
       }
    }
@@ -518,7 +481,9 @@ public:
          // Phase 0 handles targets
          break;
       case ElevatorState::SCORE:
-         elevatorTarget = getElevatorPosition(); // hold until wrist ready
+         clamp.setState(false);
+         elevatorTarget = getElevatorPosition();
+         wristTarget = ElevatorConfig::SCORE_WRIST;
          break;
       case ElevatorState::RESET:
          // Phase 0 handles targets
@@ -547,6 +512,10 @@ public:
       case ElevatorState::HOLD:
          break;
       } 
+   }
+
+   void setMaxSpeed(int speed) {
+      maxSpeed = speed;
    }
 
    int getState() const { return currentState; }
@@ -787,8 +756,8 @@ public:
          runHold();
          break;
       }
-      if (currentState == ElevatorState::SCORE && phase == 0 && getElevatorPosition() < 20.0)
-        return;
+      // if (currentState == ElevatorState::SCORE && phase == 0 && getElevatorPosition() < 20.0)
+      //   return;
 
       // ── Early exit if state changed during phase logic ──
       if (currentState == ElevatorState::REST || currentState == ElevatorState::ESTOP)

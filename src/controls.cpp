@@ -47,10 +47,6 @@ inline void activatePistons()
     {
         hood.toggle();
     }
-    if (controller.get_digital_new_press(Buttons::A))
-    {
-        clamp.toggle();
-    }
 }
 
 inline bool toggleFlipActive = false;
@@ -167,8 +163,12 @@ inline void elevatorControls()
     if(elevator.getState() == ElevatorState::MANUAL) {
         if(controller.get_digital(Buttons::R1)) {
            elevator.setElevatorTarget(100);
-        } else if(controller.get_digital(Buttons::B)) {
+           elevator.setMaxSpeed(127);
+        } else if(controller.get_digital(Buttons::R2)) {
             elevator.setElevatorTarget(-100);
+            elevator.setMaxSpeed(70);
+        } else if(controller.get_digital(Buttons::A)) {
+            elevator.setState(ElevatorState::SCORE);
         } else {
             elevator.setElevatorTarget(elevator.getElevatorPosition());
         }
@@ -190,10 +190,6 @@ inline void elevatorControls()
     // ═══════════════════════════════════════════════════════
     //  R2: SCORE — held to score, releases back to REST
     // ═══════════════════════════════════════════════════════
-    if (controller.get_digital_new_press(Buttons::R2))
-    {
-        elevator.setState(ElevatorState::SCORE);
-    }
 
     // ═══════════════════════════════════════════════════════
     //  D-PAD: DIRECT STATE SELECTION

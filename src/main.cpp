@@ -50,7 +50,7 @@ void initialize()
 	{
 		enableColourSort = true;
 	}
-	clamp.setState(true);
+	// clamp.setState(true);
 }
 
 void disabled() {}
@@ -59,7 +59,8 @@ void competition_initialize() {}
 
 void autonomous()
 {
-	runSelectedAuton();
+	// runSelectedAuton();
+	clamp.setState(true);
 	allianceColour=2;
 	chassis.setPose(60, 13, 108);
 	//chassis.setPose(0,0,0);
