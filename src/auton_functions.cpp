@@ -265,23 +265,23 @@ inline void driveDistance(float targetDist) {
     driveDistance(targetDist, 127);
 }
 
-inline void skillsAcquireMatchload() {
-    intake.setState(IntakeState::INTAKE);
-    elevator.setState(ElevatorState::MATCHLOAD);
-    int pieceDetected = 0;
-    while (true) {
-        if (colourSortSensor.get_proximity() > 100){   
-            pieceDetected = pros::millis();
-        }
-        if ((pros::millis() - pieceDetected) > 300 && colourSortSensor.get_proximity() > 100) {
-            intakeLift.setState(false);
-            driveDistance(-1);
-            elevator.setState(ElevatorState::PICKUP);
-            break;
-        }
-    }
-    intake.setState(IntakeState::IDLE);
-}
+// inline void skillsAcquireMatchload() {
+//     intake.setState(IntakeState::INTAKE);
+//     elevator.setState(ElevatorState::MATCHLOAD);
+//     int pieceDetected = 0;
+//     while (true) {
+//         if (colourSortSensor.get_proximity() > 100){   
+//             pieceDetected = pros::millis();
+//         }
+//         if ((pros::millis() - pieceDetected) > 300 && colourSortSensor.get_proximity() > 100) {
+//             intakeLift.setState(false);
+//             driveDistance(-1);
+//             elevator.setState(ElevatorState::PICKUP);
+//             break;
+//         }
+//     }
+//     intake.setState(IntakeState::IDLE);
+// }
 
 
 // inline lemlib::PID angularPID(4.0, 0.0, 17.0, 0, false);

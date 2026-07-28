@@ -33,7 +33,7 @@
 //sensor ports
 #define wristPort 14
 #define imuPort 13
-#define colourSortPort 7
+#define matchloadDistPort 7
 #define leftDistPort 5
 #define rightDistPort 13
 #define frontDistPort 6
@@ -95,8 +95,9 @@ enum ElevatorState
     MATCHLOAD = 5,
     PICKUP = 6,
     MANUAL = 7,
-    ESTOP = 8,// emergency stop from stall protection
-    HOLD = 9
+    ESTOP = 8,
+    HOLD = 9,
+    PIN_HEIGHT = 10
 };
 
 // aliance colour
@@ -166,7 +167,7 @@ inline pros::adi::DigitalOut hoodPiston(hoodPort, LOW);
 // Inertial Sensor on port
 inline pros::Imu inertial_sensor(imuPort);
 inline pros::AIVision ai_vision(8);
-inline pros::Optical colourSortSensor(colourSortPort);
+inline pros::Distance matchloadSensor(matchloadDistPort);
 inline pros::Distance leftDistSensor(leftDistPort);
 inline pros::Distance rightDistSensor(rightDistPort);
 inline pros::Distance frontDistSensor(frontDistPort);

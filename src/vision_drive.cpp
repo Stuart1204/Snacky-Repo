@@ -374,7 +374,7 @@ DriveToResult VisionDriveController::acquireAlliancePin(
             stopDrive();
             intakeLift.setState(false);
             if ((pros::millis() - intakeStartMs) > static_cast<uint32_t>(sensorArmDelayMs) &&
-                colourSortSensor.get_proximity() > 100) {   
+                matchloadSensor.get_distance() < 70) {   
                 m_intake_motor.move(127);
                 pros::delay(750);
                 elevator.setState(ElevatorState::PICKUP);
