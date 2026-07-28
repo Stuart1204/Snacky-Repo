@@ -17,19 +17,23 @@ inline void intakeControls()
 {
     if (controller.get_digital(Buttons::L1))
     {
-        elevator.setState(ElevatorState::RESET);
-        if(intakeLift.getState()) {
-            intake.setState(IntakeState::INTAKEHIGH);
-            elevator.setState(ElevatorState::MATCHLOAD);
-        } else {
-            intake.setState(IntakeState::INTAKE);
-            elevator.setState(ElevatorState::LOAD);
+        if (controller.get_digital_new_press(Buttons::L1))
+        {
+            elevator.requestResetAndIntake(
+                intakeLift.getState() ? IntakeState::INTAKEHIGH : IntakeState::INTAKE,
+                intakeLift.getState() ? ElevatorState::MATCHLOAD : ElevatorState::LOAD);
+        }
+        else if (elevator.getState() != ElevatorState::RESET)
+        {
+            intake.setState(intakeLift.getState() ? IntakeState::INTAKEHIGH : IntakeState::INTAKE);
         }
     }
     else if (controller.get_digital(Buttons::L2))
     {
         intake.setState(IntakeState::OUTTAKE);
-    } else {
+    }
+    else if (elevator.getState() != ElevatorState::RESET)
+    {
         intake.setState(IntakeState::IDLE);
     }
 }

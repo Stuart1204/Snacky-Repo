@@ -96,6 +96,10 @@ private:
    int phase = 0;              // sub-phase within a macro state
    bool stateComplete = false; // set true when a macro finishes its sequence
 
+   int pendingNextState = ElevatorState::REST;
+   int pendingIntakeState = IntakeState::IDLE;
+   bool resetSequenceRequested = false;
+
    // ── Targets ──
    double elevatorTarget = 0.0;
    double wristTarget = 0.0;
@@ -331,26 +335,38 @@ private:
 
    void runReset()
    {
-      // Phase 0: Raise elevator to clear funnel (hold current wrist angle)
-      // Phase 1: Level the wrist
-      // Phase 2: Drive elevator down until stalled on hard stop
-      // Phase 3: Reset encoders, transition to LOAD
+      // Phase 0: Move elevator to the safe reset height if needed.
+      // Phase 1: Rotate wrist vertical if it is not already there.
+      // Phase 2: Drive down until stalled on the hard stop.
+      // Phase 3: Reset encoders and transition to the requested follow-up state.
       switch (phase)
       {
       case 0:
-         if (elevator.getElevatorPosition() < 10 && fabs(fabs(elevator.getWristPosition()) - 180) > ElevatorConfig::WRIST_SETTLE_DEG) {
-            elevatorTarget = ElevatorConfig::RESET_ELEV;
-            wristTarget = getWristPosition(); // explicitly hold current wrist angle
-            if (isElevatorSettled()) phase = 1;
-         }
-         else {
-            wristTarget = ElevatorConfig::RESET_WRIST;
-            if (isWristSettled())
+         if (fabs(angleErrorDeg(ElevatorConfig::RESET_WRIST, getWristPosition())) > ElevatorConfig::WRIST_SETTLE_DEG)
+         {
+            if (getElevatorPosition() < 10.0)
             {
-               elevatorTarget = ElevatorConfig::RESET_ELEV_SEEK;
-               beginMotion();
-               phase = 2;
+               elevatorTarget = ElevatorConfig::RESET_ELEV;
+               wristTarget = getWristPosition();
+               if (isElevatorSettled())
+                  phase = 1;
             }
+            else
+            {
+               wristTarget = ElevatorConfig::RESET_WRIST;
+               if (isWristSettled())
+               {
+                  elevatorTarget = ElevatorConfig::RESET_ELEV_SEEK;
+                  beginMotion();
+                  phase = 2;
+               }
+            }
+         }
+         else
+         {
+            elevatorTarget = ElevatorConfig::RESET_ELEV_SEEK;
+            beginMotion();
+            phase = 2;
          }
          break;
       case 1:
@@ -371,7 +387,20 @@ private:
          rightElevator.move(0);
          elevatorReset();
          stateComplete = true;
-         //setState(ElevatorState::LOAD);
+
+         if (resetSequenceRequested)
+         {
+            int nextState = pendingNextState;
+            int intakeMode = pendingIntakeState;
+            pendingNextState = ElevatorState::REST;
+            pendingIntakeState = IntakeState::IDLE;
+            resetSequenceRequested = false;
+
+            if (intakeMode != IntakeState::IDLE)
+               intake.setState(intakeMode);
+
+            setState(nextState);
+         }
          break;
       }
    }
@@ -641,6 +670,17 @@ public:
       wristTarget = getWristPosition();
       elevatorPID.reset();
       wristPID.reset();
+   }
+
+   void requestResetAndIntake(int intakeMode, int nextState)
+   {
+      if (currentState == ElevatorState::RESET && !stateComplete)
+         return;
+
+      pendingNextState = nextState;
+      pendingIntakeState = intakeMode;
+      resetSequenceRequested = true;
+      setState(ElevatorState::RESET);
    }
 
    // ═══════════════════════════════════════════════════════
