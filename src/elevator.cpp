@@ -338,10 +338,20 @@ private:
       switch (phase)
       {
       case 0:
-         elevatorTarget = ElevatorConfig::RESET_ELEV;
-         wristTarget = getWristPosition(); // explicitly hold current wrist angle
-         if (isElevatorSettled())
-            phase = 1;
+         if (elevator.getElevatorPosition() < 10 && fabs(fabs(elevator.getWristPosition()) - 180) > ElevatorConfig::WRIST_SETTLE_DEG) {
+            elevatorTarget = ElevatorConfig::RESET_ELEV;
+            wristTarget = getWristPosition(); // explicitly hold current wrist angle
+            if (isElevatorSettled()) phase = 1;
+         }
+         else {
+            wristTarget = ElevatorConfig::RESET_WRIST;
+            if (isWristSettled())
+            {
+               elevatorTarget = ElevatorConfig::RESET_ELEV_SEEK;
+               beginMotion();
+               phase = 2;
+            }
+         }
          break;
       case 1:
          wristTarget = ElevatorConfig::RESET_WRIST;
@@ -365,6 +375,7 @@ private:
          break;
       }
    }
+
 
    void runLoad()
    {

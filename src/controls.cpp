@@ -17,6 +17,7 @@ inline void intakeControls()
 {
     if (controller.get_digital(Buttons::L1))
     {
+        elevator.setState(ElevatorState::RESET);
         if(intakeLift.getState()) {
             intake.setState(IntakeState::INTAKEHIGH);
             elevator.setState(ElevatorState::MATCHLOAD);
