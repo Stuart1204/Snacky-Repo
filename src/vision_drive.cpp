@@ -27,56 +27,44 @@ static constexpr double kTagSize = 6.0; // inches
 // OBJECT ACCESSORS
 // ============================================================================
 
-static int getObjectX(const pros::AIVision::Object &obj)
-{
-    if (pros::AIVision::is_type(obj, pros::AivisionDetectType::object))
-    {
-        return static_cast<int>(obj.object.element.xoffset + obj.object.element.width / 2);
+static int getObjectX(const pros::AIVision::Object &obj) {
+    if (pros::AIVision::is_type(obj, pros::AivisionDetectType::object)) {
+        return obj.object.element.xoffset + obj.object.element.width / 2;
     }
-    if (pros::AIVision::is_type(obj, pros::AivisionDetectType::tag))
-    {
+    if (pros::AIVision::is_type(obj, pros::AivisionDetectType::tag)) {
         return (obj.object.tag.x0 + obj.object.tag.x1 + obj.object.tag.x2 + obj.object.tag.x3) / 4;
     }
-    return static_cast<int>(obj.object.color.xoffset + obj.object.color.width / 2);
+    return obj.object.color.xoffset + obj.object.color.width / 2;
 }
 
-static int getObjectY(const pros::AIVision::Object &obj)
-{
-    if (pros::AIVision::is_type(obj, pros::AivisionDetectType::object))
-    {
-        return static_cast<int>(obj.object.element.yoffset + obj.object.element.height / 2);
+static int getObjectY(const pros::AIVision::Object &obj) {
+    if (pros::AIVision::is_type(obj, pros::AivisionDetectType::object)){
+        return obj.object.element.yoffset + obj.object.element.height / 2;
     }
-    if (pros::AIVision::is_type(obj, pros::AivisionDetectType::tag))
-    {
+    if (pros::AIVision::is_type(obj, pros::AivisionDetectType::tag)){
         return (obj.object.tag.y0 + obj.object.tag.y1 + obj.object.tag.y2 + obj.object.tag.y3) / 4;
     }
-    return static_cast<int>(obj.object.color.yoffset + obj.object.color.height / 2);
+    return obj.object.color.yoffset + obj.object.color.height / 2;
 }
 
-static int getObjectWidth(const pros::AIVision::Object &obj)
-{
-    if (pros::AIVision::is_type(obj, pros::AivisionDetectType::object))
-    {
-        return static_cast<int>(obj.object.element.width);
+static int getObjectWidth(const pros::AIVision::Object &obj) {
+    if (pros::AIVision::is_type(obj, pros::AivisionDetectType::object)) {
+        return obj.object.element.width;
     }
-    if (pros::AIVision::is_type(obj, pros::AivisionDetectType::tag))
-    {
+    if (pros::AIVision::is_type(obj, pros::AivisionDetectType::tag)) {
         return std::abs(obj.object.tag.x1 - obj.object.tag.x0);
     }
-    return static_cast<int>(obj.object.color.width);
+    return obj.object.color.width;
 }
 
-static int getObjectHeight(const pros::AIVision::Object &obj)
-{
-    if (pros::AIVision::is_type(obj, pros::AivisionDetectType::object))
-    {
-        return static_cast<int>(obj.object.element.height);
+static int getObjectHeight(const pros::AIVision::Object &obj) {
+    if (pros::AIVision::is_type(obj, pros::AivisionDetectType::object)) {
+        return obj.object.element.height;
     }
-    if (pros::AIVision::is_type(obj, pros::AivisionDetectType::tag))
-    {
+    if (pros::AIVision::is_type(obj, pros::AivisionDetectType::tag)){
         return std::abs(obj.object.tag.y1 - obj.object.tag.y0);
     }
-    return static_cast<int>(obj.object.color.height);
+    return obj.object.color.height;
 }
 
 // ============================================================================
@@ -127,11 +115,8 @@ void VisionDriveController::setupSensor()
 {
     m_ai_vision.reset();
     pros::delay(100);
-
     // Enable both color/code AND tag detection
-    m_ai_vision.enable_detection_types(
-        pros::AivisionModeType::colors,
-        pros::AivisionModeType::tags);
+    m_ai_vision.enable_detection_types(pros::AivisionModeType::colors, pros::AivisionModeType::tags);
     m_ai_vision.set_tag_family(pros::AivisionTagFamily::tag_21H7);
 
     // --- Colors (from VEXcode robot config) ---
@@ -239,12 +224,9 @@ std::optional<TagReading> VisionDriveController::getTagReading(int tag_id)
 
         double cx = (x0 + x1 + x2 + x3) / 4.0;
         double cy = (y0 + y1 + y2 + y3) / 4.0;
-
         double bearing = std::atan2(cx - kCx, kFx) * (180.0 / kPi);
         double elevation = std::atan2(kCy - cy, kFy) * (180.0 / kPi);
-
         double global_heading = m_imu.get_heading() + bearing;
-
         if (distance < best_dist)
         {
             best_dist = distance;
@@ -260,137 +242,6 @@ std::optional<TagReading> VisionDriveController::getTagReading(int tag_id)
     return best;
 }
 
-// ============================================================================
-// VISION APPROACH LOOP
-// ============================================================================
-
-DriveToResult VisionDriveController::visionApproachLoop(
-    GameObjectType object_type,
-    bool run_intake)
-{
-    uint32_t start_ms = pros::millis();
-    uint32_t last_seen_ms = pros::millis();
-    uint32_t arrival_start = 0;
-
-    bool ever_found = false;
-    bool at_arrival = false;
-
-    double prev_error = 0.0;
-    double integral = 0.0;
-
-    while (true)
-    {
-        if (m_abort_flag)
-        {
-            stopDrive();
-            if (run_intake)
-                m_intake_motor.move(0);
-            return DriveToResult::ABORTED;
-        }
-
-        if (pros::millis() - start_ms > static_cast<uint32_t>(m_config.timeout_ms))
-        {
-            stopDrive();
-            if (run_intake)
-                m_intake_motor.move(0);
-            return ever_found ? DriveToResult::OBJECT_LOST
-                              : DriveToResult::OBJECT_NOT_FOUND;
-        }
-
-        auto target = findBestTarget(object_type);
-
-        if (target.has_value())
-        {
-            const auto &obj = target.value();
-            ever_found = true;
-            last_seen_ms = pros::millis();
-
-            // ---- Horizontal centering PID ----
-            double error = static_cast<double>(getObjectX(obj)) - m_config.frame_center_x;
-
-            integral += error;
-            integral = std::clamp(integral, -500.0, 500.0);
-            double deriv = error - prev_error;
-            if (error * (error - deriv) < 0.0)
-                integral = 0.0;
-            prev_error = error;
-
-            double turn = m_config.lateral_kP * error + m_config.lateral_kI * integral + m_config.lateral_kD * deriv;
-            turn = std::clamp(turn, -60.0, 60.0);
-
-            // ---- Forward speed from apparent height ----
-            double forward = calculateApproachSpeed(obj);
-            double obj_h = static_cast<double>(getObjectHeight(obj));
-
-            // ---- Arrival ----
-            if (obj_h >= m_config.arrival_threshold)
-            {
-                if (!at_arrival)
-                {
-                    at_arrival = true;
-                    arrival_start = pros::millis();
-                }
-
-                if (run_intake)
-                    m_intake_motor.move(127);
-
-                if (pros::millis() - arrival_start >= static_cast<uint32_t>(m_config.settle_time_ms))
-                {
-                    arcadeDrive(m_config.creep_speed, 0.0);
-                    pros::delay(200);
-                    stopDrive();
-                    pros::delay(300);
-                    if (run_intake)
-                        m_intake_motor.move(0);
-                    return DriveToResult::SUCCESS;
-                }
-
-                arcadeDrive(m_config.creep_speed, turn * 0.4);
-            }
-            else
-            {
-                at_arrival = false;
-
-                if (run_intake && obj_h >= m_config.mid_threshold)
-                {
-                    m_intake_motor.move(127);
-                }
-
-                if (std::abs(error) <= m_config.centering_deadband)
-                {
-                    arcadeDrive(forward, 0.0);
-                }
-                else
-                {
-                    double scale = 1.0 - std::min(std::abs(turn) / 60.0, 0.6);
-                    arcadeDrive(forward * scale, turn);
-                }
-            }
-        }
-        else
-        {
-            at_arrival = false;
-
-            if (ever_found)
-            {
-                if (pros::millis() - last_seen_ms > static_cast<uint32_t>(m_config.lost_object_timeout_ms))
-                {
-                    stopDrive();
-                    if (run_intake)
-                        m_intake_motor.move(0);
-                    return DriveToResult::OBJECT_LOST;
-                }
-                arcadeDrive(m_config.creep_speed, 0.0);
-            }
-            else
-            {
-                arcadeDrive(0.0, 25.0);
-            }
-        }
-
-        pros::delay(20);
-    }
-}
 DriveToResult VisionDriveController::acquireAlliancePin(
     int x,
     int y,
@@ -459,17 +310,8 @@ DriveToResult VisionDriveController::acquireAlliancePin(
             timeLeft,
             static_cast<int>(dist / 20.0 * 1000.0) + 1500);
 
-        m_chassis.moveToPoint(
-            wp_x,
-            wp_y,
-            moveTimeout,
-            {.forwards = true,
-             .maxSpeed = static_cast<float>(m_config.approach_speed),
-             .minSpeed = 20,
-             .earlyExitRange = static_cast<float>(std::max(3.0, stopShort * 0.3))});
-
-        if (m_abort_flag)
-        {
+        m_chassis.moveToPoint(wp_x, wp_y, moveTimeout, {.forwards = true, .maxSpeed = static_cast<float>(m_config.approach_speed), .minSpeed = 20, .earlyExitRange = static_cast<float>(std::max(3.0, stopShort * 0.3))});
+        if (m_abort_flag) {
             stopDrive();
             m_intake_motor.move(0);
             m_running = false;
@@ -485,11 +327,7 @@ DriveToResult VisionDriveController::acquireAlliancePin(
         if (timeLeft <= 0)
             timeLeft = 500;
 
-        m_chassis.turnToPoint(
-            x,
-            y,
-            std::min(timeLeft, 1200),
-            {.forwards = true, .minSpeed = 20, .earlyExitRange=3});
+        m_chassis.turnToPoint(x,y, std::min(timeLeft, 1200), {.forwards = true, .minSpeed = 20, .earlyExitRange=3});
     }
 
     if (m_abort_flag)
@@ -536,8 +374,7 @@ DriveToResult VisionDriveController::acquireAlliancePin(
             stopDrive();
             intakeLift.setState(false);
             if ((pros::millis() - intakeStartMs) > static_cast<uint32_t>(sensorArmDelayMs) &&
-                colourSortSensor.get_proximity() > 100)
-            {   
+                colourSortSensor.get_proximity() > 100) {   
                 m_intake_motor.move(127);
                 pros::delay(750);
                 elevator.setState(ElevatorState::PICKUP);
@@ -548,8 +385,7 @@ DriveToResult VisionDriveController::acquireAlliancePin(
                 return DriveToResult::SUCCESS;
             }
 
-            if (pros::millis() - routineStart > static_cast<uint32_t>(timeout))
-            {
+            if (pros::millis() - routineStart > static_cast<uint32_t>(timeout)) {
                 intakeLift.setState(false);
                 m_intake_motor.move(127);
                 pros::delay(750);
@@ -560,13 +396,11 @@ DriveToResult VisionDriveController::acquireAlliancePin(
                 }
                 return usedFallback ? DriveToResult::OBJECT_LOST : DriveToResult::TIMEOUT;
             }
-
             pros::delay(20);
             continue;
         }
 
-        if (distToTarget <= odomArrivalRadius)
-        {
+        if (distToTarget <= odomArrivalRadius) {
             finalStopped = true;
             stopDrive();
             pros::delay(20);
@@ -575,8 +409,7 @@ DriveToResult VisionDriveController::acquireAlliancePin(
 
         auto target = findBestTarget(type);
 
-        if (target.has_value())
-        {
+        if (target.has_value()) {
             const auto &obj = target.value();
             everFound = true;
             lastSeenMs = pros::millis();
@@ -586,15 +419,12 @@ DriveToResult VisionDriveController::acquireAlliancePin(
             integral += error;
             integral = std::clamp(integral, -500.0, 500.0);
 
-            if ((error > 0.0 && prevError < 0.0) ||
-                (error < 0.0 && prevError > 0.0))
-            {
+            if ((error > 0.0 && prevError < 0.0) || (error < 0.0 && prevError > 0.0)){
                 integral = 0.0;
             }
 
             double deriv = error - prevError;
             prevError = error;
-
             double turn =
                 m_config.lateral_kP * error +
                 m_config.lateral_kI * integral +
@@ -610,46 +440,28 @@ DriveToResult VisionDriveController::acquireAlliancePin(
             else
                 forward = m_config.creep_speed;
 
-            if (std::abs(error) <= m_config.centering_deadband)
-            {
+            if (std::abs(error) <= m_config.centering_deadband) {
                 arcadeDrive(forward, 0.0);
             }
-            else
-            {
+            else {
                 double scale = 1.0 - std::min(std::abs(turn) / 60.0, 0.6);
                 arcadeDrive(forward * scale, turn);
             }
         }
-        else
-        {
-            if (everFound && distToTarget <= lostCloseRadius)
-            {
+        else {
+            if (everFound && distToTarget <= lostCloseRadius) {
                 finalStopped = true;
                 stopDrive();
                 pros::delay(20);
                 continue;
             }
 
-            if (everFound &&
-                pros::millis() - lastSeenMs > static_cast<uint32_t>(m_config.lost_object_timeout_ms))
-            {
+            if (everFound && pros::millis() - lastSeenMs > static_cast<uint32_t>(m_config.lost_object_timeout_ms)) {
                 usedFallback = true;
                 stopDrive();
 
-                m_chassis.turnToPoint(
-                    x,
-                    y,
-                    1000,
-                    {.forwards = true, .minSpeed = 0, .earlyExitRange = 1});
-
-                m_chassis.moveToPoint(
-                    static_cast<double>(x),
-                    static_cast<double>(y),
-                    3000,
-                    {.forwards = true,
-                     .maxSpeed = 90,
-                     .minSpeed = 30, .earlyExitRange = 3});
-
+                m_chassis.turnToPoint(x,y,1000, {.forwards = true, .minSpeed = 0, .earlyExitRange = 1});
+                m_chassis.moveToPoint(x,y, 3000, {.forwards = true, .maxSpeed = 90, .minSpeed = 30, .earlyExitRange = 3});
                 m_chassis.waitUntilDone();
                 stopDrive();
                 finalStopped = true;
@@ -657,38 +469,21 @@ DriveToResult VisionDriveController::acquireAlliancePin(
                 continue;
             }
 
-            if (!everFound)
-            {
-                if (pros::millis() - routineStart > 1500)
-                {
+            if (!everFound) {
+                if (pros::millis() - routineStart > 1500){
                     usedFallback = true;
                     stopDrive();
-
-                    m_chassis.turnToPoint(
-                        x,
-                        y,
-                        1000,
-                        {.forwards = true, .minSpeed = 0, .earlyExitRange = 3});
-
-                    m_chassis.moveToPoint(
-                        static_cast<double>(x),
-                        static_cast<double>(y),
-                        3000,
-                        {.forwards = true,
-                         .maxSpeed = 90,
-                         .minSpeed = 30, .earlyExitRange = 3});
-
+                    m_chassis.turnToPoint(x,y,1000,{.forwards = true, .minSpeed = 0, .earlyExitRange = 3});
+                    m_chassis.moveToPoint(x, y,1000,{.forwards = true,.maxSpeed = 90,.minSpeed = 30, .earlyExitRange = 3});
                     m_chassis.waitUntilDone();
                     stopDrive();
                     finalStopped = true;
                     pros::delay(20);
                     continue;
                 }
-
                 arcadeDrive(0.0, 20.0);
             }
-            else
-            {
+            else {
                 arcadeDrive(m_config.creep_speed, 0.0);
             }
         }
@@ -720,7 +515,6 @@ VisionDriveController::findBestTarget(GameObjectType type)
     auto objects = m_ai_vision.get_all_objects();
     if (objects.empty())
         return std::nullopt;
-
     std::optional<pros::AIVision::Object> best;
     int best_area = 0;
 
@@ -824,44 +618,14 @@ bool VisionDriveController::isValidDetection(
 }
 
 // ============================================================================
-// SPEED FROM APPARENT SIZE
-// ============================================================================
-
-double VisionDriveController::calculateApproachSpeed(
-    const pros::AIVision::Object &obj) const
-   
-{
-    double h = static_cast<double>(getObjectHeight(obj));
-    if (h < m_config.far_threshold)
-        return m_config.approach_speed;
-
-    if (h < m_config.mid_threshold)
-    {
-        double t = (h - m_config.far_threshold) / (m_config.mid_threshold - m_config.far_threshold);
-        return m_config.approach_speed + t * (m_config.slow_approach_speed - m_config.approach_speed);
-    }
-
-    if (h < m_config.close_threshold)
-    {
-        double t = (h - m_config.mid_threshold) / (m_config.close_threshold - m_config.mid_threshold);
-        return m_config.slow_approach_speed + t * (m_config.creep_speed - m_config.slow_approach_speed);
-    }
-    printf("Size: %d\n", getObjectHeight(obj));
-    return m_config.creep_speed;
-}
-
-// ============================================================================
 // DRIVETRAIN
 // ============================================================================
 
-void VisionDriveController::arcadeDrive(double throttle, double turn)
-{
+void VisionDriveController::arcadeDrive(double throttle, double turn) {
     int throttle_cmd = static_cast<int>(std::clamp(throttle, -127.0, 127.0));
     int turn_cmd = static_cast<int>(std::clamp(turn, -127.0, 127.0));
     m_chassis.arcade(throttle_cmd, turn_cmd, false);
 }
-
-void VisionDriveController::stopDrive()
-{
+void VisionDriveController::stopDrive() {
     m_chassis.arcade(0, 0, false);
 }

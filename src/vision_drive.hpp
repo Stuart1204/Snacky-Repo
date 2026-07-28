@@ -46,12 +46,6 @@ struct VisionDriveConfig
     double slow_approach_speed = 50.0;
     double creep_speed = 15.0;
 
-    // Object height thresholds (pixels) — bigger = closer
-    double far_threshold = 50.0;
-    double mid_threshold = 110.0;
-    double close_threshold = 150.0;
-    double arrival_threshold = 200.0;
-
     // Steering
     int frame_center_x = 160;
     int centering_deadband = 12;

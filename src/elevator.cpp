@@ -132,11 +132,6 @@ private:
                                       : v;
    }
 
-   static int clamp127(double v)
-   {
-      return static_cast<int>(clampD(v, -127.0, 127.0));
-   }
-
    static double wrapAngleDeg(double angle)
    {
       while (angle > 180.0)
@@ -245,50 +240,39 @@ private:
    // ═══════════════════════════════════════════════════════
    //  PHASE RUNNERS — one per macro state
    // ═══════════════════════════════════════════════════════
-      void runHold()
-   {
-      switch (phase)
-      {
+   void runHold() {
+      switch (phase) {
       case 0:
-         if (holdWristFirst)
-         {
+         if (holdWristFirst) {
             wristTarget = holdWristTarget;
             elevatorTarget = getElevatorPosition(); // freeze elevator
             if (isWristSettled())
                phase = 1;
          }
-         else
-         {
+         else {
             elevatorTarget = holdElevTarget;
             wristTarget = getWristPosition(); // freeze wrist
             if (isElevatorSettled())
                phase = 1;
          }
          break;
-
       case 1:
-         if (holdWristFirst)
-         {
+         if (holdWristFirst) {
             elevatorTarget = holdElevTarget;
-            if (isElevatorSettled())
-            {
+            if (isElevatorSettled()) {
                phase = 2;
                stateComplete = true;
             }
          }
-         else
-         {
+         else {
             wristTarget = holdWristTarget;
-            if (isWristSettled())
-            {
+            if (isWristSettled()) {
                phase = 2;
                stateComplete = true;
             }
          }
          break;
-
       case 2:
-         // Hold both targets
          break;
       }
    }
