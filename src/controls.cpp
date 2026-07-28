@@ -52,103 +52,6 @@ inline void activatePistons()
 inline bool toggleFlipActive = false;
 inline bool toggleFlipColourSeen = false;
 
-// inline void setToggle() {
-//     if (controller.get_digital_new_press(Buttons::B)) {
-//         toggleFlipActive = !toggleFlipActive;
-
-//         if (toggleFlipActive) {
-//             toggleSensor.set_integration_time(7);
-//         } else {
-//             toggleSensor.set_integration_time(20);
-//             intake.setState(IntakeState::IDLE);
-//             return;
-//         }
-//     }
-
-//     if (!toggleFlipActive) {
-//         return;
-//     }
-
-//     int detectedColour = checkColour(toggleSensor);
-//     bool allianceColourSeen = detectedColour == allianceColour;
-
-//     if (!allianceColourSeen) {
-//         if (toggleFlipColourSeen) {
-//             toggleFlipActive = false;
-//             toggleFlipColourSeen = false;
-//             toggleSensor.set_integration_time(20);
-//             intake.setState(IntakeState::IDLE);
-//         } else {
-//             intake.setState(IntakeState::INTAKE);
-//         }
-//     } else {
-//         toggleFlipColourSeen = true;
-//         intake.setState(IntakeState::INTAKEHIGH);
-//     }
-
-//     pros::screen::print(TEXT_LARGE_CENTER, 1, "seen: %i", allianceColourSeen);
-// }
-
-// inline void elevatorControls()
-// {
-//     if(elevator.getState() == ElevatorState::MANUAL) {
-//         if(controller.get_digital(Buttons::R1)) {
-//            elevator.setElevatorTarget(100);
-//         } else if(controller.get_digital(Buttons::B)) {
-//             elevator.setElevatorTarget(-100);
-//         } else {
-//             elevator.setElevatorTarget(elevator.getElevatorPosition());
-//         }
-//     }
-//     if(controller.get_digital_new_press(Buttons::R1)) {
-//         if(elevator.getState() == ElevatorState::LOAD || elevator.getState() == ElevatorState::MATCHLOAD) {
-//             elevator.setState(ElevatorState::PICKUP);
-//         }
-//         if(elevator.getState() == ElevatorState::STOW) {
-//             elevator.setState(ElevatorState::MANUAL);
-//         }
-//     } else if(controller.get_digital(Buttons::R2)) {
-//         elevator.setState(ElevatorState::SCORE);
-//     } else {
-//         // elevator.setElevatorTarget(elevator.getElevatorPosition());
-//     }
-
-//     if (controller.get_digital(Buttons::LEFT))
-//     {
-//         elevator.setState(ElevatorState::STOW);
-//     }
-//     else if (controller.get_digital(Buttons::RIGHT))
-//     {
-//         elevator.setState(ElevatorState::LOAD);
-//     }
-//     else if (controller.get_digital(Buttons::UP))
-//     {
-//         elevator.setState(ElevatorState::PICKUP);
-//     }
-//     else if (controller.get_digital(Buttons::DOWN))
-//     {
-//         elevator.setState(ElevatorState::RESET);
-//     }
-//     else {
-//         elevator.setState(ElevatorState::REST);
-//     }
-// }
-    // if(controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
-	// 		leftElevator.move(127);
-	// 		rightElevator.move(-127);
-	// 	} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
-	// 		leftElevator.move(-127);
-	// 		rightElevator.move(127);
-	// 	} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
-	// 		leftElevator.move(-127);
-	// 		rightElevator.move(-127);
-	// 	} else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) {
-	// 		leftElevator.move(127);
-	// 		rightElevator.move(127);
-	// 	} else {
-	// 		leftElevator.move(0);
-	// 		rightElevator.move(0);
-    //}
 inline void elevatorControls()
 {
     int state = elevator.getState();
@@ -161,13 +64,13 @@ inline void elevatorControls()
     // ═══════════════════════════════════════════════════════
 
     if(elevator.getState() == ElevatorState::MANUAL) {
-        if(controller.get_digital(Buttons::R1)) {
+        if(controller.get_digital(Buttons::B)) {
            elevator.setElevatorTarget(100);
            elevator.setMaxSpeed(127);
-        } else if(controller.get_digital(Buttons::R2)) {
+        } else if(controller.get_digital(Buttons::DOWN)) {
             elevator.setElevatorTarget(-100);
             elevator.setMaxSpeed(70);
-        } else if(controller.get_digital(Buttons::A)) {
+        } else if(controller.get_digital(Buttons::R2)) {
             elevator.setState(ElevatorState::SCORE);
         } else {
             elevator.setElevatorTarget(elevator.getElevatorPosition());
@@ -176,12 +79,11 @@ inline void elevatorControls()
     if(controller.get_digital_new_press(Buttons::R1)) {
         if(elevator.getState() == ElevatorState::LOAD || elevator.getState() == ElevatorState::MATCHLOAD) {
             elevator.setState(ElevatorState::PICKUP);
-        }
-        if(elevator.getState() == ElevatorState::STOW) {
-            elevator.setState(ElevatorState::MANUAL);
+        } else {
+            elevator.setState(ElevatorState::RESET);
         }
     }
-    if(controller.get_digital_new_press(Buttons::B)) {
+    if(controller.get_digital_new_press(Buttons::B) || controller.get_digital_new_press(Buttons::DOWN)) {
         if(elevator.getState() == ElevatorState::STOW) {
             elevator.setState(ElevatorState::MANUAL);
         }
@@ -205,10 +107,6 @@ inline void elevatorControls()
     else if (controller.get_digital_new_press(Buttons::UP))
     {
         elevator.setState(ElevatorState::MATCHLOAD);
-    }
-    else if (controller.get_digital_new_press(Buttons::DOWN))
-    {
-        elevator.setState(ElevatorState::RESET);
     }
 
     // ═══════════════════════════════════════════════════════
