@@ -342,6 +342,7 @@ DriveToResult VisionDriveController::acquireAlliancePin(
     // Phase 3 — Start intake + elevator intake position
     // =========================================================================
     clamp.setState(false);
+    hood.setState(true);
     elevator.setState(ElevatorState::MATCHLOAD);
     elevator.waitUntilComplete();
     m_intake_motor.move(127);
@@ -373,6 +374,7 @@ DriveToResult VisionDriveController::acquireAlliancePin(
         {
             stopDrive();
             intakeLift.setState(false);
+            hood.setState(false);
             if ((pros::millis() - intakeStartMs) > static_cast<uint32_t>(sensorArmDelayMs) &&
                 matchloadSensor.get_distance() < 70) {   
                 m_intake_motor.move(127);
@@ -491,6 +493,7 @@ DriveToResult VisionDriveController::acquireAlliancePin(
         if (pros::millis() - routineStart > static_cast<uint32_t>(timeout))
         {
             stopDrive();
+            hood.setState(false);
             intakeLift.setState(false);
             m_intake_motor.move(127);
             pros::delay(750);

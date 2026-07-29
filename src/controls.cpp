@@ -16,90 +16,65 @@ inline bool l1Prev = false;
 inline uint32_t l1PressStart = 0;
 inline bool l1HoldCommitted = false;
 
+
 inline bool matchloadMode = false;
 inline bool targetMode = true;
-inline void intakeControls()
-{
-    bool l1 = controller.get_digital(Buttons::L1);
-
+inline void intakeControls() {
     int targetState = matchloadMode ? ElevatorState::MATCHLOAD : ElevatorState::LOAD;
     int intakeMode = matchloadMode ? IntakeState::INTAKEHIGH : IntakeState::INTAKE;
 
-    // Rising edge
+    bool l1 = controller.get_digital(Buttons::L1);
+    bool l2 = controller.get_digital(Buttons::L2);
+
+    // Rising edge: decide once per press
     if (l1 && !l1Prev)
     {
-        l1PressStart = pros::millis();
-        l1HoldCommitted = false;
+        // Only reset if coming from SCORE
+        if (elevator.getLastState() == ElevatorState::SCORE ||
+            elevator.getState() == ElevatorState::SCORE)
+        {
+            elevator.forceResetAndIntake(intakeMode, targetState);
+        }
+        else
+        {
+            elevator.setState(targetState);
+        }
     }
 
-    if (l1)
+    // Intake motor control only — does NOT affect elevator reset state
+    if (l2)
     {
-        if (!l1HoldCommitted && pros::millis() - l1PressStart >= 125)
-        {
-            l1HoldCommitted = true;
-
-            // Start intake immediately — don't wait for reset/elevator
-            intake.setState(intakeMode);
-
-            if (elevator.isAtResetHome())
-            {
-                elevator.setState(targetState);
-            }
-            else
-            {
-                elevator.forceResetThen(targetState, intakeMode);
-            }
-        }
-
-        // Keep intake running the entire time L1 is held
-        if (l1HoldCommitted)
-        {
-            intake.setState(intakeMode);
-        }
+        // Allow outtake even during reset
+        intake.setState(IntakeState::OUTTAKE);
     }
-    else
+    else if (l1)
     {
-        // Falling edge
-        if (l1Prev)
-        {
-            if (!l1HoldCommitted)
-            {
-                // Tap — reset only, no intake
-                elevator.forceResetThen(targetState, IntakeState::IDLE);
-            }
-            else
-            {
-                // Released after hold — stop intake
-                intake.setState(IntakeState::IDLE);
-            }
-        }
-
-        // L2 outtake
-        if (controller.get_digital(Buttons::L2))
-        {
-            intake.setState(IntakeState::OUTTAKE);
-        }
-        else if (!l1Prev && elevator.getState() != ElevatorState::RESET)
-        {
-            intake.setState(IntakeState::IDLE);
-        }
+        // Keep intake running while held
+        intake.setState(intakeMode);
     }
-
+    else if (elevator.getState() != ElevatorState::RESET)
+    {
+        // Only idle if not resetting
+        intake.setState(IntakeState::IDLE);
+    }
     l1Prev = l1;
 }
+inline bool manualActive = false; // tracks if any manual button is held this cycle
 
 inline void elevatorControls()
 {
     int state = elevator.getState();
+    bool wasManual = manualActive;
+    manualActive = false;
 
     // ─────────────────────────────────────────────────────
     // R1 PRESS:
     //   From LOAD/MATCHLOAD → PICKUP
     //   From STOW → MANUAL
     // R1 HOLD:
-    //   In MANUAL or PIN_HEIGHT → manual elevator UP
+    //   In MANUAL or PIN_HEIGHT → elevator UP
     // ─────────────────────────────────────────────────────
-    if (controller.get_digital_new_press(Buttons::R1))
+    if (controller.get_digital_new_press(Buttons::Y))
     {
         if (state == ElevatorState::LOAD || state == ElevatorState::MATCHLOAD)
         {
@@ -112,12 +87,13 @@ inline void elevatorControls()
         }
     }
 
-    if (controller.get_digital(Buttons::R1))
+    if (controller.get_digital(Buttons::Y))
     {
         if (state == ElevatorState::MANUAL || state == ElevatorState::PIN_HEIGHT)
         {
-            elevator.manualActiveThisCycle = true;
-            elevator.manualElevator(ElevatorConfig::MANUAL_VOLTAGE);
+            manualActive = true;
+            elevator.manualElevator(1);
+            elevator.setMaxSpeed(127);
         }
     }
 
@@ -126,64 +102,70 @@ inline void elevatorControls()
     // ─────────────────────────────────────────────────────
     if (controller.get_digital_new_press(Buttons::R2))
     {
-        clamp.setState(false);
+        elevator.setState(ElevatorState::SCORE);
+    }
+    if (controller.get_digital_new_press(Buttons::A)) {
+        elevator.setState(ElevatorState::RESET);
     }
 
     // ─────────────────────────────────────────────────────
-    // D-PAD LEFT HOLD: Manual wrist one direction
+    // D-PAD LEFT HOLD: Wrist one direction
     // ─────────────────────────────────────────────────────
-    if (controller.get_digital(Buttons::LEFT))
-    {
-        elevator.manualActiveThisCycle = true;
-        elevator.manualWrist(-ElevatorConfig::MANUAL_VOLTAGE);
-    }
+    // if (controller.get_digital(Buttons::UP))
+    // {
+    //     manualActive = true;
+    //     elevator.manualWrist(-1);
+    // }
 
     // ─────────────────────────────────────────────────────
-    // D-PAD RIGHT HOLD: Manual wrist other direction
+    // D-PAD RIGHT HOLD: Wrist other direction
+    // ─────────────────────────────────────────────────────
+    // if (controller.get_digital(Buttons::DOWN))
+    // {
+    //     manualActive = true;
+    //     elevator.manualWrist(1);
+    // }
+
+    // ─────────────────────────────────────────────────────
+    // D-PAD DOWN HOLD: Elevator down
     // ─────────────────────────────────────────────────────
     if (controller.get_digital(Buttons::RIGHT))
     {
-        elevator.manualActiveThisCycle = true;
-        elevator.manualWrist(ElevatorConfig::MANUAL_VOLTAGE);
+        targetMode = false;
+        manualActive = true;
+        elevator.manualElevator(-1);
+        elevator.setMaxSpeed(70);
     }
 
     // ─────────────────────────────────────────────────────
-    // D-PAD DOWN HOLD: Manual elevator down
+    // When all manual buttons released, snap to current position
     // ─────────────────────────────────────────────────────
-    if (controller.get_digital(Buttons::DOWN))
+    if (wasManual && !manualActive)
     {
-        targetMode = false;
-        elevator.manualActiveThisCycle = true;
-        elevator.manualElevator(-ElevatorConfig::MANUAL_VOLTAGE);
+        elevator.manualStop();
     }
 
     // ─────────────────────────────────────────────────────
     // Y PRESS: Toggle matchload mode
     // ─────────────────────────────────────────────────────
-    if (controller.get_digital_new_press(Buttons::Y))
+    if (controller.get_digital_new_press(Buttons::X))
     {
         matchloadMode = !matchloadMode;
+        intakeLift.setState(matchloadMode);
 
-        if (matchloadMode)
+        if (state == ElevatorState::LOAD || state == ElevatorState::MATCHLOAD)
         {
-            intakeLift.setState(true);
-            hood.setState(false);
-            elevator.setState(ElevatorState::MATCHLOAD);
-        }
-        else
-        {
-            intakeLift.setState(false);
-            hood.setState(true);
-            elevator.setState(ElevatorState::LOAD);
+            if (matchloadMode)
+                elevator.setState(ElevatorState::MATCHLOAD);
+            else
+                elevator.setState(ElevatorState::LOAD);
         }
     }
 
     // ─────────────────────────────────────────────────────
-    // B PRESS:
-    //   From LOAD/MATCHLOAD → PICKUP
-    //   From PIN_HEIGHT → cycle pin heights
+    // B PRESS: PICKUP or cycle pin heights
     // ─────────────────────────────────────────────────────
-    if (controller.get_digital_new_press(Buttons::B))
+    if (controller.get_digital_new_press(Buttons::R1))
     {
         if (state == ElevatorState::LOAD || state == ElevatorState::MATCHLOAD)
         {
@@ -216,11 +198,22 @@ inline void elevatorControls()
         controller.rumble("-");
         elevator.setState(ElevatorState::REST);
     }
+    if (controller.get_digital_new_press(Buttons::B)) {
+        isNeutralGoal = !isNeutralGoal;
+        controller.rumble(".");
+        controller.clear_line(0);
+        pros::delay(50);
+        controller.print(0, 0, "%s", isNeutralGoal ? "NEUTRAL " : "ALLIANCE");
+        if (elevator.getState() == ElevatorState::PIN_HEIGHT && elevator.getPinLevel() > 0) {
+            elevator.goToPinHeight(elevator.getPinLevel());
+        }
+        
+    }
 }
 
 inline void activatePistons()
 {
-    if (controller.get_digital_new_press(Buttons::B))
+    if (controller.get_digital_new_press(Buttons::R1))
     {
         if(!intakeLift.getState()) {
             elevator.setState(ElevatorState::MATCHLOAD);
@@ -228,6 +221,7 @@ inline void activatePistons()
             elevator.setState(ElevatorState::LOAD);
         }
     }
+
 }
 
 inline bool toggleFlipActive = false;

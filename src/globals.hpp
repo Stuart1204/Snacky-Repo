@@ -57,6 +57,7 @@ inline int startingSide;
 //global variables
 inline int allianceColour;
 inline bool enableColourSort = false;
+inline bool isNeutralGoal = true;
 
 // global constants
 const inline float FRONT_DIST_OFFSET = 5.5;

@@ -13,51 +13,51 @@ namespace ElevatorConfig
    constexpr double TICKS_PER_INCH = 83;
    constexpr double SENSOR_DEG_PER_WRIST_DEG = 1.0;
 
-   constexpr double ELEVATOR_MIN = -200.0;
+   constexpr double ELEVATOR_MIN = -100.0;
    constexpr double ELEVATOR_MAX = 100.0;
    constexpr double WRIST_MIN = -300.0;
    constexpr double WRIST_MAX = 90.0;
 
    constexpr double STOW_ELEV = 6.0;
-   constexpr double STOW_WRIST = -75.0;
+   constexpr double STOW_WRIST = -80.0;
 
    constexpr double SCORE_ELEV = -10.0;
-   constexpr double SCORE_WRIST = -65.0;
+   constexpr double SCORE_WRIST = -65;
 
    constexpr double RESET_ELEV = 10;
-   constexpr double RESET_WRIST = -165.0;
+   constexpr double RESET_WRIST = -177.0;
    constexpr double RESET_ELEV_SEEK = -100.0;
 
    constexpr double LOAD_ELEV = 0;
-   constexpr double LOAD_WRIST = -175.0;
+   constexpr double LOAD_WRIST = -177.0;
 
    constexpr double MATCHLOAD_ELEV = 0;
-   constexpr double MATCHLOAD_WRIST = -175.0;
+   constexpr double MATCHLOAD_WRIST = -177.0;
 
    constexpr double PICKUP_APPROACH_ELEV = 10.0;
    constexpr double PICKUP_VERTICAL_WRIST = -170.0;
    constexpr double PICKUP_SEEK_ELEV = 2;
    constexpr double PICKUP_SWEEP_WRIST = -170.0;
 
-   constexpr double PIN_1_ELEV = 9.0;
-   constexpr double PIN_2_ELEV = 15.0;
-   constexpr double PIN_3_ELEV = 21.0;
-   constexpr double PIN_4_ELEV = 27.0;
+   constexpr double PIN_1_ELEV = 7.5;
+   constexpr double PIN_2_ELEV = 15.1;
+   constexpr double PIN_3_ELEV = 22.5;
+   constexpr double PIN_4_ELEV = 31;
    constexpr double PIN_MAX_ELEV = 28.0; // clamp guard
    constexpr double PIN_WRIST = -90.0;
 
    constexpr double MANUAL_WRIST = STOW_WRIST;
 
    constexpr double ELEV_KP = 45.0, ELEV_KI = 0.0, ELEV_KD = 0.0;
-   constexpr double WRIST_KP = 2.5, WRIST_KI = 0.05, WRIST_KD = 2;
+   constexpr double WRIST_KP = 3.7, WRIST_KI = 0.05, WRIST_KD = 2;
 
    constexpr double ELEV_SETTLE_IN = 1;
-   constexpr double WRIST_SETTLE_DEG = 8.0;
+   constexpr double WRIST_SETTLE_DEG = 7.0;
 
-   constexpr double STALL_VELOCITY_THRESHOLD = 90.0;
-   constexpr double STALL_CURRENT_THRESHOLD = 1600.0;
+   constexpr double STALL_VELOCITY_THRESHOLD = 150.0;
+   constexpr double STALL_CURRENT_THRESHOLD = 1500.0;
    constexpr uint32_t STALL_GRACE_PERIOD_MS = 300;
-   constexpr uint32_t STALL_TIMEOUT_MS = 1000;
+   constexpr uint32_t STALL_TIMEOUT_MS = 900;
 
    constexpr uint32_t GLOBAL_STALL_DURATION_MS = 500;
    constexpr double GLOBAL_STALL_VELOCITY = 20.0;
@@ -163,7 +163,7 @@ private:
       if (!stalledNow)
          stallStartTime = pros::millis();
 
-      return (pros::millis() - stallStartTime > 100);
+      return (pros::millis() - stallStartTime > 90);
    }
 
    bool checkGlobalStallProtection()
@@ -277,13 +277,8 @@ private:
          break;
       }
    }
-
    void runReset()
    {
-      // Phase 0: Decide path based on wrist and elevator position
-      // Phase 1: Rotate wrist vertical (only if needed and we raised first)
-      // Phase 2: Drive down until stalled on hard stop
-      // Phase 3: Reset encoders, transition
       switch (phase)
       {
       case 0:
@@ -294,11 +289,11 @@ private:
             beginMotion();
             phase = 2;
          }
-         else if (getElevatorPosition() >= 10.0)
+         else if (getElevatorPosition() >= 12.0)
          {
             // High enough — rotate wrist in place, skip raising
             wristTarget = ElevatorConfig::RESET_WRIST;
-            elevatorTarget = getElevatorPosition(); // hold elevator
+            beginMotion();
             phase = 1;
          }
          else
@@ -306,27 +301,51 @@ private:
             // Too low and wrist not vertical — raise first
             elevatorTarget = ElevatorConfig::RESET_ELEV;
             wristTarget = getWristPosition(); // freeze wrist while raising
-            phase = 4; // go to raise-then-rotate path
+            phase = 4;
          }
          break;
 
       case 4:
-         // Sub-path: raising elevator before rotating wrist
+         // Raise elevator before rotating wrist
          elevatorTarget = ElevatorConfig::RESET_ELEV;
          wristTarget = getWristPosition();
          if (isElevatorSettled())
+         {
+            wristTarget = ElevatorConfig::RESET_WRIST;
+            beginMotion();
             phase = 1;
+         }
          break;
 
       case 1:
+      {
+         // PURE WRIST CONTROL — bypass elevator mixing entirely
          wristTarget = ElevatorConfig::RESET_WRIST;
+
+         double wristErr = wristTarget - getWristPosition();
+         double wristOut = wristPID.update(wristErr);
+
+         wristOut = clampD(wristOut, -maxSpeed, maxSpeed);
+
+         leftPower = static_cast<int>(-wristOut);
+         rightPower = static_cast<int>(-wristOut);
+
+         leftElevator.move(leftPower);
+         rightElevator.move(rightPower);
+
          if (isWristSettled())
          {
+            leftPower = 0;
+            rightPower = 0;
+            leftElevator.move(0);
+            rightElevator.move(0);
+
             elevatorTarget = ElevatorConfig::RESET_ELEV_SEEK;
             beginMotion();
             phase = 2;
          }
-         break;
+         return;
+      }
 
       case 2:
          if (isMotionStalled())
@@ -389,6 +408,13 @@ private:
          break;
       }
    }
+   void runScore() {
+      clamp.setState(false);
+      elevatorTarget = getElevatorPosition();
+      if(pros::millis() - motionStartTime > 300) {
+         wristTarget = ElevatorConfig::SCORE_WRIST;
+      }
+   }
 
    void runPickup()
    {
@@ -417,8 +443,7 @@ private:
             phase = 3;
          break;
       case 3:
-         elevatorTarget = clampD(ElevatorConfig::PIN_1_ELEV,
-                                 0.0, ElevatorConfig::PIN_MAX_ELEV);
+         elevatorTarget = clampD(8, 0.0, ElevatorConfig::PIN_MAX_ELEV);
          if (isElevatorSettled())
             phase = 4;
          break;
@@ -426,15 +451,20 @@ private:
          wristTarget = ElevatorConfig::PIN_WRIST;
          if (isWristSettled())
          {
+            phase = 5;
+            // Don't call setState — avoid re-init, just swap state ID
+         }
+         break;
+      case 5:
+         elevatorTarget = clampD(ElevatorConfig::PIN_1_ELEV, 0.0, ElevatorConfig::PIN_MAX_ELEV);
+         if (isElevatorSettled() || isMotionStalled()){
             currentPinLevel = 1;
             stateComplete = true;
             // Transition to PIN_HEIGHT so B button cycling works
             lastState = currentState;
             currentState = ElevatorState::PIN_HEIGHT;
             phase = 0;
-            // Don't call setState — avoid re-init, just swap state ID
          }
-         break;
       }
    }
 
@@ -506,9 +536,7 @@ public:
          currentPinLevel = 0;
          break;
       case ElevatorState::SCORE:
-         clamp.setState(false);
-         elevatorTarget = getElevatorPosition();
-         wristTarget = ElevatorConfig::SCORE_WRIST;
+         runScore();
          break;
       case ElevatorState::RESET:
          break;
@@ -516,6 +544,9 @@ public:
          clamp.setState(false);
          hood.setState(false);
          intakeLift.setState(false);
+         if(lastState == ElevatorState::RESET) {
+            elevatorReset();
+         }
          break;
       case ElevatorState::MATCHLOAD:
          clamp.setState(false);
@@ -557,9 +588,15 @@ public:
 
    double getPinElevation(int level)
    {
-      if (level < 1 || level > ElevatorConfig::NUM_PIN_LEVELS)
-         return ElevatorConfig::PIN_1_ELEV;
-      return ElevatorConfig::PIN_HEIGHTS[level - 1];
+      if(isNeutralGoal) {
+         if (level < 1 || level > ElevatorConfig::NUM_PIN_LEVELS) return ElevatorConfig::PIN_1_ELEV;
+         return ElevatorConfig::PIN_HEIGHTS[level - 1];
+      }
+      else {
+         if (level < 1 || level > ElevatorConfig::NUM_PIN_LEVELS) return ElevatorConfig::PIN_1_ELEV - 2.52;
+         return ElevatorConfig::PIN_HEIGHTS[level - 1] - 2.52;
+      }
+      
    }
 
 
@@ -572,11 +609,6 @@ public:
       // Force re-entry even if already in RESET
       currentState = -1;
       setState(ElevatorState::RESET);
-   }
-   bool isAtResetHome(double elevTol = 3.0, double wristTol = 15.0)
-   {
-      return fabs(getElevatorPosition()) < elevTol &&
-            fabs(getWristPosition() - (-180.0)) < wristTol;
    }
 
    void forceResetThen(int nextState, int intakeMode = IntakeState::IDLE)
@@ -617,13 +649,12 @@ public:
 
       for (int i = 0; i < ElevatorConfig::NUM_PIN_LEVELS; i++)
       {
-         if (ElevatorConfig::PIN_HEIGHTS[i] > curElev + 1.0)
+         if (getPinElevation(i + 1) > curElev + 1.0)
          {
-            goToPinHeight(i + 1);
-            return;
+               goToPinHeight(i + 1);
+               return;
          }
       }
-      // Already at or above pin 4 — do nothing
    }
 
    // ═══════════════════════════════════════════════════════
@@ -633,7 +664,7 @@ public:
 
    // Call each cycle from controls to apply raw voltage.
    // Positive elevator = up, positive wrist = one direction.
-   void manualElevator(int voltage)
+   void manualElevator(int direction)
    {
       if (currentState != ElevatorState::MANUAL &&
           currentState != ElevatorState::PIN_HEIGHT)
@@ -641,40 +672,45 @@ public:
          setState(ElevatorState::MANUAL);
       }
 
-      // Differential: left = -wrist + elev, right = -wrist - elev
-      // For pure elevator: left = +voltage, right = -voltage
-      leftPower = clampD(voltage, -127, 127);
-      rightPower = clampD(-voltage, -127, 127);
+      // direction > 0 = up, direction < 0 = down
+      if (direction > 0)
+         elevatorTarget = ElevatorConfig::ELEVATOR_MAX;
+      else
+         elevatorTarget = ElevatorConfig::ELEVATOR_MIN;
 
-      leftElevator.move(leftPower);
-      rightElevator.move(rightPower);
-
-      // Track position so PID doesn't jerk when manual stops
-      elevatorTarget = getElevatorPosition();
-      wristTarget = getWristPosition();
+      // Hold wrist where it is
+      wristTarget = ElevatorConfig::STOW_WRIST;
    }
 
-   void manualWrist(int voltage)
+   // void manualWrist(int direction)
+   // {
+   //    if (currentState != ElevatorState::MANUAL &&
+   //       currentState != ElevatorState::PIN_HEIGHT)
+   //    {
+   //       setState(ElevatorState::MANUAL);
+   //    }
+
+   //    // direction > 0 = towards 0 (less negative), direction < 0 = towards -300
+   //    // Seam is at 62.5, so stay well below it
+   //    if (direction > 0)
+   //       wristTarget = 0.0;
+   //    else
+   //       wristTarget = -297.0;
+
+   //    // Hold elevator where it is
+   //    elevatorTarget = getElevatorPosition();
+   // }
+
+   void manualStop()
    {
-      if (currentState != ElevatorState::MANUAL &&
-          currentState != ElevatorState::PIN_HEIGHT)
-      {
-         setState(ElevatorState::MANUAL);
-      }
-
-      // For pure wrist: left = -voltage, right = -voltage (both same dir)
-      leftPower = clampD(-voltage, -127, 127);
-      rightPower = clampD(-voltage, -127, 127);
-
-      leftElevator.move(leftPower);
-      rightElevator.move(rightPower);
-
-      elevatorTarget = getElevatorPosition();
-      wristTarget = getWristPosition();
+      leftElevator.move(0);
+      rightElevator.move(0);
+      setElevatorTarget(getElevatorPosition());
+      setWristTarget(ElevatorConfig::STOW_WRIST);
+      elevatorPID.reset();
+      wristPID.reset();
    }
 
-   // Flag set by controls to tell run() to skip PID this cycle
-   bool manualActiveThisCycle = false;
 
    // ═══════════════════════════════════════════════════════
    //  POSITION GETTERS
@@ -832,11 +868,6 @@ public:
       }
 
       // ── If manual control was applied this cycle, skip PID entirely ──
-      if (manualActiveThisCycle)
-      {
-         manualActiveThisCycle = false;
-         return; // motors already set by manualElevator/manualWrist
-      }
 
       switch (currentState)
       {
@@ -871,6 +902,8 @@ public:
       if (currentState == ElevatorState::REST || currentState == ElevatorState::ESTOP)
          return;
 
+      if (currentState == ElevatorState::RESET && phase == 1)
+         return;
       double elevPos = getElevatorPosition();
       double wristPos = getWristPosition();
 
@@ -879,15 +912,29 @@ public:
 
       double elevOut = elevatorPID.update(elevErr);
       double wristOut = wristPID.update(wristErr);
+      printf("elevOut: %d", elevOut);
+      printf("wristOut: %d", wristOut);
+      if (currentState == ElevatorState::STOW || currentState == ElevatorState::MANUAL)
+      {
+         wristOut += .3 * wristErr;
+      }
 
+      // leftPower = clampD(elevOut, -maxSpeed, maxSpeed);
+      // rightPower = -clampD(elevOut, -maxSpeed, maxSpeed);
       leftPower = -wristOut + elevOut;
       rightPower = -wristOut - elevOut;
+
+      // leftPower -= clampD(wristOut, -abs(127 - abs(leftPower)), abs(127 - abs(leftPower)));
+      // rightPower -= clampD(wristOut, -abs(127 - abs(rightPower)), abs(127 - abs(rightPower)));
 
       if (isSettled() && stateComplete)
       {
          leftPower = 0;
          rightPower = 0;
       }
+
+      leftPower = clampD(leftPower, -maxSpeed, maxSpeed);
+      rightPower = clampD(rightPower, -maxSpeed, maxSpeed);
 
       leftElevator.move(leftPower);
       rightElevator.move(rightPower);
