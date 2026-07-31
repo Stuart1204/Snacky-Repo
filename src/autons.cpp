@@ -22,6 +22,33 @@ inline void SAWP() {
 
 }
 
+inline void TAWP() { // teamate has to score one pin and get toggle
+    chassis.setPose(-60.5, 9, -128);
+    elevator.setState(ElevatorState::PICKUP);
+    moveDrive(105, 650);
+    chassis.turnToHeading(-25, 300, {.minSpeed = 80});
+    chassis.moveToPoint(-62.5, -9, 1500, {.forwards = false, .minSpeed = 90, .earlyExitRange = 5});
+    chassis.waitUntil(6);
+    elevator.setState(ElevatorState::PIN_HEIGHT);
+    elevator.goToPinHeight(0);
+    matchloadMode = true;
+    intakeLift.setState(true);
+    hood.setState(true);
+    chassis.swingToHeading(-90, DriveSide::RIGHT, 700, {.minSpeed = 90, .earlyExitRange = 10});
+    chassis.waitUntilDone();
+    moveDrive(0, 300);
+    elevator.setState(ElevatorState::SCORE);
+    goalReset();
+    pros::delay(350);
+    elevator.setState(ElevatorState::RESET);
+    turnToHeading(-90, true);
+    leftMotors.move(30);
+    rightMotors.move(30);
+    intake.setState(IntakeState::INTAKE);
+    pros::delay(2500);
+    moveDrive(-60, 500);
+}
+
 
 
 inline void runSelectedAuton() {

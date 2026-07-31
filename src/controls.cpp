@@ -45,39 +45,6 @@ inline void elevatorControls()
     bool wasManual = manualActive;
     manualActive = false;
 
-    // ─────────────────────────────────────────────────────
-    // R1 PRESS:
-    //   From LOAD/MATCHLOAD → PICKUP
-    //   From STOW → MANUAL
-    // R1 HOLD:
-    //   In MANUAL or PIN_HEIGHT → elevator UP
-    // ─────────────────────────────────────────────────────
-    // if (controller.get_digital_new_press(Buttons::Y))
-    // {
-    //     if (state == ElevatorState::LOAD || state == ElevatorState::MATCHLOAD)
-    //     {
-    //         targetMode = true;
-    //         elevator.setState(ElevatorState::PICKUP);
-    //     }
-    //     else if (state == ElevatorState::STOW && elevator.isStateComplete())
-    //     {
-    //         elevator.setState(ElevatorState::MANUAL);
-    //     }
-    // }
-
-    // if (controller.get_digital(Buttons::Y))
-    // {
-    //     if (state == ElevatorState::MANUAL || state == ElevatorState::PIN_HEIGHT)
-    //     {
-    //         manualActive = true;
-    //         elevator.manualElevator(1);
-    //         elevator.setMaxSpeed(127);
-    //     }
-    // }
-
-    // ─────────────────────────────────────────────────────
-    // R2 PRESS: Release clamp
-    // ─────────────────────────────────────────────────────
     if (controller.get_digital_new_press(Buttons::R2))
     {
         elevator.setState(ElevatorState::SCORE);
@@ -86,27 +53,6 @@ inline void elevatorControls()
         elevator.setState(ElevatorState::RESET);
     }
 
-    // ─────────────────────────────────────────────────────
-    // D-PAD LEFT HOLD: Wrist one direction
-    // ─────────────────────────────────────────────────────
-    // if (controller.get_digital(Buttons::UP))
-    // {
-    //     manualActive = true;
-    //     elevator.manualWrist(-1);
-    // }
-
-    // ─────────────────────────────────────────────────────
-    // D-PAD RIGHT HOLD: Wrist other direction
-    // ─────────────────────────────────────────────────────
-    // if (controller.get_digital(Buttons::DOWN))
-    // {
-    //     manualActive = true;
-    //     elevator.manualWrist(1);
-    // }
-
-    // ─────────────────────────────────────────────────────
-    // D-PAD DOWN HOLD: Elevator down
-    // ─────────────────────────────────────────────────────
     if (controller.get_digital(Buttons::RIGHT))
     {
         targetMode = false;
@@ -152,6 +98,7 @@ inline void elevatorControls()
     // ─────────────────────────────────────────────────────
     if (controller.get_digital_new_press(Buttons::R1))
     {
+        elevator.setMaxSpeed(127);
         if (state == ElevatorState::LOAD || state == ElevatorState::MATCHLOAD)
         {
             targetMode = true;
@@ -257,18 +204,18 @@ inline void displayData()
     float rightCurrentDistance = (rightDistSensor.get_distance() * MM_TO_INCHES) + RIGHT_DIST_OFFSET;
     // display lemlib pose
     lemlib::Pose pose = chassis.getPose();
-    // pros::screen::print(TEXT_LARGE_CENTER, 1, "X: %f", pose.x);
-    // pros::screen::print(TEXT_LARGE_CENTER, 3, "Y: %f", pose.y);
-    // pros::screen::print(TEXT_LARGE_CENTER, 5, "Theta: %f", pose.theta);
+    pros::screen::print(TEXT_LARGE_CENTER, 1, "X: %f", pose.x);
+    pros::screen::print(TEXT_LARGE_CENTER, 3, "Y: %f", pose.y);
+    pros::screen::print(TEXT_LARGE_CENTER, 5, "Theta: %f", pose.theta);
     //pros::screen::print(TEXT_LARGE_CENTER, 7, "Colour: %i", checkColour(toggleSensor));
     // pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %f", rightCurrentDistance);
 
-    pros::screen::print(TEXT_LARGE_CENTER, 1, "elevatorPos: %f", elevator.getElevatorPosition());
-    pros::screen::print(TEXT_LARGE_CENTER, 3, "wristPos: %f", elevator.getWristPosition());
-    pros::screen::print(TEXT_LARGE_CENTER, 9, "Proximity: %iu", vertical_rotation.get_position());
+    pros::screen::print(TEXT_LARGE_CENTER, 7, "elevatorPos: %f", elevator.getElevatorPosition());
+    // pros::screen::print(TEXT_LARGE_CENTER, 3, "wristPos: %f", elevator.getWristPosition());
+    // pros::screen::print(TEXT_LARGE_CENTER, 9, "Proximity: %iu", vertical_rotation.get_position());
     // // pros::screen::print(TEXT_LARGE_CENTER, 7, "ele: %f", (leftElevator.get_position() - rightElevator.get_position()) / 2.0);
-    pros::screen::print(TEXT_LARGE_CENTER, 5, "leftPower: %i", elevator.getLeftPower());
-    pros::screen::print(TEXT_LARGE_CENTER, 7, "rightPower: %i", elevator.getRightPower());
+    pros::screen::print(TEXT_LARGE_CENTER, 9, "leftPower: %i", elevator.getLeftPower());
+    pros::screen::print(TEXT_LARGE_CENTER, 11, "rightPower: %i", elevator.getRightPower());
 
 
 }

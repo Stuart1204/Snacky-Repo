@@ -24,7 +24,7 @@ namespace ElevatorConfig
    constexpr double SCORE_ELEV = -10.0;
    constexpr double SCORE_WRIST = -60;
 
-   constexpr double RESET_ELEV = 8;
+   constexpr double RESET_ELEV = 7;
    constexpr double RESET_WRIST = -175.0;
    constexpr double RESET_ELEV_SEEK = -100.0;
 
@@ -34,6 +34,7 @@ namespace ElevatorConfig
    constexpr double MATCHLOAD_ELEV = 0;
    constexpr double MATCHLOAD_WRIST = -180.0;
 
+   constexpr double PIN_0_ELEV = -4;
    constexpr double PIN_1_ELEV = 7.5;
    constexpr double PIN_2_ELEV = 14.5;
    constexpr double PIN_3_ELEV = 23;
@@ -63,8 +64,8 @@ namespace ElevatorConfig
    constexpr int MANUAL_VOLTAGE = 120;
 
    // All pin heights in order for cycling
-   constexpr double PIN_HEIGHTS[] = {PIN_1_ELEV, PIN_2_ELEV, PIN_3_ELEV, PIN_4_ELEV};
-   constexpr int NUM_PIN_LEVELS = 4;
+   constexpr double PIN_HEIGHTS[] = {PIN_0_ELEV, PIN_1_ELEV, PIN_2_ELEV, PIN_3_ELEV, PIN_4_ELEV};
+   constexpr int NUM_PIN_LEVELS = 5;
 }
 
 class Elevator
@@ -573,23 +574,23 @@ public:
    double getPinElevation(int level)
    {
       if(isNeutralGoal) {
-         if (level < 1 || level > ElevatorConfig::NUM_PIN_LEVELS) return ElevatorConfig::PIN_1_ELEV;
-         return ElevatorConfig::PIN_HEIGHTS[level - 1];
+         if (level < 0 || level > ElevatorConfig::NUM_PIN_LEVELS) return ElevatorConfig::PIN_1_ELEV;
+         return ElevatorConfig::PIN_HEIGHTS[level];
       }
       else {
-         if (level < 1 || level > ElevatorConfig::NUM_PIN_LEVELS) return ElevatorConfig::PIN_1_ELEV - 2.52;
-         return ElevatorConfig::PIN_HEIGHTS[level - 1] - 2.52;
+         if (level < 0 || level > ElevatorConfig::NUM_PIN_LEVELS) return ElevatorConfig::PIN_1_ELEV - 2.52;
+         return ElevatorConfig::PIN_HEIGHTS[level] - 2.52;
       }
       
    }
 
    void goToPinHeight(int level)
    {
-      if (level < 1) level = 1;
+      // if (level < 1) level = 1;
       if (level > ElevatorConfig::NUM_PIN_LEVELS) level = ElevatorConfig::NUM_PIN_LEVELS;
 
       currentPinLevel = level;
-      elevatorTarget = clampD(getPinElevation(level), 0.0, ElevatorConfig::PIN_MAX_ELEV);
+      elevatorTarget = getPinElevation(level);
       wristTarget = ElevatorConfig::PIN_WRIST;
 
       if (currentState != ElevatorState::PIN_HEIGHT)
