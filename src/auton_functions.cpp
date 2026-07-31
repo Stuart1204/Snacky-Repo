@@ -16,7 +16,6 @@
 #include "pros/screen.hpp"
 #include <cmath>
 #include <iostream>
-#include <cmath>
 
 // Define a simple struct for goal coordinates
 struct Point { int x; int y; };
@@ -37,26 +36,9 @@ const Point GOALS[9] = {
 inline void goalReset() {
     // --- PHYSICAL PARAMETERS ---
     const float GOAL_CENTER_TO_FACE = 2.805; // inches
-    const float GOAL_CORNER_TO_FACE = 3.22;
-    const float ROBOT_BACK_TO_CENTER       = 4.0;   // inches
+    const float ROBOT_BACK_TO_CENTER = 5.0;   // inches
 
-    // Straight approach: robot back sits directly on goal face
-    const float OFFSET_STRAIGHT = GOAL_CENTER_TO_FACE + ROBOT_BACK_TO_CENTER;
-
-
-    // Diagonal (45°) approach: the contact point is the goal CORNER.
-    // The robot's back-center is OFFSET_STRAIGHT away from the corner,
-    // so split that evenly across X and Y via sin/cos 45°.
-    //
-    //   corner is at (goalX ± GOAL_CENTER_TO_FACE * cos45,
-    //                 goalY ± GOAL_CENTER_TO_FACE * sin45)
-    //
-    // Then the robot centre sits a further ROBOT_BACK_TO_CENTER along
-    // the same diagonal from that corner.  The combined per-axis shift is:
-    //
-    //   (GOAL_CENTER_TO_FACE + ROBOT_BACK_TO_CENTER) * sin(45°)
-    //
-    const float OFFSET_DIAG  = (GOAL_CORNER_TO_FACE + ROBOT_BACK_TO_CENTER) / sqrt(2);
+    const float TOTAL_OFFSET = GOAL_CENTER_TO_FACE + ROBOT_BACK_TO_CENTER;
 
     lemlib::Pose currentPose = chassis.getPose();
 
@@ -79,76 +61,12 @@ inline void goalReset() {
     // -------------------------------------------------------
     // LemLib: 0° = North (+Y), 90° = East (+X), clockwise positive
 
-    float heading = fmod(currentPose.theta, 360.0f);
-    if (heading < 0) heading += 360.0f;
+    float thetaRad = currentPose.theta*(M_PI/180.0f);
 
-    // Snap to nearest 45°
-    int snappedHeading = (int)(round(heading / 45.0f) * 45);
-    if (snappedHeading == 360) snappedHeading = 0;
+    float newX = closestGoal.x + TOTAL_OFFSET * sin(thetaRad);
+    float newY = closestGoal.y + TOTAL_OFFSET * cos(thetaRad);
 
-    float newX = currentPose.x;
-    float newY = currentPose.y;
-
-    // ------------------------------------------------------------------
-    // Cardinal directions — robot back is flush with one face of the goal
-    // ------------------------------------------------------------------
-    //
-    //         [  N face  ]
-    //  W face [   GOAL   ] E face
-    //         [  S face  ]
-    //
-    //  Heading 0   (N): robot is NORTH  of goal, back touching N face  → newY = goalY + OFFSET_STRAIGHT
-    //  Heading 90  (E): robot is EAST   of goal, back touching E face  → newX = goalX + OFFSET_STRAIGHT
-    //  Heading 180 (S): robot is SOUTH  of goal, back touching S face  → newY = goalY - OFFSET_STRAIGHT
-    //  Heading 270 (W): robot is WEST   of goal, back touching W face  → newX = goalX - OFFSET_STRAIGHT
-    //
-    // Diagonal directions — robot back corner touches the goal corner
-    //
-    //  Heading 45  (NE): robot is NE of goal  → newX = goalX + OFFSET_DIAG, newY = goalY + OFFSET_DIAG
-    //  Heading 135 (SE): robot is SE of goal  → newX = goalX + OFFSET_DIAG, newY = goalY - OFFSET_DIAG
-    //  Heading 225 (SW): robot is SW of goal  → newX = goalX - OFFSET_DIAG, newY = goalY - OFFSET_DIAG
-    //  Heading 315 (NW): robot is NW of goal  → newX = goalX - OFFSET_DIAG, newY = goalY + OFFSET_DIAG
-    // ------------------------------------------------------------------
-
-    switch (snappedHeading) {
-        // --- Cardinal ---
-        case 0:
-            newY = closestGoal.y + OFFSET_STRAIGHT;
-            break;
-        case 90:
-            newX = closestGoal.x + OFFSET_STRAIGHT;
-            break;
-        case 180:
-            newY = closestGoal.y - OFFSET_STRAIGHT;
-            break;
-        case 270:
-            newX = closestGoal.x - OFFSET_STRAIGHT;
-            break;
-
-        // --- Diagonal ---
-        case 45:
-            newX = closestGoal.x + OFFSET_DIAG;
-            newY = closestGoal.y + OFFSET_DIAG;
-            break;
-        case 135:
-            newX = closestGoal.x + OFFSET_DIAG;
-            newY = closestGoal.y - OFFSET_DIAG;
-            break;
-        case 225:
-            newX = closestGoal.x - OFFSET_DIAG;
-            newY = closestGoal.y - OFFSET_DIAG;
-            break;
-        case 315:
-            newX = closestGoal.x - OFFSET_DIAG;
-            newY = closestGoal.y + OFFSET_DIAG;
-            break;
-
-        default:
-            // Should never reach here — log and leave position unchanged
-            printf("WARN: unexpected snappedHeading %d\n", snappedHeading);
-            break;
-    }
-
+    
     // -------------------------------------------------------
     // 4. Reset odometry (keep theta from IMU, update X & Y)
     // -------------------------------------------------------
@@ -158,7 +76,6 @@ inline void goalReset() {
     printf("currX:        %.3f\n", currentPose.x);
     printf("currY:        %.3f\n", currentPose.y);
     printf("currTheta:    %.3f\n", currentPose.theta);
-    printf("snappedHdg:   %d\n",   snappedHeading);
     printf("newX:         %.3f\n", newX);
     printf("newY:         %.3f\n", newY);
     printf("================================\n");

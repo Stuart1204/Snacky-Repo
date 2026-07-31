@@ -7,12 +7,14 @@
 #include "pros/rtos.hpp"
 #include "pros/screen.h"
 #include "pros/screen.hpp"
+#include <cstdint>
 #include <future>
 #include "globals.hpp"
 #include "intake.cpp"
 #include "piston.cpp"
 #include "auton_functions.cpp"
 #include "other_functions.cpp"
+#include "pros/motors.h"
 
 inline void skillsAuton() {
 
@@ -39,41 +41,73 @@ inline void TAWP() { // teamate has to score one pin and get toggle
     hood.setState(true);
     chassis.swingToHeading(-90, DriveSide::RIGHT, 700, {.minSpeed = 90, .earlyExitRange = 10});
     chassis.waitUntilDone();
-    moveDrive(0, 300);
+    moveDrive(0, 200);
+    leftMotors.move(-10);
+    rightMotors.move(-10);
     elevator.setState(ElevatorState::SCORE);
-    lemlib::Pose pose = chassis.getPose();
-    printf("currX:        %.3f\n", pose.x);
-    printf("currY:        %.3f\n", pose.y);
     goalReset();
     pros::delay(350);
+    isFastReset = true;
     elevator.setState(ElevatorState::RESET);
     turnToHeading(-90, true);
-    leftMotors.move(30);
-    rightMotors.move(30);
     intake.setState(IntakeState::INTAKE);
-    pros::delay(2500);
+    leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+	rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+	moveDrive(45, 400);
+	moveDrive(-20, 200);
+    uint32_t startTime = pros::millis();
+    while(elevator.getState() != ElevatorState::PIN_HEIGHT) {
+        pros::delay(10);
+        if(pros::millis() - startTime > 2500) {
+            break;
+        }
+    }
+    isFastReset = false;
+    turnToHeading(-80, true);
     moveDrive(-60, 500);
     elevator.setState(ElevatorState::SCORE);
-    pose = chassis.getPose();
-    printf("currX:        %.3f\n", pose.x);
-    printf("currY:        %.3f\n", pose.y);
     goalReset();
     pros::delay(350);
     elevator.setState(ElevatorState::RESET);
-    moveDrive(50, 300);
+    chassis.moveToPoint(-63, -10, 700, {.minSpeed = 30, .earlyExitRange = 3});
     elevator.setState(ElevatorState::GROUND_PICKUP);
-    moveToPoint(-48, -42, false, true, true);
+    chassis.moveToPoint(-63, -30, 700, {.forwards = false, .minSpeed = 30, .earlyExitRange = 5});
+    moveToPoint(-50, -46, false, true, true);
     leftMotors.move(-10);
 	rightMotors.move(-10);
     elevator.moveTo(ElevatorConfig::GROUND_CLAMP_ELEV, ElevatorConfig::GROUND_PICKUP_WRIST, false);
     elevator.setState(ElevatorState::HOLD);
-	pros::delay(600);
+	pros::delay(400);
     clamp.setState(true);
 	pros::delay(200);
     elevator.setState(ElevatorState::PIN_HEIGHT);
 	isNeutralGoal = false; 
     elevator.goToPinHeight(1);
-	moveDrive(0, 100);
+    pros::delay(200);
+    chassis.moveToPoint(-27, -48, 700, {.forwards = false, .earlyExitRange = 4});
+    chassis.waitUntilDone();
+    leftMotors.move(-15);
+    rightMotors.move(-15);
+    pros::delay(300);
+    goalReset();
+    isAutoReset = false;
+    elevator.setState(ElevatorState::SCORE);
+    pros::delay(300);
+    moveDrive(50, 250);
+    elevator.setState(ElevatorState::GROUND_PICKUP);
+    moveToPoint(-26, -27, false, true, true);
+    elevator.moveTo(ElevatorConfig::GROUND_CLAMP_ELEV, ElevatorConfig::GROUND_PICKUP_WRIST, false);
+    leftMotors.move(-10);
+	rightMotors.move(-10);
+    elevator.setState(ElevatorState::HOLD);
+	pros::delay(400);
+    clamp.setState(true);
+	pros::delay(200);
+    elevator.setState(ElevatorState::PIN_HEIGHT);
+	isNeutralGoal = true; 
+    elevator.goToPinHeight(1);
+    isAutoReset = true;
+    pros::delay(200);
 
     // elevator.setState(ElevatorState::GROUND_PICKUP);
     // moveDrive(-30, 800);

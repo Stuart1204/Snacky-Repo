@@ -40,7 +40,7 @@ namespace ElevatorConfig
    constexpr double PIN_3_ELEV = 23;
    constexpr double PIN_4_ELEV = 31.5;
    constexpr double PIN_MAX_ELEV = 35.0; // clamp guard
-   constexpr double PIN_WRIST = -83.0;
+   constexpr double PIN_WRIST = -88.5;
 
    constexpr double GROUND_PICKUP_ELEV = 4;
    constexpr double GROUND_CLAMP_ELEV = -3.5;
@@ -295,8 +295,13 @@ private:
          }
          else
          {
+            if(isFastReset) {
+               elevatorTarget = 4;
+            }
+            else {
+               elevatorTarget = ElevatorConfig::RESET_ELEV;
+            }
             // Too low and wrist not vertical — raise first
-            elevatorTarget = ElevatorConfig::RESET_ELEV;
             wristTarget = getWristPosition(); // freeze wrist while raising
             phase = 4;
          }
@@ -304,7 +309,6 @@ private:
 
       case 4:
          // Raise elevator before rotating wrist
-         elevatorTarget = ElevatorConfig::RESET_ELEV;
          wristTarget = getWristPosition();
          if (isElevatorSettled())
          {
@@ -376,12 +380,12 @@ private:
       switch (phase)
       {
       case 0:
-         if(pros::millis() - motionStartTime > 800) {
+         if(pros::millis() - motionStartTime > 200) {
             phase = 1;
          }
          break;
       case 1:
-         if (matchloadSensor.get_distance() < 100)
+         if (matchloadSensor.get_distance() < 140)
          {
             hood.setState(false);
             motionStartTime = pros::millis();
@@ -389,7 +393,7 @@ private:
          }
          break;
       case 2:
-         if (pros::millis() - motionStartTime > 500) {
+         if (pros::millis() - motionStartTime > 350) {
             hood.setState(true);
             setState(ElevatorState::PICKUP);
          }
@@ -401,7 +405,7 @@ private:
       if(pros::millis() - motionStartTime > 250) {
          wristTarget = ElevatorConfig::SCORE_WRIST;
          if(isSettled()) {
-            if(vertical_rotation.get_position() - odomPosition > 2500) {
+            if(vertical_rotation.get_position() - odomPosition > 2500 && isAutoReset == true) {
                setState(ElevatorState::RESET);
             }
          }
@@ -431,7 +435,7 @@ private:
       case 2:
          clamp.setState(true);
          intake.setState(IntakeState::IDLE);
-         if (pros::millis() - motionStartTime > 300)
+         if (pros::millis() - motionStartTime > 200)
             phase = 3;
          break;
       case 3:
@@ -894,8 +898,6 @@ public:
 
       double elevOut = elevatorPID.update(elevErr);
       double wristOut = wristPID.update(wristErr);
-      printf("elevOut: %d", elevOut);
-      printf("wristOut: %d", wristOut);
       if (currentState == ElevatorState::STOW || currentState == ElevatorState::MANUAL)
       {
          wristOut += .3 * wristErr;

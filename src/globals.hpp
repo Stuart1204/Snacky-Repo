@@ -60,6 +60,8 @@ inline int allianceColour;
 inline bool enableColourSort = false;
 inline bool isNeutralGoal = true;
 inline bool matchloadMode = false;
+inline bool isAutoReset = true;
+inline bool isFastReset = false;
 
 // global constants
 const inline float FRONT_DIST_OFFSET = 5.5;
