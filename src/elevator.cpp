@@ -34,13 +34,17 @@ namespace ElevatorConfig
    constexpr double MATCHLOAD_ELEV = 0;
    constexpr double MATCHLOAD_WRIST = -180.0;
 
-   constexpr double PIN_0_ELEV = -4;
+   constexpr double PIN_0_ELEV = -1.5;
    constexpr double PIN_1_ELEV = 7.5;
    constexpr double PIN_2_ELEV = 14.5;
    constexpr double PIN_3_ELEV = 23;
    constexpr double PIN_4_ELEV = 31.5;
    constexpr double PIN_MAX_ELEV = 35.0; // clamp guard
    constexpr double PIN_WRIST = -83.0;
+
+   constexpr double GROUND_PICKUP_ELEV = 4;
+   constexpr double GROUND_CLAMP_ELEV = -3.5;
+   constexpr double GROUND_PICKUP_WRIST = -95.0;
 
    constexpr double MANUAL_WRIST = STOW_WRIST;
 
@@ -459,6 +463,25 @@ private:
          }
       }
    }
+   void runGroundPickup () {
+      switch(phase) {
+         case(0):
+            elevatorTarget = ElevatorConfig::GROUND_PICKUP_ELEV;
+            wristTarget = getWristPosition();
+            if (isElevatorSettled() || isMotionStalled())
+               phase = 1;
+            break;
+         case(1):
+            wristTarget = ElevatorConfig::GROUND_PICKUP_WRIST;
+            if (isWristSettled() || isMotionStalled())
+               stateComplete = true;
+               elevatorTarget = getElevatorPosition();
+               phase = 2;
+            break;
+         case(2):
+            break;
+      }
+   }
 
    void runPinHeight()
    {
@@ -851,7 +874,12 @@ public:
       case ElevatorState::PIN_HEIGHT:
          runPinHeight();
          break;
+      case ElevatorState::GROUND_PICKUP:
+         clamp.setState(false);
+         runGroundPickup();
+         break;
       }
+
 
       if (currentState == ElevatorState::REST || currentState == ElevatorState::ESTOP)
          return;

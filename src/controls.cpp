@@ -23,7 +23,8 @@ inline void intakeControls() {
     {
         intake.setState(IntakeState::INTAKE);
         if(elevator.getState() != ElevatorState::RESET && elevator.getState() != ElevatorState::STOW
-             && elevator.getState() != ElevatorState::MANUAL) {
+             && elevator.getState() != ElevatorState::MANUAL && elevator.getState() != ElevatorState::PICKUP
+                && elevator.getState() != ElevatorState::PIN_HEIGHT) {
                 
             if(matchloadMode) {
                 elevator.setState(ElevatorState::MATCHLOAD);
@@ -204,9 +205,10 @@ inline void displayData()
     float rightCurrentDistance = (rightDistSensor.get_distance() * MM_TO_INCHES) + RIGHT_DIST_OFFSET;
     // display lemlib pose
     lemlib::Pose pose = chassis.getPose();
-    pros::screen::print(TEXT_LARGE_CENTER, 1, "X: %f", pose.x);
-    pros::screen::print(TEXT_LARGE_CENTER, 3, "Y: %f", pose.y);
-    pros::screen::print(TEXT_LARGE_CENTER, 5, "Theta: %f", pose.theta);
+    pros::screen::print(TEXT_MEDIUM_CENTER, 1, "X: %f", pose.x);
+    pros::screen::print(TEXT_MEDIUM_CENTER, 2, "Y: %f", pose.y);
+    pros::screen::print(TEXT_MEDIUM_CENTER, 3, "Theta: %f", pose.theta);
+    pros::screen::print(TEXT_LARGE_CENTER, 5, "velo: %f", intakeMotor.get_actual_velocity());
     //pros::screen::print(TEXT_LARGE_CENTER, 7, "Colour: %i", checkColour(toggleSensor));
     // pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %f", rightCurrentDistance);
 

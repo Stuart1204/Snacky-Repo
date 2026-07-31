@@ -100,7 +100,8 @@ enum ElevatorState
     MANUAL = 7,
     ESTOP = 8,
     HOLD = 9,
-    PIN_HEIGHT = 10
+    PIN_HEIGHT = 10,
+    GROUND_PICKUP = 11
 };
 
 // aliance colour

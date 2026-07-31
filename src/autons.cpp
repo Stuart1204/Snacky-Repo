@@ -24,6 +24,9 @@ inline void SAWP() {
 
 inline void TAWP() { // teamate has to score one pin and get toggle
     chassis.setPose(-60.5, 9, -128);
+    
+
+    isNeutralGoal = false;
     elevator.setState(ElevatorState::PICKUP);
     moveDrive(105, 650);
     chassis.turnToHeading(-25, 300, {.minSpeed = 80});
@@ -38,6 +41,9 @@ inline void TAWP() { // teamate has to score one pin and get toggle
     chassis.waitUntilDone();
     moveDrive(0, 300);
     elevator.setState(ElevatorState::SCORE);
+    lemlib::Pose pose = chassis.getPose();
+    printf("currX:        %.3f\n", pose.x);
+    printf("currY:        %.3f\n", pose.y);
     goalReset();
     pros::delay(350);
     elevator.setState(ElevatorState::RESET);
@@ -47,6 +53,41 @@ inline void TAWP() { // teamate has to score one pin and get toggle
     intake.setState(IntakeState::INTAKE);
     pros::delay(2500);
     moveDrive(-60, 500);
+    elevator.setState(ElevatorState::SCORE);
+    pose = chassis.getPose();
+    printf("currX:        %.3f\n", pose.x);
+    printf("currY:        %.3f\n", pose.y);
+    goalReset();
+    pros::delay(350);
+    elevator.setState(ElevatorState::RESET);
+    moveDrive(50, 300);
+    elevator.setState(ElevatorState::GROUND_PICKUP);
+    moveToPoint(-48, -42, false, true, true);
+    leftMotors.move(-10);
+	rightMotors.move(-10);
+    elevator.moveTo(ElevatorConfig::GROUND_CLAMP_ELEV, ElevatorConfig::GROUND_PICKUP_WRIST, false);
+    elevator.setState(ElevatorState::HOLD);
+	pros::delay(600);
+    clamp.setState(true);
+	pros::delay(200);
+    elevator.setState(ElevatorState::PIN_HEIGHT);
+	isNeutralGoal = false; 
+    elevator.goToPinHeight(1);
+	moveDrive(0, 100);
+
+    // elevator.setState(ElevatorState::GROUND_PICKUP);
+    // moveDrive(-30, 800);
+	// leftMotors.move(-10);
+	// rightMotors.move(-10);
+    // elevator.moveTo(ElevatorConfig::GROUND_CLAMP_ELEV, ElevatorConfig::GROUND_PICKUP_WRIST, false);
+    // elevator.setState(ElevatorState::HOLD);
+	// pros::delay(600);
+    // clamp.setState(true);
+	// pros::delay(200);
+    // elevator.setState(ElevatorState::PIN_HEIGHT);
+	// isNeutralGoal = false; 
+    // elevator.goToPinHeight(1);
+	// moveDrive(0, 100);
 }
 
 
