@@ -150,6 +150,7 @@ void opcontrol()
 {
 	leftMotors.set_current_limit_all(2250);
 	rightMotors.set_current_limit_all(2250);
+	controller.print(0, 0, "%s", isNeutralGoal ? "NEUTRAL " : "ALLIANCE");
 	// leftElevator.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	// rightElevator.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	while (true)

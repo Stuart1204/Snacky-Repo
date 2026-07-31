@@ -32,5 +32,6 @@ class Piston {
 inline Piston intakeLift(intakeLiftPiston);
 inline Piston clamp(clampPiston);
 inline Piston hood(hoodPiston);
+inline Piston doinker(doinkerPiston);
 
 #endif

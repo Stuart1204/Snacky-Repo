@@ -19,32 +19,27 @@ namespace ElevatorConfig
    constexpr double WRIST_MAX = 90.0;
 
    constexpr double STOW_ELEV = 6.0;
-   constexpr double STOW_WRIST = -80.0;
+   constexpr double STOW_WRIST = -83.0;
 
    constexpr double SCORE_ELEV = -10.0;
-   constexpr double SCORE_WRIST = -65;
+   constexpr double SCORE_WRIST = -60;
 
-   constexpr double RESET_ELEV = 10;
-   constexpr double RESET_WRIST = -177.0;
+   constexpr double RESET_ELEV = 8;
+   constexpr double RESET_WRIST = -175.0;
    constexpr double RESET_ELEV_SEEK = -100.0;
 
    constexpr double LOAD_ELEV = 0;
-   constexpr double LOAD_WRIST = -177.0;
+   constexpr double LOAD_WRIST = -180.0;
 
    constexpr double MATCHLOAD_ELEV = 0;
-   constexpr double MATCHLOAD_WRIST = -177.0;
-
-   constexpr double PICKUP_APPROACH_ELEV = 10.0;
-   constexpr double PICKUP_VERTICAL_WRIST = -170.0;
-   constexpr double PICKUP_SEEK_ELEV = 2;
-   constexpr double PICKUP_SWEEP_WRIST = -170.0;
+   constexpr double MATCHLOAD_WRIST = -180.0;
 
    constexpr double PIN_1_ELEV = 7.5;
-   constexpr double PIN_2_ELEV = 15.1;
-   constexpr double PIN_3_ELEV = 22.5;
-   constexpr double PIN_4_ELEV = 31;
-   constexpr double PIN_MAX_ELEV = 28.0; // clamp guard
-   constexpr double PIN_WRIST = -90.0;
+   constexpr double PIN_2_ELEV = 14.5;
+   constexpr double PIN_3_ELEV = 23;
+   constexpr double PIN_4_ELEV = 31.5;
+   constexpr double PIN_MAX_ELEV = 35.0; // clamp guard
+   constexpr double PIN_WRIST = -83.0;
 
    constexpr double MANUAL_WRIST = STOW_WRIST;
 
@@ -54,9 +49,9 @@ namespace ElevatorConfig
    constexpr double ELEV_SETTLE_IN = 1;
    constexpr double WRIST_SETTLE_DEG = 7.0;
 
-   constexpr double STALL_VELOCITY_THRESHOLD = 150.0;
-   constexpr double STALL_CURRENT_THRESHOLD = 1500.0;
-   constexpr uint32_t STALL_GRACE_PERIOD_MS = 300;
+   constexpr double STALL_VELOCITY_THRESHOLD = 200.0;
+   constexpr double STALL_CURRENT_THRESHOLD = 1200.0;
+   constexpr uint32_t STALL_GRACE_PERIOD_MS = 200;
    constexpr uint32_t STALL_TIMEOUT_MS = 900;
 
    constexpr uint32_t GLOBAL_STALL_DURATION_MS = 500;
@@ -89,10 +84,6 @@ private:
    int phase = 0;
    bool stateComplete = false;
 
-   int pendingNextState = ElevatorState::REST;
-   int pendingIntakeState = IntakeState::IDLE;
-   bool resetSequenceRequested = false;
-
    double elevatorTarget = 0.0;
    double wristTarget = 0.0;
 
@@ -103,6 +94,7 @@ private:
    bool holdWristFirst = false;
 
    int currentPinLevel = 0;
+   int odomPosition = 0;
 
    int leftPower = 0;
    int rightPower = 0;
@@ -357,19 +349,10 @@ private:
          rightElevator.move(0);
          elevatorReset();
          stateComplete = true;
-
-         if (resetSequenceRequested)
-         {
-            int nextState = pendingNextState;
-            int intakeMode = pendingIntakeState;
-            pendingNextState = ElevatorState::REST;
-            pendingIntakeState = IntakeState::IDLE;
-            resetSequenceRequested = false;
-
-            if (intakeMode != IntakeState::IDLE)
-               intake.setState(intakeMode);
-
-            setState(nextState);
+         if(matchloadMode) {
+            setState(ElevatorState::MATCHLOAD);
+         } else {
+            setState(ElevatorState::LOAD);
          }
          break;
       }
@@ -410,9 +393,13 @@ private:
    }
    void runScore() {
       clamp.setState(false);
-      elevatorTarget = getElevatorPosition();
-      if(pros::millis() - motionStartTime > 300) {
+      if(pros::millis() - motionStartTime > 250) {
          wristTarget = ElevatorConfig::SCORE_WRIST;
+         if(isSettled()) {
+            if(vertical_rotation.get_position() - odomPosition > 2500) {
+               setState(ElevatorState::RESET);
+            }
+         }
       }
    }
 
@@ -443,7 +430,7 @@ private:
             phase = 3;
          break;
       case 3:
-         elevatorTarget = clampD(8, 0.0, ElevatorConfig::PIN_MAX_ELEV);
+         elevatorTarget = clampD(6.75, 0.0, ElevatorConfig::PIN_MAX_ELEV);
          if (isElevatorSettled())
             phase = 4;
          break;
@@ -456,7 +443,11 @@ private:
          }
          break;
       case 5:
-         elevatorTarget = clampD(ElevatorConfig::PIN_1_ELEV, 0.0, ElevatorConfig::PIN_MAX_ELEV);
+         if(isNeutralGoal) {
+            elevatorTarget = clampD(ElevatorConfig::PIN_1_ELEV, 0.0, ElevatorConfig::PIN_MAX_ELEV);
+         } else {
+            elevatorTarget = clampD(ElevatorConfig::PIN_1_ELEV-2.52, 0.0, ElevatorConfig::PIN_MAX_ELEV);
+         }
          if (isElevatorSettled() || isMotionStalled()){
             currentPinLevel = 1;
             stateComplete = true;
@@ -511,13 +502,6 @@ public:
       if (state == currentState)
          return;
 
-      if (state != ElevatorState::RESET)
-      {
-         resetSequenceRequested = false;
-         pendingNextState = ElevatorState::REST;
-         pendingIntakeState = IntakeState::IDLE;
-      }
-
       lastState = currentState;
       currentState = state;
       phase = 0;
@@ -536,7 +520,7 @@ public:
          currentPinLevel = 0;
          break;
       case ElevatorState::SCORE:
-         runScore();
+         odomPosition = vertical_rotation.get_position();
          break;
       case ElevatorState::RESET:
          break;
@@ -597,27 +581,6 @@ public:
          return ElevatorConfig::PIN_HEIGHTS[level - 1] - 2.52;
       }
       
-   }
-
-
-   void forceResetAndIntake(int intakeMode, int nextState)
-   {
-      pendingNextState = nextState;
-      pendingIntakeState = intakeMode;
-      resetSequenceRequested = true;
-
-      // Force re-entry even if already in RESET
-      currentState = -1;
-      setState(ElevatorState::RESET);
-   }
-
-   void forceResetThen(int nextState, int intakeMode = IntakeState::IDLE)
-   {
-      pendingNextState = nextState;
-      pendingIntakeState = intakeMode;
-      resetSequenceRequested = true;
-      currentState = -1;
-      setState(ElevatorState::RESET);
    }
 
    void goToPinHeight(int level)
@@ -771,17 +734,6 @@ public:
       setState(ElevatorState::HOLD);
    }
 
-   void requestResetAndIntake(int intakeMode, int nextState)
-   {
-      if (currentState == ElevatorState::RESET && !stateComplete)
-         return;
-
-      pendingNextState = nextState;
-      pendingIntakeState = intakeMode;
-      resetSequenceRequested = true;
-      setState(ElevatorState::RESET);
-   }
-
    void elevatorReset()
    {
       leftElevator.tare_position();
@@ -875,6 +827,7 @@ public:
          runStow();
          break;
       case ElevatorState::SCORE:
+         runScore();
          break;
       case ElevatorState::RESET:
          runReset();

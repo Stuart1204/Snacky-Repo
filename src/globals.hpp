@@ -44,6 +44,7 @@
 #define intakeLiftPort 'D'
 #define clampPort 'E'
 #define hoodPort 'C'
+#define doinkerPort 'G'
 
 //drivetrain specs
 #define driveTrackWidth 11.375
@@ -58,6 +59,7 @@ inline int startingSide;
 inline int allianceColour;
 inline bool enableColourSort = false;
 inline bool isNeutralGoal = true;
+inline bool matchloadMode = false;
 
 // global constants
 const inline float FRONT_DIST_OFFSET = 5.5;
@@ -163,6 +165,8 @@ inline pros::Motor rightElevator(rightElePort, pros::v5::MotorGears::rpm_600);
 inline pros::adi::DigitalOut intakeLiftPiston(intakeLiftPort, LOW);
 inline pros::adi::DigitalOut clampPiston(clampPort, LOW);
 inline pros::adi::DigitalOut hoodPiston(hoodPort, LOW);
+inline pros::adi::DigitalOut doinkerPiston(doinkerPort, LOW);
+
 
 
 // Inertial Sensor on port

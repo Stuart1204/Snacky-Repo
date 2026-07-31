@@ -12,53 +12,31 @@
 #include "pros/screen.hpp"
 #include <cstring>
 
-inline bool l1Prev = false;
-inline uint32_t l1PressStart = 0;
-inline bool l1HoldCommitted = false;
+inline bool targetMode = false;
 
-
-inline bool matchloadMode = false;
-inline bool targetMode = true;
 inline void intakeControls() {
-    int targetState = matchloadMode ? ElevatorState::MATCHLOAD : ElevatorState::LOAD;
-    int intakeMode = matchloadMode ? IntakeState::INTAKEHIGH : IntakeState::INTAKE;
-
-    bool l1 = controller.get_digital(Buttons::L1);
-    bool l2 = controller.get_digital(Buttons::L2);
-
-    // Rising edge: decide once per press
-    if (l1 && !l1Prev)
+    if (controller.get_digital(Buttons::L2))
     {
-        // Only reset if coming from SCORE
-        if (elevator.getLastState() == ElevatorState::SCORE ||
-            elevator.getState() == ElevatorState::SCORE)
-        {
-            elevator.forceResetAndIntake(intakeMode, targetState);
-        }
-        else
-        {
-            elevator.setState(targetState);
-        }
-    }
-
-    // Intake motor control only — does NOT affect elevator reset state
-    if (l2)
-    {
-        // Allow outtake even during reset
         intake.setState(IntakeState::OUTTAKE);
     }
-    else if (l1)
+    else if (controller.get_digital(Buttons::L1))
     {
-        // Keep intake running while held
-        intake.setState(intakeMode);
+        intake.setState(IntakeState::INTAKE);
+        if(elevator.getState() != ElevatorState::RESET && elevator.getState() != ElevatorState::STOW
+             && elevator.getState() != ElevatorState::MANUAL) {
+                
+            if(matchloadMode) {
+                elevator.setState(ElevatorState::MATCHLOAD);
+            } else {
+                elevator.setState(ElevatorState::LOAD);
+            }
+        }
     }
     else if (elevator.getState() != ElevatorState::RESET)
     {
-        // Only idle if not resetting
         intake.setState(IntakeState::IDLE);
-    }
-    l1Prev = l1;
-}
+    }                                           
+}                                                                                                                                                                                             
 inline bool manualActive = false; // tracks if any manual button is held this cycle
 
 inline void elevatorControls()
@@ -74,28 +52,28 @@ inline void elevatorControls()
     // R1 HOLD:
     //   In MANUAL or PIN_HEIGHT → elevator UP
     // ─────────────────────────────────────────────────────
-    if (controller.get_digital_new_press(Buttons::Y))
-    {
-        if (state == ElevatorState::LOAD || state == ElevatorState::MATCHLOAD)
-        {
-            targetMode = true;
-            elevator.setState(ElevatorState::PICKUP);
-        }
-        else if (state == ElevatorState::STOW && elevator.isStateComplete())
-        {
-            elevator.setState(ElevatorState::MANUAL);
-        }
-    }
+    // if (controller.get_digital_new_press(Buttons::Y))
+    // {
+    //     if (state == ElevatorState::LOAD || state == ElevatorState::MATCHLOAD)
+    //     {
+    //         targetMode = true;
+    //         elevator.setState(ElevatorState::PICKUP);
+    //     }
+    //     else if (state == ElevatorState::STOW && elevator.isStateComplete())
+    //     {
+    //         elevator.setState(ElevatorState::MANUAL);
+    //     }
+    // }
 
-    if (controller.get_digital(Buttons::Y))
-    {
-        if (state == ElevatorState::MANUAL || state == ElevatorState::PIN_HEIGHT)
-        {
-            manualActive = true;
-            elevator.manualElevator(1);
-            elevator.setMaxSpeed(127);
-        }
-    }
+    // if (controller.get_digital(Buttons::Y))
+    // {
+    //     if (state == ElevatorState::MANUAL || state == ElevatorState::PIN_HEIGHT)
+    //     {
+    //         manualActive = true;
+    //         elevator.manualElevator(1);
+    //         elevator.setMaxSpeed(127);
+    //     }
+    // }
 
     // ─────────────────────────────────────────────────────
     // R2 PRESS: Release clamp
@@ -104,7 +82,7 @@ inline void elevatorControls()
     {
         elevator.setState(ElevatorState::SCORE);
     }
-    if (controller.get_digital_new_press(Buttons::A)) {
+    if (controller.get_digital_new_press(Buttons::B)) {
         elevator.setState(ElevatorState::RESET);
     }
 
@@ -135,6 +113,13 @@ inline void elevatorControls()
         manualActive = true;
         elevator.manualElevator(-1);
         elevator.setMaxSpeed(70);
+    }
+    if (controller.get_digital(Buttons::Y))
+    {
+        targetMode = false;
+        manualActive = true;
+        elevator.manualElevator(1);
+        elevator.setMaxSpeed(127);
     }
 
     // ─────────────────────────────────────────────────────
@@ -198,7 +183,7 @@ inline void elevatorControls()
         controller.rumble("-");
         elevator.setState(ElevatorState::REST);
     }
-    if (controller.get_digital_new_press(Buttons::B)) {
+    if (controller.get_digital_new_press(Buttons::UP)) {
         isNeutralGoal = !isNeutralGoal;
         controller.rumble(".");
         controller.clear_line(0);
@@ -207,7 +192,6 @@ inline void elevatorControls()
         if (elevator.getState() == ElevatorState::PIN_HEIGHT && elevator.getPinLevel() > 0) {
             elevator.goToPinHeight(elevator.getPinLevel());
         }
-        
     }
 }
 
@@ -221,7 +205,18 @@ inline void activatePistons()
             elevator.setState(ElevatorState::LOAD);
         }
     }
-
+    if (controller.get_digital_new_press(Buttons::A))
+    {
+        doinker.toggle();
+    }
+    if (controller.get_digital_new_press(Buttons::LEFT))
+    {
+        clamp.toggle();
+    }
+    if (controller.get_digital_new_press(Buttons::DOWN))
+    {
+        hood.toggle();
+    }
 }
 
 inline bool toggleFlipActive = false;
@@ -270,7 +265,7 @@ inline void displayData()
 
     pros::screen::print(TEXT_LARGE_CENTER, 1, "elevatorPos: %f", elevator.getElevatorPosition());
     pros::screen::print(TEXT_LARGE_CENTER, 3, "wristPos: %f", elevator.getWristPosition());
-    pros::screen::print(TEXT_LARGE_CENTER, 9, "Proximity: %iu", matchloadSensor.get_distance());
+    pros::screen::print(TEXT_LARGE_CENTER, 9, "Proximity: %iu", vertical_rotation.get_position());
     // // pros::screen::print(TEXT_LARGE_CENTER, 7, "ele: %f", (leftElevator.get_position() - rightElevator.get_position()) / 2.0);
     pros::screen::print(TEXT_LARGE_CENTER, 5, "leftPower: %i", elevator.getLeftPower());
     pros::screen::print(TEXT_LARGE_CENTER, 7, "rightPower: %i", elevator.getRightPower());
