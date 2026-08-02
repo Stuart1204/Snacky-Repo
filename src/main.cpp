@@ -43,6 +43,7 @@ void initialize()
 	autonSelectionEnum = Selection::MATCH;
 
 	// autonSelection();
+	clampSelection();
 
 	if (autonSelectionEnum == Selection::SKILLS || startingSide == Selection::SKILLS)
 	{
@@ -61,12 +62,15 @@ void competition_initialize() {}
 
 void autonomous()
 {
+	isAutonomous = true;
 	// runSelectedAuton();
-	TAWP();
+	// TAWP();
+	elimsAllianceGoal();
 }
 
 void opcontrol()
 {
+	isAutonomous = false;
 	leftMotors.set_current_limit_all(2250);
 	rightMotors.set_current_limit_all(2250);
 	controller.print(0, 0, "%s", isNeutralGoal ? "NEUTRAL " : "ALLIANCE");

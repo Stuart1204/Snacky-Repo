@@ -34,12 +34,12 @@ namespace ElevatorConfig
    constexpr double MATCHLOAD_ELEV = 0;
    constexpr double MATCHLOAD_WRIST = -180.0;
 
-   constexpr double PIN_0_ELEV = -1.5;
-   constexpr double PIN_1_ELEV = 7.5;
-   constexpr double PIN_2_ELEV = 14.5;
-   constexpr double PIN_3_ELEV = 23;
-   constexpr double PIN_4_ELEV = 31.5;
-   constexpr double PIN_MAX_ELEV = 35.0; // clamp guard
+   constexpr double PIN_0_ELEV = -.5;
+   constexpr double PIN_1_ELEV = 7.75;
+   constexpr double PIN_2_ELEV = 14.75;
+   constexpr double PIN_3_ELEV = 23.25;
+   constexpr double PIN_4_ELEV = 31.75;
+   constexpr double PIN_MAX_ELEV = 38.0; // clamp guard
    constexpr double PIN_WRIST = -88.5;
 
    constexpr double GROUND_PICKUP_ELEV = 4;
@@ -56,7 +56,7 @@ namespace ElevatorConfig
 
    constexpr double STALL_VELOCITY_THRESHOLD = 200.0;
    constexpr double STALL_CURRENT_THRESHOLD = 1200.0;
-   constexpr uint32_t STALL_GRACE_PERIOD_MS = 200;
+   constexpr uint32_t STALL_GRACE_PERIOD_MS = 150;
    constexpr uint32_t STALL_TIMEOUT_MS = 900;
 
    constexpr uint32_t GLOBAL_STALL_DURATION_MS = 500;
@@ -296,7 +296,7 @@ private:
          else
          {
             if(isFastReset) {
-               elevatorTarget = 4;
+               elevatorTarget = 2.4;
             }
             else {
                elevatorTarget = ElevatorConfig::RESET_ELEV;
@@ -385,7 +385,7 @@ private:
          }
          break;
       case 1:
-         if (matchloadSensor.get_distance() < 140)
+         if (matchloadSensor.get_distance() < 140 && intake.getState() == IntakeState::INTAKE)
          {
             hood.setState(false);
             motionStartTime = pros::millis();
@@ -868,6 +868,9 @@ public:
          break;
       case ElevatorState::PICKUP:
          runPickup();
+         if(controller.get_digital_new_press(Buttons::R1)) {
+            
+         }
          break;
       case ElevatorState::MANUAL:
          runManual();

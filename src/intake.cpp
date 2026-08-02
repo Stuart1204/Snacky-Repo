@@ -31,8 +31,6 @@ class Intake {
             break;
          case IntakeState::OUTTAKE:
             break;
-         case IntakeState::INTAKEHIGH:
-            break;
       }
       }
    }
@@ -51,9 +49,6 @@ class Intake {
             break;
          case IntakeState::OUTTAKE:
             move(-127);
-            break;
-         case IntakeState::INTAKEHIGH:
-            move(127);
             break;
       }
    }

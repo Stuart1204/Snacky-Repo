@@ -62,6 +62,7 @@ inline bool isNeutralGoal = true;
 inline bool matchloadMode = false;
 inline bool isAutoReset = true;
 inline bool isFastReset = false;
+inline bool isAutonomous = false;
 
 // global constants
 const inline float FRONT_DIST_OFFSET = 5.5;
@@ -76,7 +77,6 @@ enum IntakeState {
     IDLE = 0,
     INTAKE = 1,
     OUTTAKE = 2,
-    INTAKEHIGH = 3,
 };
 
 // enum ElevatorState {
