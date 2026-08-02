@@ -17,8 +17,9 @@
 #include <cmath>
 #include <iostream>
 
+
 // Define a simple struct for goal coordinates
-struct Point { int x; int y; };
+struct Point {int x; int y;};
 
 // Array of all 9 goals on the Override field
 const Point GOALS[9] = {
@@ -235,8 +236,8 @@ inline void turnToPoint(float targetX, float targetY, bool direction) {
     lemlib::Pose currentPose = chassis.getPose();
 
     // find the heading from the atan function (returns trig-angle type style)
-    float targetHeading = lv_atan2(targetY - currentPose.y, targetX - currentPose.x);
-    //printf("lv_atan2 result: %f\n", targetHeading);
+    float targetHeading = std::atan2(targetY - currentPose.y, targetX - currentPose.x) * (180.0 / M_PI);
+    //printf("atan2 result: %f\n", targetHeading);
 
     //converting to navigation angle style
     targetHeading = fmod((450 - targetHeading), 360);
@@ -577,6 +578,43 @@ inline void driveToDistance(float distance) {
     linearPID.reset();
     leftMotors.move(0);
     rightMotors.move(0);
+}
+
+
+inline void skillsAcquireMatchload() {
+    moveToPoint(-48, 60, true, true);
+    turnToHeading(-90);
+    rightResetPos();
+    isNeutralGoal = true;
+    matchloadMode = true;
+    intakeLift.setState(true);
+
+    hood.setState(true);
+    moveToPoint(-60, 60, true, true);
+    intake.setState(IntakeState::INTAKE);
+    leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+	rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+	moveDrive(30, 250);
+    pros::delay(300);
+    moveDrive(30, 350);
+	moveDrive(-20, 200);
+    uint32_t startTime = pros::millis();
+    while(elevator.getState() != ElevatorState::PIN_HEIGHT) {
+        pros::delay(10);
+        if(pros::millis() - startTime > 2000) {
+            break;
+        }
+    }
+}
+inline void skillsScoreOnFarNeutralGoal() {
+    rightResetPos();
+    moveDrive(0, 10);
+    moveToPoint(-48, 60, false, true);
+    moveToPoint(-48, 28, false, true);
+    moveDrive(-60, 500);
+    elevator.setState(ElevatorState::SCORE);
+    goalReset();
+    leftResetPos();
 }
 
 #endif
