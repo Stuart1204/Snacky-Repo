@@ -581,40 +581,77 @@ inline void driveToDistance(float distance) {
 }
 
 
-inline void skillsAcquireMatchload() {
+inline void skillsAcquireNeutralMatchload() {
     moveToPoint(-48, 60, true, true);
-    turnToHeading(-90);
+    turnToHeading(-90, true);
     rightResetPos();
     isNeutralGoal = true;
     matchloadMode = true;
     intakeLift.setState(true);
-
     hood.setState(true);
-    moveToPoint(-60, 60, true, true);
+
+    moveToPoint(-60, 60, true, false);
     intake.setState(IntakeState::INTAKE);
     leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 	rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-	moveDrive(30, 250);
-    pros::delay(300);
-    moveDrive(30, 350);
-	moveDrive(-20, 200);
+    turnToHeading(-90, true);
+    moveDrive(30, 500);
+	moveDrive(-12, 150);
     uint32_t startTime = pros::millis();
     while(elevator.getState() != ElevatorState::PIN_HEIGHT) {
         pros::delay(10);
-        if(pros::millis() - startTime > 2000) {
+        if(pros::millis() - startTime > 2750) {
             break;
         }
     }
 }
-inline void skillsScoreOnFarNeutralGoal() {
+inline void skillsScoreOnNeutralGoal() {
     rightResetPos();
-    moveDrive(0, 10);
-    moveToPoint(-48, 60, false, true);
-    moveToPoint(-48, 28, false, true);
-    moveDrive(-60, 500);
+    moveToPoint(-48, 60, false, false);
+    moveToPoint(-48, 30, false, true);
+    leftMotors.move(-35);
+    rightMotors.move(-35);
+    pros::delay(500);
     elevator.setState(ElevatorState::SCORE);
     goalReset();
+    pros::delay(350);
+}
+
+inline void skillsAquireAllianceMatchload() {
+    moveToPoint(-48, -60, true, true);
+    turnToHeading(-90, true);
     leftResetPos();
+    isNeutralGoal = false;
+    matchloadMode = true;
+    intakeLift.setState(true);
+    hood.setState(true);
+
+    moveToPoint(-60, -60, true, false);
+    intake.setState(IntakeState::INTAKE);
+    leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+	rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+    turnToHeading(-90, true);
+    moveDrive(30, 500);
+	moveDrive(-12, 150);
+    uint32_t startTime = pros::millis();
+    while(elevator.getState() != ElevatorState::PIN_HEIGHT) {
+        pros::delay(10);
+        if(pros::millis() - startTime > 2750) {
+            break;
+        }
+    }
+}
+
+inline void skillsScoreOnAllianceGoal() {
+    leftResetPos();
+    moveToPoint(-48, -60, false, false);
+    moveToPoint(-48, -30, false, true);
+    leftMotors.move(-35);
+    rightMotors.move(-35);
+    pros::delay(500);
+    elevator.setState(ElevatorState::SCORE);
+    goalReset();
+    pros::delay(350);
 }
 
 #endif

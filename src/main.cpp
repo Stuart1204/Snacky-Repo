@@ -65,7 +65,8 @@ void autonomous()
 	isAutonomous = true;
 	// runSelectedAuton();
 	// TAWP();
-	elimsAllianceGoal();
+	// elimsAllianceGoal();
+	skillsAuton();
 }
 
 void opcontrol()
