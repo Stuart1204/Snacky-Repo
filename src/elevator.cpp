@@ -19,13 +19,13 @@ namespace ElevatorConfig
    constexpr double WRIST_MAX = 90.0;
 
    constexpr double STOW_ELEV = 6.0;
-   constexpr double STOW_WRIST = -83.0;
+   constexpr double STOW_WRIST = -90.0;
 
    constexpr double SCORE_ELEV = -10.0;
    constexpr double SCORE_WRIST = -60;
 
    constexpr double RESET_ELEV = 7;
-   constexpr double RESET_WRIST = -175.0;
+   constexpr double RESET_WRIST = -177.0;
    constexpr double RESET_ELEV_SEEK = -100.0;
 
    constexpr double LOAD_ELEV = 0;
@@ -39,8 +39,8 @@ namespace ElevatorConfig
    constexpr double PIN_2_ELEV = 14.75;
    constexpr double PIN_3_ELEV = 23.25;
    constexpr double PIN_4_ELEV = 31.75;
-   constexpr double PIN_MAX_ELEV = 38.0; // clamp guard
-   constexpr double PIN_WRIST = -88.5;
+   constexpr double PIN_MAX_ELEV = 40.0; // clamp guard
+   constexpr double PIN_WRIST = -90;
 
    constexpr double GROUND_PICKUP_ELEV = 4;
    constexpr double GROUND_CLAMP_ELEV = -3.5;
@@ -383,6 +383,7 @@ private:
          if(pros::millis() - motionStartTime > 200) {
             phase = 1;
          }
+         stateComplete = true;
          break;
       case 1:
          if (matchloadSensor.get_distance() < 140 && intake.getState() == IntakeState::INTAKE)
@@ -393,9 +394,16 @@ private:
          }
          break;
       case 2:
-         if (pros::millis() - motionStartTime > 350) {
-            hood.setState(true);
-            setState(ElevatorState::PICKUP);
+         if(isAutonSkills) {
+            if (pros::millis() - motionStartTime > 750) {
+               hood.setState(true);
+               setState(ElevatorState::PICKUP);
+           }
+         } else {
+            if (pros::millis() - motionStartTime > 500) {
+               hood.setState(true);
+               setState(ElevatorState::PICKUP);
+           }
          }
          break;
       }
@@ -614,7 +622,7 @@ public:
    void goToPinHeight(int level)
    {
       // if (level < 1) level = 1;
-      if (level > ElevatorConfig::NUM_PIN_LEVELS) level = ElevatorConfig::NUM_PIN_LEVELS;
+      if (level > ElevatorConfig::NUM_PIN_LEVELS - 1) level = ElevatorConfig::NUM_PIN_LEVELS - 1;
 
       currentPinLevel = level;
       elevatorTarget = getPinElevation(level);

@@ -34,8 +34,8 @@
 #define wristPort 14
 #define imuPort 13
 #define matchloadDistPort 7
-#define leftDistPort 5
-#define rightDistPort 13
+#define leftDistPort 10
+#define rightDistPort 15
 #define frontDistPort 6
 
 #define verticalEncoderPort -17
@@ -63,11 +63,12 @@ inline bool matchloadMode = false;
 inline bool isAutoReset = true;
 inline bool isFastReset = false;
 inline bool isAutonomous = false;
+inline bool isAutonSkills = false;
 
 // global constants
 const inline float FRONT_DIST_OFFSET = 5.5;
-const inline float LEFT_DIST_OFFSET = 2.5;
-const inline float RIGHT_DIST_OFFSET = 2.5;
+const inline float LEFT_DIST_OFFSET = 4.8;
+const inline float RIGHT_DIST_OFFSET = 4.8;
 const inline float MM_TO_INCHES = 0.03937007874;
 const inline float CENTIDEG_TO_INCHES = 0.00017889624;
 const inline float DEG_TO_RAD = (M_PI / 180.0);
