@@ -111,34 +111,39 @@ inline void skillsAuton() {
     turnToPoint(-56.5, 2, false);
     chassis.moveToPoint(-56.5, 2, 1000, {.forwards = false});
     chassis.waitUntil(6);
-    elevator.setState(ElevatorState::PICKUP);
     isNeutralGoal = true;
+    elevator.setState(ElevatorState::PICKUP);
+    
 
     // moveToPoint(-48, 2, false, true);
     turnToHeading(180, true);
     moveDrive(-60, 500);
     elevator.goToPinHeight(0);
+    pros::delay(300);
     elevator.setState(ElevatorState::SCORE);
     leftMotors.move(-35);
     rightMotors.move(-35);
     pros::delay(350);
     goalReset();
     moveToPoint(-61, 1, true, false, true);
-    moveToPoint(-61, 27, false, true, true);
-    moveToPoint(-46, 60, false, false, false);
+    moveToPoint(-61, 30, false, true, true);
+    moveToPoint(-46, 60, false, false, true);
     matchloadMode = true;
     intakeLift.setState(true);
+    isAutoReset = true;
     hood.setState(true);
-    turnToHeading(-90, true);
+    turnToHeading(-90, false);
     rightResetPos();
 
-    moveToPoint(-60, 60, true, false);
+    moveToPoint(-61, 56, true, true);
     intake.setState(IntakeState::INTAKE);
+    elevator.setState(ElevatorState::MATCHLOAD);
     leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 	rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
     turnToHeading(-90, true);
-    moveDrive(30, 500);
+    moveDrive(30, 750);
 	moveDrive(-12, 150);
+    isNeutralGoal = true;
     uint32_t startTime = pros::millis();
     while(elevator.getState() != ElevatorState::PIN_HEIGHT) {
         pros::delay(10);
@@ -146,50 +151,53 @@ inline void skillsAuton() {
             break;
         }
     }
-
+    isNeutralGoal = true;
     elevator.goToPinHeight(1);
     skillsScoreOnNeutralGoal();
 
     skillsAcquireNeutralMatchload();
+
     elevator.goToPinHeight(2);
     skillsScoreOnNeutralGoal();
     
     intake.setState(IntakeState::IDLE);
     isNeutralGoal = false;
     matchloadMode = false;
-    moveDrive(50, 350);
+    moveDrive(50, 250);
     intakeLift.setState(true);
-    moveToPoint(-30, 26, true, true);
-    intakeLift.setState(IntakeState::INTAKE);
+    moveToPoint(-31, 25, true, true);
+    intake.setState(IntakeState::INTAKE);
     intakeLift.setState(false);
     pros::delay(1000);
-    turnToPoint(-5, 5, false);
     elevator.setState(ElevatorState::PICKUP);
-    chassis.moveToPoint(-6, 6, 1000, {.forwards = false, .earlyExitRange = 3});
+    intake.setState(IntakeState::OUTTAKE);
+    moveToPoint(-24, 15, true, false, true);
+    turnToPoint(0, 0, false);
+    chassis.moveToPoint(-4, 4, 1000, {.forwards = false, .minSpeed = 60, .earlyExitRange = 3});
     chassis.waitUntil(12);
-    elevator.setState(ElevatorState::PIN_HEIGHT);
-    elevator.goToPinHeight(2);
+    elevator.moveTo(5, -80, false);
+    elevator.setState(ElevatorState::HOLD);
     leftMotors.move(-35);
     rightMotors.move(-35);
-    pros::delay(350);
+    pros::delay(450);
     isAutoReset = false;
     elevator.setState(ElevatorState::SCORE);
     pros::delay(350);
     goalReset();
     moveDrive(50, 300);
-    moveToPoint(20, 23, false, true);
+    moveToPoint(19, 23, false, true);
     leftMotors.move(-15);
 	rightMotors.move(-15);
-    elevator.moveTo(ElevatorConfig::GROUND_CLAMP_ELEV - .5, ElevatorConfig::GROUND_PICKUP_WRIST, false);
+    elevator.moveTo(ElevatorConfig::GROUND_CLAMP_ELEV - .5, ElevatorConfig::GROUND_PICKUP_WRIST, true);
     elevator.setState(ElevatorState::HOLD);
 	pros::delay(500);
     clamp.setState(true);
 	pros::delay(200);
     elevator.setState(ElevatorState::PIN_HEIGHT);
-    elevator.goToPinHeight(3);
+    elevator.goToPinHeight(2);
     //since elevator is off this is the right height for pin heihgt 3 alliance goal
     pros::delay(200);
-    moveToPoint(5, 5, false, true, true);
+    moveToPoint(4, 4, false, true, true);
     leftMotors.move(-35);
     rightMotors.move(-35);
     pros::delay(300);
