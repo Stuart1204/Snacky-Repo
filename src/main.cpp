@@ -17,17 +17,6 @@ VisionDriveController *vdc = nullptr;
 void initialize()
 {
 	chassis.calibrate();
-	static VisionDriveController controller(
-		chassis,
-		ai_vision,
-		inertial_sensor,
-		intakeMotor,
-		5.0,  // camera 5 inches forward of tracking center
-		14.0, // camera 8 inches above ground
-		-30.0 // camera pitched 30° downward
-	);
-	controller.setupSensor();
-	vdc = &controller;
 
 	elevator.elevatorReset();
 	pros::Task elevatorTask([]
@@ -39,21 +28,11 @@ void initialize()
 		} });
 
 	allianceColour = AllianceColour::RED;
-	startingSide = Selection::MATCH;
-	autonSelectionEnum = Selection::MATCH;
+	startingSide = Selection::LEFT;
+	autonSelectionEnum = Selection::ELIMS;
 
 	// autonSelection();
-	clampSelection();
-
-	if (autonSelectionEnum == Selection::SKILLS || startingSide == Selection::SKILLS)
-	{
-		enableColourSort = false;
-	}
-	else
-	{
-		enableColourSort = true;
-	}
-	// clamp.setState(true);
+	// clampSelection();
 }
 
 void disabled() {
@@ -71,20 +50,36 @@ void autonomous()
 	// skillsAuton();
 }
 
+
 void opcontrol()
 {
+
+	if (startingSide == Selection::SKILLS || autonSelectionEnum == Selection::SKILLS) {
+		skillsTask = new pros::Task([]{
+			skillsDriverMacro();
+		});
+		isSkillsMacro = true;
+	}
+
 	isAutonomous = false;
-	leftMotors.set_current_limit_all(2250);
-	rightMotors.set_current_limit_all(2250);
+	leftMotors.set_current_limit_all(2100);
+	rightMotors.set_current_limit_all(2100);
 	controller.print(0, 0, "%s", isNeutralGoal ? "NEUTRAL " : "ALLIANCE");
-	// leftElevator.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	// rightElevator.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+
 	while (true)
 	{
-		// intake has its own thread
-		drivetrainControls();
+		if(!isSkillsMacro) {
+			drivetrainControls();
+    	}
 		subsystemControls();
 		displayData();
 		pros::delay(20);
+
+		if (controller.get_digital_new_press(Buttons::DOWN)) {
+			if (skillsTask != nullptr) {
+				skillsTask->suspend();
+				isSkillsMacro = false;
+			}
+		}
 	}
 }

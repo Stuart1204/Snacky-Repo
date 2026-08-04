@@ -65,6 +65,7 @@ inline bool isFastReset = false;
 inline bool isAutonomous = false;
 inline bool isAutonSkills = false;
 inline bool isDropDownIntake = true;
+inline bool isSkillsMacro = false;
 
 // global constants
 const inline float FRONT_DIST_OFFSET = 5.5;
@@ -73,6 +74,8 @@ const inline float RIGHT_DIST_OFFSET = 4.8;
 const inline float MM_TO_INCHES = 0.03937007874;
 const inline float CENTIDEG_TO_INCHES = 0.00017889624;
 const inline float DEG_TO_RAD = (M_PI / 180.0);
+
+inline pros::Task* skillsTask = nullptr;
 
 // intake states enum
 enum IntakeState {
@@ -122,7 +125,10 @@ enum Selection {
     LEFT = 3,
     RIGHT = 4,
     SOLO_AWP = 5,
-    NOTHING = 6
+    NOTHING = 6,
+    TAWP = 7,
+    ELIMS = 8,
+    CORNER = 9
 };
 
 // -- Namespace Configurations -- //

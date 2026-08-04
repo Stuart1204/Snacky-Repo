@@ -219,6 +219,83 @@ inline void skillsAuton() {
     elevator.setState(ElevatorState::SCORE);
 }
 
+inline void skillsDriverMacro() {
+    chassis.setPose(-60.5, 9, -128);
+    isNeutralGoal = false;
+    isAutoReset = true;
+    isAutonSkills = true;
+    elevator.setState(ElevatorState::PICKUP);
+    moveDrive(105, 650);
+    turnToPoint(-55, -21, false);
+    elevator.setState(ElevatorState::PIN_HEIGHT);
+    elevator.goToPinHeight(0);
+    moveDrive(-70, 500);
+    leftMotors.move(-35);
+    rightMotors.move(-35);
+    pros::delay(300);
+    isAutoReset = false;
+    elevator.setState(ElevatorState::SCORE);
+    goalReset();
+    pros::delay(350);
+    moveToPoint(-48, -5, true, false);
+    elevator.setState(ElevatorState::GROUND_PICKUP);
+    moveToPoint(-28, -23, false, true, true);
+    leftMotors.move(-12);
+	rightMotors.move(-12);
+    elevator.moveTo(ElevatorConfig::GROUND_CLAMP_ELEV - .25, ElevatorConfig::GROUND_PICKUP_WRIST, false);
+    elevator.setState(ElevatorState::HOLD);
+	pros::delay(500);
+    clamp.setState(true);
+	pros::delay(200);
+    elevator.setState(ElevatorState::PIN_HEIGHT);
+
+    //PICKUS UP 1st ground Pin
+
+    // elevator.goToPinHeight(1);
+    elevator.moveTo(ElevatorConfig::PIN_1_ELEV-2.52-.5, ElevatorConfig::PIN_WRIST, false);
+    elevator.setState(ElevatorState::HOLD);
+    pros::delay(200);
+    moveToPoint(-42, -24, false, true);
+    leftMotors.move(-35);
+    rightMotors.move(-35);
+    pros::delay(450);
+    goalReset();
+    isAutoReset = true;
+    elevator.setState(ElevatorState::SCORE);
+    pros::delay(300);
+    moveDrive(50, 350);
+    pros::delay(1250);
+    elevator.elevatorReset();
+    elevator.setState(ElevatorState::GROUND_PICKUP);
+    moveToPoint(-44, -44, false, true, true);
+    leftMotors.move(-15);
+	rightMotors.move(-15);
+    elevator.moveTo(ElevatorConfig::GROUND_CLAMP_ELEV, ElevatorConfig::GROUND_PICKUP_WRIST, false);
+    elevator.setState(ElevatorState::HOLD);
+	pros::delay(500);
+    clamp.setState(true);
+	pros::delay(200);
+    elevator.setState(ElevatorState::PIN_HEIGHT);
+    elevator.goToPinHeight(2);
+    //since elevator is off this is the right height for pin heihgt 3 alliance goal
+    pros::delay(200);
+    moveToPoint(-48, -27, false, true, true);
+    leftMotors.move(-35);
+    rightMotors.move(-35);
+    pros::delay(300);
+    elevator.setState(ElevatorState::SCORE);
+    goalReset();
+    pros::delay(350);
+    matchloadMode = true;
+    intakeLift.setState(true);
+    hood.setState(true);
+    leftMotors.move(50);
+    rightMotors.move(50);
+    if (skillsTask != nullptr) {
+        skillsTask->suspend();
+        isSkillsMacro = false;
+	}
+}
 
 inline void autonFirstPartLeft() {
     chassis.setPose(-60.5, 9, -128);
@@ -506,39 +583,34 @@ inline void runSelectedAuton() {
     if(autonSelectionEnum == Selection::SKILLS) {
         skillsAuton();
         allianceColour = AllianceColour::RED;
-        enableColourSort = false;
     }
     if(startingSide == Selection::LEFT) {
-        // if(autonSelectionEnum == Selection::LONG_CONTROL) {
-        //     // left7Block(); // not long control
-        //     left7BlockWing();
-        // }
-        // if(autonSelectionEnum == Selection::LONG_AND_CENTER) {
-        //     // leftLGAndC_CenterLast();
-        //     leftLGAndCRush();
-        // }
-        // if(autonSelectionEnum == Selection::SOLO_AWP) {
-        //     midRush();
-        // }
-        // if(autonSelectionEnum == Selection::NI_SAWP) {
-        //     upperMidRush();
-        // }
+        if(autonSelectionEnum == Selection::TAWP) {
+            TAWPLeft();
+        }
+        if(autonSelectionEnum == Selection::ELIMS) {
+            elimsAllianceGoalLeft();
+        }
+        if(autonSelectionEnum == Selection::CORNER) {
+
+        }
+        if(autonSelectionEnum == Selection::NOTHING) {
+
+        }
     }
     if(startingSide == Selection::RIGHT) {
-        // if(autonSelectionEnum == Selection::LONG_CONTROL) {
-        //     // right7Block(); // not long control
-        //     // right7BlockWing();
-        //     right7Block();
-        // }
-        // if(autonSelectionEnum == Selection::LONG_AND_CENTER) {
-        //     // rightLGAndC_CenterLast();
-        //     rightLGAndCRush();
-        // }
-        // if(autonSelectionEnum == Selection::SOLO_AWP) {
-        //     SAWP13();
-        // }
-        // if(autonSelectionEnum == Selection::NI_SAWP) {
-        //     SAWP4Goal();
-        // }
+        if(autonSelectionEnum == Selection::TAWP) {
+            TAWPRight();
+        }
+        if(autonSelectionEnum == Selection::ELIMS) {
+            // rightLGAndC_CenterLast();
+            elimsAllianceGoalRight();
+        }
+        if(autonSelectionEnum == Selection::CORNER) {
+
+        }
+        if(autonSelectionEnum == Selection::NOTHING) {
+
+        }
     }
 }

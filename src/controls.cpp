@@ -172,10 +172,10 @@ inline void activatePistons()
     {
         clamp.toggle();
     }
-    if (controller.get_digital_new_press(Buttons::DOWN))
-    {
-        hood.toggle();
-    }
+    // if (controller.get_digital_new_press(Buttons::DOWN))
+    // {
+    //     hood.toggle();
+    // }
 }
 
 inline bool toggleFlipActive = false;
@@ -302,157 +302,165 @@ inline void clampSelection() {
 }
 
 inline void autonSelection() {
-    //button skillsButton(20, 15, 225, 220, pros::Color::fuchsia, "Skills");
-    //button MatchButton(250, 15, 455, 220, pros::Color::alice_blue, "Match");
-    // selecting between skills and match
+    button skillsButton(20, 15, 225, 220, pros::Color::fuchsia, "Skills");
+    button matchButton(250, 15, 455, 220, pros::Color::alice_blue, "Match");
+    //selecting between skills and match
     while(true) {
+        if(skillsButton.isPressed()) {
+            autonSelectionEnum = Selection::SKILLS;
+            break;
+        }
+        if(matchButton.isPressed()) {
+            autonSelectionEnum = Selection::MATCH;
+            break;
+        }
         pros::delay(20);
-    // }
-    // clearScreen();
-    // if(autonSelectionEnum == Selection::SKILLS) {
-    //     button skillsScreen(0, 0, 480, 200, pros::Color::fuchsia, "Skills Selected!");
-    // }
-    // if(autonSelectionEnum == Selection::MATCH) {
-    //     button redAllianceButton(20, 15, 225, 220, pros::Color::orange_red, "Red");
-    //     button blueAllianceButton(250, 15, 455, 220, pros::Color::light_blue, "Blue");
-    //     while(true) {
-    //         if(redAllianceButton.isPressed()) {
-    //             allianceColour = AllianceColour::RED;
-    //             break;
-    //         }
-    //         if(blueAllianceButton.isPressed()) {
-    //             allianceColour = AllianceColour::BLUE;
-    //             break;
-    //         }
-    //         pros::delay(20);
-    //     }
-    //     clearScreen();
+    }
+    clearScreen();
+    if(autonSelectionEnum == Selection::SKILLS) {
+        button skillsScreen(0, 0, 480, 200, pros::Color::fuchsia, "Skills Selected!");
+    }
+    if(autonSelectionEnum == Selection::MATCH) {
+        button redAllianceButton(20, 15, 225, 220, pros::Color::orange_red, "Red");
+        button blueAllianceButton(250, 15, 455, 220, pros::Color::light_blue, "Blue");
+        while(true) {
+            if(redAllianceButton.isPressed()) {
+                allianceColour = AllianceColour::RED;
+                break;
+            }
+            if(blueAllianceButton.isPressed()) {
+                allianceColour = AllianceColour::BLUE;
+                break;
+            }
+            pros::delay(20);
+        }
+        clearScreen();
 
-    //     button leftSideButton(20, 15, 225, 180, pros::Color::sky_blue, "Left");
-    //     button rightSideButton(250, 15, 455, 180, pros::Color::sky_blue, "Right");
-    //     if(allianceColour == AllianceColour::RED) {
-    //         pros::screen::print(pros::E_TEXT_MEDIUM, 10, "Selected: Red");
-    //     }
-    //     if(allianceColour == AllianceColour::BLUE) {
-    //         pros::screen::print(pros::E_TEXT_MEDIUM, 10, "Selected: Blue");
-    //     }
+        button leftSideButton(20, 15, 225, 180, pros::Color::sky_blue, "Left");
+        button rightSideButton(250, 15, 455, 180, pros::Color::sky_blue, "Right");
+        if(allianceColour == AllianceColour::RED) {
+            pros::screen::print(pros::E_TEXT_MEDIUM, 10, "Selected: Red");
+        }
+        if(allianceColour == AllianceColour::BLUE) {
+            pros::screen::print(pros::E_TEXT_MEDIUM, 10, "Selected: Blue");
+        }
 
-    //     while(true) {
-    //         if(leftSideButton.isPressed()) {
-    //             startingSide = Selection::LEFT;
-    //             break;
-    //         }
-    //         if(rightSideButton.isPressed()) {
-    //             startingSide = Selection::RIGHT;
-    //             break;
-    //         }
-    //         pros::delay(20);
-    //     }
-    //     clearScreen();
+        while(true) {
+            if(leftSideButton.isPressed()) {
+                startingSide = Selection::LEFT;
+                break;
+            }
+            if(rightSideButton.isPressed()) {
+                startingSide = Selection::RIGHT;
+                break;
+            }
+            pros::delay(20);
+        }
+        clearScreen();
 
-    //     button longControlButton(0, 15, 120, 180, pros::Color::sky_blue, "LG");
-    //     button longAndCenterButton(120, 15, 240, 180, pros::Color::sky_blue, "LG+C");
-    //     button SAWPButton(240, 15, 360, 180, pros::Color::sky_blue, "SAWP or Both Mid");
-    //     button NISAWPButton(360, 15, 480, 180, pros::Color::sky_blue, "4-Goal or UpMid Rush");
+        button TAWPButton(0, 15, 120, 180, pros::Color::sky_blue, "TAWP");
+        button ElimsButton(120, 15, 240, 180, pros::Color::sky_blue, "Elims");
+        button CornerButton(240, 15, 360, 180, pros::Color::sky_blue, "Corner");
+        button NothingButton(360, 15, 480, 180, pros::Color::sky_blue, "nottin");
 
-    //     if(allianceColour == AllianceColour::RED) {
-    //         if(startingSide == Selection::LEFT) {
-    //             pros::screen::print(pros::E_TEXT_MEDIUM, 10, "Selected: Red, Left");
-    //         }
-    //         if(startingSide == Selection::RIGHT) {
-    //             pros::screen::print(pros::E_TEXT_MEDIUM, 10, "Selected: Red, Right");
-    //         }
-    //     }
-    //     if(allianceColour == AllianceColour::BLUE) {
-    //         if(startingSide == Selection::LEFT) {
-    //             pros::screen::print(pros::E_TEXT_MEDIUM, 10, "Selected: Blue, Left");
-    //         }
-    //         if(startingSide == Selection::RIGHT) {
-    //             pros::screen::print(pros::E_TEXT_MEDIUM, 10, "Selected: Blue, Right");
-    //         }
-    //     }
+        if(allianceColour == AllianceColour::RED) {
+            if(startingSide == Selection::LEFT) {
+                pros::screen::print(pros::E_TEXT_MEDIUM, 10, "Selected: Red, Left");
+            }
+            if(startingSide == Selection::RIGHT) {
+                pros::screen::print(pros::E_TEXT_MEDIUM, 10, "Selected: Red, Right");
+            }
+        }
+        if(allianceColour == AllianceColour::BLUE) {
+            if(startingSide == Selection::LEFT) {
+                pros::screen::print(pros::E_TEXT_MEDIUM, 10, "Selected: Blue, Left");
+            }
+            if(startingSide == Selection::RIGHT) {
+                pros::screen::print(pros::E_TEXT_MEDIUM, 10, "Selected: Blue, Right");
+            }
+        }
 
-    //     while(true) {
-    //         if(longControlButton.isPressed()) {
-    //             autonSelectionEnum = Selection::LONG_CONTROL;
-    //             break;
-    //         }
-    //         if(longAndCenterButton.isPressed()) {
-    //             autonSelectionEnum = Selection::LONG_AND_CENTER;
-    //             break;
-    //         }
-    //         if(SAWPButton.isPressed()) {
-    //             autonSelectionEnum = Selection::SOLO_AWP;
-    //             break;
-    //         }
-    //         if(NISAWPButton.isPressed()) {
-    //             autonSelectionEnum = Selection::NI_SAWP;
-    //             break;
-    //         }
-    //         pros::delay(20);
-    //     }
-    //     clearScreen();
+        while(true) {
+            if(TAWPButton.isPressed()) {
+                autonSelectionEnum = Selection::TAWP;
+                break;
+            }
+            if(ElimsButton.isPressed()) {
+                autonSelectionEnum = Selection::ELIMS;
+                break;
+            }
+            if(CornerButton.isPressed()) {
+                autonSelectionEnum = Selection::CORNER;
+                break;
+            }
+            if(NothingButton.isPressed()) {
+                autonSelectionEnum = Selection::NOTHING;
+                break;
+            }
+            pros::delay(20);
+        }
+        clearScreen();
 
-    //     if(allianceColour == AllianceColour::RED) {
-    //         if(startingSide == Selection::LEFT) {
-    //             if(autonSelectionEnum == Selection::LONG_CONTROL) {
-    //                 button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Red, Left, LG");
-    //             }
-    //             if(autonSelectionEnum == Selection::LONG_AND_CENTER) {
-    //                 button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Red, Left, LG+C");
-    //             }
-    //             if(autonSelectionEnum == Selection::SOLO_AWP) {
-    //                 button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "both mid rush");
-    //             }
-    //             if(autonSelectionEnum == Selection::NI_SAWP) {
-    //                 button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "up mid rush");
-    //             }
-    //         }
-    //         if(startingSide == Selection::RIGHT) {
-    //             if(autonSelectionEnum == Selection::LONG_CONTROL) {
-    //                 button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Red, Right, LG");
-    //             }
-    //             if(autonSelectionEnum == Selection::LONG_AND_CENTER) {
-    //                 button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Red, Right, LG+C");
-    //             }
-    //             if(autonSelectionEnum == Selection::SOLO_AWP) {
-    //                 button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Red, Right, SAWP");
-    //             }
-    //             if(autonSelectionEnum == Selection::NI_SAWP) {
-    //                 button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Red, Right, NISAWP");
-    //             }
-    //         }
-    //     }
-    //     if(allianceColour == AllianceColour::BLUE) {
-    //         if(startingSide == Selection::LEFT) {
-    //             if(autonSelectionEnum == Selection::LONG_CONTROL) {
-    //                 button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Blue, Left, LG");
-    //             }
-    //             if(autonSelectionEnum == Selection::LONG_AND_CENTER) {
-    //                 button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Blue, Left, LG+C");
-    //             }
-    //             if(autonSelectionEnum == Selection::SOLO_AWP) {
-    //                 button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "both mid rush");
-    //             }
-    //             if(autonSelectionEnum == Selection::NI_SAWP) {
-    //                 button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "up mid rush");
-    //             }
-    //         }
-    //         if(startingSide == Selection::RIGHT) {
-    //             if(autonSelectionEnum == Selection::LONG_CONTROL) {
-    //                 button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Blue, Right, LG");
-    //             }
-    //             if(autonSelectionEnum == Selection::LONG_AND_CENTER) {
-    //                 button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Blue, Right, LG+C");
-    //             }
-    //             if(autonSelectionEnum == Selection::SOLO_AWP) {
-    //                 button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Blue, Right, SAWP");
-    //             }
-    //             if(autonSelectionEnum == Selection::NI_SAWP) {
-    //                 button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Blue, Right, NISAWP");
-    //             }
-    //         }
-    //     }
+        if(allianceColour == AllianceColour::RED) {
+            if(startingSide == Selection::LEFT) {
+                if(autonSelectionEnum == Selection::TAWP) {
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Red, Left, TAWP");
+                }
+                if(autonSelectionEnum == Selection::ELIMS) {
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Red, Left, Elims");
+                }
+                if(autonSelectionEnum == Selection::CORNER) {
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Red, Left, corner");
+                }
+                if(autonSelectionEnum == Selection::NOTHING) {
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "nottin");
+                }
+            }
+            if(startingSide == Selection::RIGHT) {
+                if(autonSelectionEnum == Selection::TAWP) {
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Red, Right, TAWP");
+                }
+                if(autonSelectionEnum == Selection::ELIMS) {
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Red, Right, ELIMS");
+                }
+                if(autonSelectionEnum == Selection::CORNER) {
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Red, Right, corner");
+                }
+                if(autonSelectionEnum == Selection::NOTHING) {
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "nothing");
+                }
+            }
+        }
+        if(allianceColour == AllianceColour::BLUE) {
+            if(startingSide == Selection::LEFT) {
+                if(autonSelectionEnum == Selection::TAWP) {
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Blue, Left, TAWP");
+                }
+                if(autonSelectionEnum == Selection::ELIMS) {
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Blue, Left, ELIMS");
+                }
+                if(autonSelectionEnum == Selection::CORNER) {
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Blue, left, corner");
+                }
+                if(autonSelectionEnum == Selection::NOTHING) {
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "nothing");
+                }
+            }
+            if(startingSide == Selection::RIGHT) {
+                if(autonSelectionEnum == Selection::TAWP) {
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Blue, Right, TAWP");
+                }
+                if(autonSelectionEnum == Selection::ELIMS) {
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Blue, Right, ELIMS");
+                }
+                if(autonSelectionEnum == Selection::CORNER) {
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "Blue, Right, corner");
+                }
+                if(autonSelectionEnum == Selection::NOTHING) {
+                    button currentSelection(20, 15, 455, 180, pros::Color::fuchsia, "nothing");
+                }
+            }
+        }
     }
 }
 

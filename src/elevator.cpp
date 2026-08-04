@@ -19,7 +19,7 @@ namespace ElevatorConfig
    constexpr double WRIST_MAX = 90.0;
 
    constexpr double STOW_ELEV = 5.5;
-   constexpr double STOW_WRIST = -89;
+   constexpr double STOW_WRIST = -91;
 
    constexpr double SCORE_ELEV = -10.0;
    constexpr double SCORE_WRIST = -60;
@@ -40,7 +40,7 @@ namespace ElevatorConfig
    constexpr double PIN_3_ELEV = 23.6;
    constexpr double PIN_4_ELEV = 32.1;
    constexpr double PIN_MAX_ELEV = 40.0; // clamp guard
-   constexpr double PIN_WRIST = -89;
+   constexpr double PIN_WRIST = -91;
 
    constexpr double GROUND_PICKUP_ELEV = 3.5;
    constexpr double GROUND_CLAMP_ELEV = -4;
