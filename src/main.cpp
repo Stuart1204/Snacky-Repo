@@ -56,7 +56,9 @@ void initialize()
 	// clamp.setState(true);
 }
 
-void disabled() {}
+void disabled() {
+	clamp.setState(false);
+}
 
 void competition_initialize() {}
 
@@ -64,9 +66,9 @@ void autonomous()
 {
 	isAutonomous = true;
 	// runSelectedAuton();
-	// TAWP();
+	elimsAllianceGoalRight();
 	// elimsAllianceGoal();
-	skillsAuton();
+	// skillsAuton();
 }
 
 void opcontrol()

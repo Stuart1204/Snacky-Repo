@@ -82,6 +82,7 @@ inline void goalReset() {
     printf("================================\n");
 
     chassis.setPose(newX, newY, currentPose.theta);
+    controller.rumble(".");
 }
 
 
@@ -607,10 +608,13 @@ inline void skillsAcquireNeutralMatchload() {
 }
 inline void skillsScoreOnNeutralGoal() {
     rightResetPos();
-    moveToPoint(-49, 60, false, false);
-    moveToPoint(-49, 30, false, true);
+    moveDrive(-50, 300);
+    moveToPoint(-50, 33, false, true, true, 70);
     moveDrive(-35, 500);
+    leftMotors.move(-30);
+    rightMotors.move(-30);
     elevator.setState(ElevatorState::SCORE);
+
     goalReset();
     pros::delay(350);
 }
@@ -644,8 +648,8 @@ inline void skillsAquireAllianceMatchload() {
 
 inline void skillsScoreOnAllianceGoal() {
     leftResetPos();
-    moveToPoint(-48, -60, false, false);
-    moveToPoint(-48, -30, false, true);
+    moveDrive(-50, 300);
+    moveToPoint(-50, -33, false, true, true, 70);
     leftMotors.move(-35);
     rightMotors.move(-35);
     pros::delay(500);

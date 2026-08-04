@@ -18,8 +18,8 @@ namespace ElevatorConfig
    constexpr double WRIST_MIN = -300.0;
    constexpr double WRIST_MAX = 90.0;
 
-   constexpr double STOW_ELEV = 6.0;
-   constexpr double STOW_WRIST = -90.0;
+   constexpr double STOW_ELEV = 5.5;
+   constexpr double STOW_WRIST = -89;
 
    constexpr double SCORE_ELEV = -10.0;
    constexpr double SCORE_WRIST = -60;
@@ -35,15 +35,15 @@ namespace ElevatorConfig
    constexpr double MATCHLOAD_WRIST = -180.0;
 
    constexpr double PIN_0_ELEV = -.5;
-   constexpr double PIN_1_ELEV = 7.75;
-   constexpr double PIN_2_ELEV = 14.75;
-   constexpr double PIN_3_ELEV = 23.25;
-   constexpr double PIN_4_ELEV = 31.75;
+   constexpr double PIN_1_ELEV = 8.1;
+   constexpr double PIN_2_ELEV = 15.1;
+   constexpr double PIN_3_ELEV = 23.6;
+   constexpr double PIN_4_ELEV = 32.1;
    constexpr double PIN_MAX_ELEV = 40.0; // clamp guard
-   constexpr double PIN_WRIST = -90;
+   constexpr double PIN_WRIST = -89;
 
-   constexpr double GROUND_PICKUP_ELEV = 4;
-   constexpr double GROUND_CLAMP_ELEV = -3.5;
+   constexpr double GROUND_PICKUP_ELEV = 3.5;
+   constexpr double GROUND_CLAMP_ELEV = -4;
    constexpr double GROUND_PICKUP_WRIST = -95.0;
 
    constexpr double MANUAL_WRIST = STOW_WRIST;
@@ -463,7 +463,7 @@ private:
          if(isNeutralGoal) {
             elevatorTarget = clampD(ElevatorConfig::PIN_1_ELEV, 0.0, ElevatorConfig::PIN_MAX_ELEV);
          } else {
-            elevatorTarget = clampD(ElevatorConfig::PIN_1_ELEV-2.52, 0.0, ElevatorConfig::PIN_MAX_ELEV);
+            elevatorTarget = clampD(ElevatorConfig::PIN_1_ELEV-3, 0.0, ElevatorConfig::PIN_MAX_ELEV);
          }
          if (isElevatorSettled() || isMotionStalled()){
             currentPinLevel = 1;
@@ -563,7 +563,9 @@ public:
       case ElevatorState::LOAD:
          clamp.setState(false);
          hood.setState(false);
-         intakeLift.setState(false);
+         if(isDropDownIntake) {
+            intakeLift.setState(false);
+         }
          if(lastState == ElevatorState::RESET) {
             elevatorReset();
          }
@@ -613,8 +615,8 @@ public:
          return ElevatorConfig::PIN_HEIGHTS[level];
       }
       else {
-         if (level < 0 || level > ElevatorConfig::NUM_PIN_LEVELS) return ElevatorConfig::PIN_1_ELEV - 2.52;
-         return ElevatorConfig::PIN_HEIGHTS[level] - 2.52;
+         if (level < 0 || level > ElevatorConfig::NUM_PIN_LEVELS) return ElevatorConfig::PIN_1_ELEV - 3;
+         return ElevatorConfig::PIN_HEIGHTS[level] - 3;
       }
       
    }

@@ -64,6 +64,7 @@ inline bool isAutoReset = true;
 inline bool isFastReset = false;
 inline bool isAutonomous = false;
 inline bool isAutonSkills = false;
+inline bool isDropDownIntake = true;
 
 // global constants
 const inline float FRONT_DIST_OFFSET = 5.5;
