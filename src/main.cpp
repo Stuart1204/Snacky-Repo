@@ -31,8 +31,8 @@ void initialize()
 	startingSide = Selection::LEFT;
 	autonSelectionEnum = Selection::ELIMS;
 
-	// autonSelection();
-	// clampSelection();
+	autonSelection();
+	clampSelection();
 }
 
 void disabled() {
@@ -44,10 +44,11 @@ void competition_initialize() {}
 void autonomous()
 {
 	isAutonomous = true;
-	// runSelectedAuton();
-	elimsAllianceGoalRight();
+	runSelectedAuton();
+	// elimsAllianceGoalRight();
 	// elimsAllianceGoal();
 	// skillsAuton();
+	// TAWPLeft();
 }
 
 
@@ -62,8 +63,6 @@ void opcontrol()
 	}
 
 	isAutonomous = false;
-	leftMotors.set_current_limit_all(2100);
-	rightMotors.set_current_limit_all(2100);
 	controller.print(0, 0, "%s", isNeutralGoal ? "NEUTRAL " : "ALLIANCE");
 
 	while (true)
@@ -75,7 +74,9 @@ void opcontrol()
 		displayData();
 		pros::delay(20);
 
-		if (controller.get_digital_new_press(Buttons::DOWN)) {
+		if (controller.get_digital_new_press(Buttons::DOWN) || 
+			abs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)) > 20 || 
+				abs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X)) > 20) {
 			if (skillsTask != nullptr) {
 				skillsTask->suspend();
 				isSkillsMacro = false;

@@ -34,17 +34,23 @@ namespace ElevatorConfig
    constexpr double MATCHLOAD_ELEV = 0;
    constexpr double MATCHLOAD_WRIST = -180.0;
 
-   constexpr double PIN_0_ELEV = -.5;
-   constexpr double PIN_1_ELEV = 8.1;
-   constexpr double PIN_2_ELEV = 15.1;
-   constexpr double PIN_3_ELEV = 23.6;
-   constexpr double PIN_4_ELEV = 32.1;
+   constexpr double PIN_0_ELEV = 1;
+   constexpr double PIN_1_ELEV = 8.6;
+   constexpr double PIN_2_ELEV = 15.6;
+   constexpr double PIN_3_ELEV = 24.1;
+   constexpr double PIN_4_ELEV = 32.6;
    constexpr double PIN_MAX_ELEV = 40.0; // clamp guard
    constexpr double PIN_WRIST = -91;
 
-   constexpr double GROUND_PICKUP_ELEV = 3.5;
+   constexpr double GROUND_PICKUP_ELEV = 4.25;
    constexpr double GROUND_CLAMP_ELEV = -4;
    constexpr double GROUND_PICKUP_WRIST = -95.0;
+
+   constexpr double MATCHLOAD_CLAMP_ELEV = -1.5;
+   constexpr double MATCHLOAD_CLAMP_WRIST = -90;
+   constexpr double MATCHLOAD_CLAMP_JITTER_WRIST = -10;
+
+   constexpr double ALLIANCE_OFFSET = 3.5;
 
    constexpr double MANUAL_WRIST = STOW_WRIST;
 
@@ -88,6 +94,8 @@ private:
    int lastState = ElevatorState::REST;
    int phase = 0;
    bool stateComplete = false;
+   
+   int tempEleTarget = 0;
 
    double elevatorTarget = 0.0;
    double wristTarget = 0.0;
@@ -463,7 +471,7 @@ private:
          if(isNeutralGoal) {
             elevatorTarget = clampD(ElevatorConfig::PIN_1_ELEV, 0.0, ElevatorConfig::PIN_MAX_ELEV);
          } else {
-            elevatorTarget = clampD(ElevatorConfig::PIN_1_ELEV-3, 0.0, ElevatorConfig::PIN_MAX_ELEV);
+            elevatorTarget = clampD(ElevatorConfig::PIN_1_ELEV-ElevatorConfig::ALLIANCE_OFFSET, 0.0, ElevatorConfig::PIN_MAX_ELEV);
          }
          if (isElevatorSettled() || isMotionStalled()){
             currentPinLevel = 1;
@@ -491,6 +499,76 @@ private:
                phase = 2;
             break;
          case(2):
+            break;
+      }
+   }
+
+   void runGroundClamp() {
+      switch(phase) {
+         case(0):
+            elevatorTarget = ElevatorConfig::GROUND_CLAMP_ELEV;
+            wristTarget = ElevatorConfig::GROUND_PICKUP_WRIST;
+            if (isElevatorSettled() || isMotionStalled()) {
+               phase = 1;
+               motionStartTime = pros::millis();
+            }
+            break;
+         case(1):
+               if(pros::millis() - motionStartTime > 10) {
+                  clamp.setState(true);
+                  phase = 2;
+                  motionStartTime = pros::millis();
+               }
+            break;
+         case(2):
+               if(pros::millis() - motionStartTime > 10) {
+                  setState(ElevatorState::PIN_HEIGHT);
+                  goToPinHeight(1);
+               }
+            break;
+      }
+   }
+
+   void runMatchloadClamp() {
+      switch(phase) {
+         case(0):
+            elevatorTarget = ElevatorConfig::MATCHLOAD_CLAMP_ELEV;
+            wristTarget = ElevatorConfig::MATCHLOAD_CLAMP_WRIST;
+            if (isElevatorSettled() || isMotionStalled()) {
+               phase = 1;
+               motionStartTime = pros::millis();
+            }
+            break;
+         case(1):
+            if(matchloadJitter) {
+               leftMotors.move(9);
+               rightMotors.move(9);
+               if(resetTime) {
+                  motionStartTime = pros::millis();
+                  resetTime = false;
+               }
+               wristTarget = ElevatorConfig::MATCHLOAD_CLAMP_JITTER_WRIST;
+               if(pros::millis() - motionStartTime > 300) {
+                  tempEleTarget = getElevatorPosition() - 5;
+                  phase = 2;
+               }
+            }
+            break;
+         case(2):
+            wristTarget = ElevatorConfig::MATCHLOAD_CLAMP_WRIST - 15;
+            elevatorTarget = tempEleTarget;
+
+            if (isElevatorSettled() || isMotionStalled()) {
+               // clamp.setState(true);
+               matchloadJitter = false;
+               phase = 3;
+               motionStartTime = pros::millis();
+            }
+            break;
+         case(3):
+            if(pros::millis() - motionStartTime > 200) {
+               clamp.setState(true);
+            }
             break;
       }
    }
@@ -615,8 +693,8 @@ public:
          return ElevatorConfig::PIN_HEIGHTS[level];
       }
       else {
-         if (level < 0 || level > ElevatorConfig::NUM_PIN_LEVELS) return ElevatorConfig::PIN_1_ELEV - 3;
-         return ElevatorConfig::PIN_HEIGHTS[level] - 3;
+         if (level < 0 || level > ElevatorConfig::NUM_PIN_LEVELS) return ElevatorConfig::PIN_1_ELEV - ElevatorConfig::ALLIANCE_OFFSET;
+         return ElevatorConfig::PIN_HEIGHTS[level] - ElevatorConfig::ALLIANCE_OFFSET;
       }
       
    }
@@ -878,9 +956,6 @@ public:
          break;
       case ElevatorState::PICKUP:
          runPickup();
-         if(controller.get_digital_new_press(Buttons::R1)) {
-            
-         }
          break;
       case ElevatorState::MANUAL:
          runManual();
@@ -894,6 +969,12 @@ public:
       case ElevatorState::GROUND_PICKUP:
          clamp.setState(false);
          runGroundPickup();
+         break;
+      case ElevatorState::GROUND_CLAMP:
+         runGroundClamp();
+         break;
+      case ElevatorState::MATCHLOAD_CLAMP:
+         runMatchloadClamp();
          break;
       }
 
@@ -911,9 +992,9 @@ public:
 
       double elevOut = elevatorPID.update(elevErr);
       double wristOut = wristPID.update(wristErr);
-      if (currentState == ElevatorState::STOW || currentState == ElevatorState::MANUAL)
+      if (currentState == ElevatorState::STOW || currentState == ElevatorState::MANUAL || currentState == ElevatorState::PIN_HEIGHT)
       {
-         wristOut += .3 * wristErr;
+         wristOut += .7 * wristErr;
       }
 
       // leftPower = clampD(elevOut, -maxSpeed, maxSpeed);

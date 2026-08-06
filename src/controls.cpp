@@ -48,8 +48,20 @@ inline void elevatorControls()
     manualActive = false;
 
     if (controller.get_digital_new_press(Buttons::R2))
-    {
-        elevator.setState(ElevatorState::SCORE);
+    {   
+        if(elevator.getState() == ElevatorState::PIN_HEIGHT || elevator.getState() == ElevatorState::STOW || elevator.getState() == ElevatorState::MANUAL) {
+            elevator.setState(ElevatorState::SCORE);
+        }
+        if(elevator.getState() == ElevatorState::GROUND_PICKUP) {
+            elevator.setState(ElevatorState::GROUND_CLAMP);
+        }
+        if(elevator.getState() == ElevatorState::LOAD || elevator.getState() == ElevatorState::MATCHLOAD) {
+            elevator.setState(ElevatorState::GROUND_PICKUP);
+        }
+        // if(elevator.getState() == ElevatorState::MATCHLOAD_CLAMP) {
+        //     matchloadJitter = true;
+        //     resetTime = true;
+        // }
     }
     if (controller.get_digital_new_press(Buttons::B)) {
         elevator.setState(ElevatorState::RESET);
@@ -57,10 +69,15 @@ inline void elevatorControls()
 
     if (controller.get_digital(Buttons::RIGHT))
     {
-        targetMode = false;
-        manualActive = true;
-        elevator.manualElevator(-1);
-        elevator.setMaxSpeed(70);
+        if(elevator.getState() == ElevatorState::GROUND_PICKUP || elevator.getState() == ElevatorState::MATCHLOAD_CLAMP
+            || elevator.getState() == ElevatorState::GROUND_CLAMP) {
+            elevator.setState(ElevatorState::MATCHLOAD_CLAMP);
+        } else {
+            targetMode = false;
+            manualActive = true;
+            elevator.manualElevator(-1);
+            elevator.setMaxSpeed(70);
+        }
     }
     if (controller.get_digital(Buttons::Y))
     {
@@ -113,6 +130,9 @@ inline void elevatorControls()
             elevator.setState(ElevatorState::PICKUP);
             levelCounter = 1;
         }
+        if(state == ElevatorState::GROUND_PICKUP || state == ElevatorState::GROUND_CLAMP) {
+            elevator.setState(PIN_HEIGHT);
+        }
         if(state == ElevatorState::PICKUP) {
             levelCounter++;
         }
@@ -164,13 +184,16 @@ inline void activatePistons()
             elevator.setState(ElevatorState::LOAD);
         }
     }
-    if (controller.get_digital_new_press(Buttons::A))
+    if (controller.get_digital_new_press(Buttons::A) && elevator.getWristPosition() < -150)
     {
         doinker.toggle();
     }
     if (controller.get_digital_new_press(Buttons::LEFT))
     {
         clamp.toggle();
+    }
+    if (elevator.getWristPosition() > -150) {
+        doinker.setState(false);
     }
     // if (controller.get_digital_new_press(Buttons::DOWN))
     // {
@@ -188,11 +211,11 @@ inline void drivetrainControls()
     rightMotors.set_brake_mode(MotorConfigs::BRAKE);
     int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
     int rightX = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
-    if (abs(leftY) < 20)
+    if (abs(leftY) < 12)
     {
         leftY = 0;
     }
-    if (abs(rightX) < 20)
+    if (abs(rightX) < 12)
     {
         rightX = 0;
     }
@@ -223,7 +246,7 @@ inline void displayData()
     //pros::screen::print(TEXT_LARGE_CENTER, 7, "Colour: %i", checkColour(toggleSensor));
     // pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %f", rightCurrentDistance);
 
-    pros::screen::print(TEXT_LARGE_CENTER, 7, "elevatorPos: %f", elevator.getElevatorPosition());
+    pros::screen::print(TEXT_LARGE_CENTER, 7, "state: %i", elevator.getState());
     // pros::screen::print(TEXT_LARGE_CENTER, 3, "wristPos: %f", elevator.getWristPosition());
     // pros::screen::print(TEXT_LARGE_CENTER, 9, "Proximity: %iu", vertical_rotation.get_position());
     // // pros::screen::print(TEXT_LARGE_CENTER, 7, "ele: %f", (leftElevator.get_position() - rightElevator.get_position()) / 2.0);

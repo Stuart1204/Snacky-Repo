@@ -66,6 +66,9 @@ inline bool isAutonomous = false;
 inline bool isAutonSkills = false;
 inline bool isDropDownIntake = true;
 inline bool isSkillsMacro = false;
+inline bool matchloadJitter = false;
+inline bool resetTime = false;
+inline bool fastMatchload = false;
 
 // global constants
 const inline float FRONT_DIST_OFFSET = 5.5;
@@ -108,7 +111,9 @@ enum ElevatorState
     ESTOP = 8,
     HOLD = 9,
     PIN_HEIGHT = 10,
-    GROUND_PICKUP = 11
+    GROUND_PICKUP = 11,
+    GROUND_CLAMP = 12,
+    MATCHLOAD_CLAMP = 13
 };
 
 // aliance colour
