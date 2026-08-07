@@ -34,7 +34,7 @@ namespace ElevatorConfig
    constexpr double MATCHLOAD_ELEV = 0;
    constexpr double MATCHLOAD_WRIST = -180.0;
 
-   constexpr double PIN_0_ELEV = 1;
+   constexpr double PIN_0_ELEV = .5;
    constexpr double PIN_1_ELEV = 8.6;
    constexpr double PIN_2_ELEV = 15.6;
    constexpr double PIN_3_ELEV = 24.1;
@@ -304,7 +304,7 @@ private:
          else
          {
             if(isFastReset) {
-               elevatorTarget = 2.4;
+               elevatorTarget = 3;
             }
             else {
                elevatorTarget = ElevatorConfig::RESET_ELEV;

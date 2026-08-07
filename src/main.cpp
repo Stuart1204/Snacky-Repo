@@ -31,8 +31,10 @@ void initialize()
 	startingSide = Selection::LEFT;
 	autonSelectionEnum = Selection::ELIMS;
 
-	autonSelection();
-	clampSelection();
+	// autonSelection();
+	// clampSelection();
+	clamp.setState(true);
+
 }
 
 void disabled() {
@@ -44,11 +46,15 @@ void competition_initialize() {}
 void autonomous()
 {
 	isAutonomous = true;
-	runSelectedAuton();
+	// runSelectedAuton();
 	// elimsAllianceGoalRight();
 	// elimsAllianceGoal();
 	// skillsAuton();
 	// TAWPLeft();
+	// TAWPRight();
+	// chassis.setPose(0,0,250);
+	// goalJiggle(270, 1000);
+	TAWPRight();
 }
 
 

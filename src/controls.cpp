@@ -246,7 +246,7 @@ inline void displayData()
     //pros::screen::print(TEXT_LARGE_CENTER, 7, "Colour: %i", checkColour(toggleSensor));
     // pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %f", rightCurrentDistance);
 
-    pros::screen::print(TEXT_LARGE_CENTER, 7, "state: %i", elevator.getState());
+    pros::screen::print(TEXT_LARGE_CENTER, 7, "heading: %f", inertial_sensor.get_heading());
     // pros::screen::print(TEXT_LARGE_CENTER, 3, "wristPos: %f", elevator.getWristPosition());
     // pros::screen::print(TEXT_LARGE_CENTER, 9, "Proximity: %iu", vertical_rotation.get_position());
     // // pros::screen::print(TEXT_LARGE_CENTER, 7, "ele: %f", (leftElevator.get_position() - rightElevator.get_position()) / 2.0);

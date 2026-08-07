@@ -142,6 +142,49 @@ inline void driveDistance(float targetDist) {
     driveDistance(targetDist, 127);
 }
 
+inline void goalJiggle(int targetHeading, int timeout) {
+    int TIMEOUT = timeout; // milliseconds
+
+    bool inSettleZone = false;
+    uint32_t settleStartTime;
+    uint32_t startTime = pros::millis();
+
+    while (true) {
+        lemlib::Pose pose = chassis.getPose();
+        float newTheta = (int)pose.theta % 360;
+        if(newTheta < 0) {
+            newTheta += 360;
+        }
+        int error = targetHeading - newTheta;
+        if(abs(error) > 5) {
+            if(newTheta > targetHeading) {
+                leftMotors.move(-127);
+                rightMotors.move(30);
+            } else {
+                leftMotors.move(30);
+                rightMotors.move(-127);
+            }
+        } else {
+            if(newTheta > targetHeading) {
+                leftMotors.move(-100);
+                rightMotors.move(18);
+            } else {
+                leftMotors.move(18);
+                rightMotors.move(-100);
+            }
+        }
+
+        if(pros::millis() - startTime > TIMEOUT) {
+            break;
+        }
+
+
+        pros::delay(20);
+    }
+    leftMotors.move(0);
+    rightMotors.move(0);
+}
+
 
 
 inline lemlib::PID angularPID(4.0, 0.0, 17.0, 0, false);
