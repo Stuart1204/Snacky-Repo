@@ -23,6 +23,7 @@ namespace ElevatorConfig
 
    constexpr double SCORE_ELEV = -10.0;
    constexpr double SCORE_WRIST = -60;
+   constexpr double SCORE_DOWN_WRIST = -95;
 
    constexpr double RESET_ELEV = 7;
    constexpr double RESET_WRIST = -177.0;
@@ -42,8 +43,8 @@ namespace ElevatorConfig
    constexpr double PIN_MAX_ELEV = 40.0; // clamp guard
    constexpr double PIN_WRIST = -91;
 
-   constexpr double GROUND_PICKUP_ELEV = 4.25;
-   constexpr double GROUND_CLAMP_ELEV = -4;
+   constexpr double GROUND_PICKUP_ELEV = 5;
+   constexpr double GROUND_CLAMP_ELEV = -4.5;
    constexpr double GROUND_PICKUP_WRIST = -95.0;
 
    constexpr double MATCHLOAD_CLAMP_ELEV = -1.5;
@@ -418,8 +419,13 @@ private:
    }
    void runScore() {
       clamp.setState(false);
+      if(pros::millis() - motionStartTime < 250) {
+         wristTarget = ElevatorConfig::SCORE_DOWN_WRIST;
+         elevatorTarget = tempEleTarget - 1.5;
+      }
       if(pros::millis() - motionStartTime > 250) {
          wristTarget = ElevatorConfig::SCORE_WRIST;
+         elevatorTarget = tempEleTarget + .5;
          if(isSettled()) {
             if(vertical_rotation.get_position() - odomPosition > 2500 && isAutoReset == true) {
                setState(ElevatorState::RESET);
@@ -635,6 +641,7 @@ public:
          break;
       case ElevatorState::SCORE:
          odomPosition = vertical_rotation.get_position();
+         tempEleTarget = getElevatorPosition();
          break;
       case ElevatorState::RESET:
          break;

@@ -87,7 +87,7 @@ inline void goalReset() {
 
 
 inline void driveDistance(float targetDist, int maxSpeed) {
-    float TARGET_THRESHOLD = 5; // inches
+    float TARGET_THRESHOLD = .5; // inches
     int TIME_BEFORE_EXIT = 0; // in milliseconds
     int TIMEOUT = 2500; // milliseconds
     lemlib::PID linearPID{5.6,0,29, 0};

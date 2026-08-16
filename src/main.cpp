@@ -46,7 +46,13 @@ void competition_initialize() {}
 void autonomous()
 {
 	isAutonomous = true;
+
 	// runSelectedAuton();
+	elimsAutoConsistentRight();
+	// iceAutoRight();
+	// skillsAuton();
+	// TAWPRight();
+	// iceAutoRight();
 	// elimsAllianceGoalRight();
 	// elimsAllianceGoal();
 	// skillsAuton();
@@ -54,7 +60,8 @@ void autonomous()
 	// TAWPRight();
 	// chassis.setPose(0,0,250);
 	// goalJiggle(270, 1000);
-	TAWPRight();
+	// TAWPRight();
+	// hybridRight();
 }
 
 
@@ -68,6 +75,7 @@ void opcontrol()
 		isSkillsMacro = true;
 	}
 
+	isAutoReset = true;
 	isAutonomous = false;
 	controller.print(0, 0, "%s", isNeutralGoal ? "NEUTRAL " : "ALLIANCE");
 
