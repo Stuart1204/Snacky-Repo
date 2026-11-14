@@ -3,6 +3,7 @@
 
 #include "globals.hpp"
 #include "pros/adi.hpp"
+#include "pros/rtos.hpp"
 
 class Piston {
     private:
@@ -33,5 +34,16 @@ inline Piston intakeLift(intakeLiftPiston);
 inline Piston clamp(clampPiston);
 inline Piston hood(hoodPiston);
 inline Piston doinker(doinkerPiston);
+// Wrist hardware is digital only: false = retracted, true = extended.
+inline Piston wristPiston(wristPistonOutput);
+// Selects whether intakevator powers the elevator (false) or intake (true).
+inline Piston intakevatorPto(intakevatorPtoOutput);
+
+inline void setIntakevatorPto(bool intakeSelected) {
+    if (intakevatorPto.getState() == intakeSelected) return;
+    intakevator.move(0);
+    intakevatorPto.setState(intakeSelected);
+    pros::delay(100);
+}
 
 #endif

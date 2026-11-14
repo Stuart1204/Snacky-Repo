@@ -8,7 +8,7 @@
 // ============================================================================
 // CONSTANTS
 // ============================================================================
-
+//Deprecated, ignore
 static constexpr double kImageW = 320.0;
 static constexpr double kImageH = 240.0;
 static constexpr double kHFovDeg = 75.0;

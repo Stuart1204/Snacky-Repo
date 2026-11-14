@@ -3,19 +3,16 @@
 
 
 #include "globals.hpp"
-#include "other_functions.cpp"
+#include "localization.hpp"
 #include "intake.cpp"
 #include "elevator.cpp"
 #include "lemlib/pid.hpp"
 #include "lemlib/pose.hpp"
-#include "lemlib/timer.hpp"
 #include "piston.cpp"
-#include "pros/distance.hpp"
 #include "pros/rtos.hpp"
-#include "pros/screen.h"
-#include "pros/screen.hpp"
 #include <cmath>
-#include <iostream>
+#include <cstdint>
+#include <cstdio>
 
 
 // Define a simple struct for goal coordinates
@@ -81,7 +78,7 @@ inline void goalReset() {
     printf("newY:         %.3f\n", newY);
     printf("================================\n");
 
-    chassis.setPose(newX, newY, currentPose.theta);
+    localization.resetPose(newX, newY, currentPose.theta);
     controller.rumble(".");
 }
 
@@ -339,25 +336,25 @@ inline void resetPos() {
             // Facing forward (0°)
             float offsetAngle = fabs(normalizedAngle);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(currentPose.x, FIELD_WALL - currentDistance, chassis.getPose().theta);
+            localization.resetPose(currentPose.x, FIELD_WALL - currentDistance, chassis.getPose().theta);
             // controller.rumble("-");
         } else if (fabs(normalizedAngle - 90) < ANGLE_TOLERANCE) {
             // Facing right (90°)
             float offsetAngle = fabs(normalizedAngle - 90);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(FIELD_WALL - currentDistance, currentPose.y, chassis.getPose().theta);
+            localization.resetPose(FIELD_WALL - currentDistance, currentPose.y, chassis.getPose().theta);
             // controller.rumble("-");
         } else if (fabs(normalizedAngle + 90) < ANGLE_TOLERANCE) {
             // Facing left (-90°)
             float offsetAngle = fabs(normalizedAngle + 90);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(-FIELD_WALL + currentDistance, currentPose.y, chassis.getPose().theta);
+            localization.resetPose(-FIELD_WALL + currentDistance, currentPose.y, chassis.getPose().theta);
             //controller.rumble("-");
         } else if (fabs(fabs(normalizedAngle) - 180) < ANGLE_TOLERANCE) {
             // Facing backward (180° or -180°)
             float offsetAngle = fabs(fabs(normalizedAngle) - 180);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(currentPose.x, -FIELD_WALL + currentDistance, chassis.getPose().theta);
+            localization.resetPose(currentPose.x, -FIELD_WALL + currentDistance, chassis.getPose().theta);
             //controller.rumble("-");
         }
     }
@@ -407,25 +404,25 @@ inline void leftResetPos() {
             // Facing right (90°)
             float offsetAngle = fabs(normalizedAngle - 90);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(currentPose.x, FIELD_WALL - currentDistance, chassis.getPose().theta);
+            localization.resetPose(currentPose.x, FIELD_WALL - currentDistance, chassis.getPose().theta);
             controller.rumble("-");
         } else if (fabs(fabs(normalizedAngle) - 180) < ANGLE_TOLERANCE) {
             // Facing right (90°)
             float offsetAngle = fabs(fabs(normalizedAngle) - 180);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(FIELD_WALL - currentDistance, currentPose.y, chassis.getPose().theta);
+            localization.resetPose(FIELD_WALL - currentDistance, currentPose.y, chassis.getPose().theta);
             controller.rumble("-");
         } else if (fabs(normalizedAngle) < ANGLE_TOLERANCE) {
             // Facing left (-90°)
             float offsetAngle = fabs(normalizedAngle);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(-FIELD_WALL + currentDistance, currentPose.y, chassis.getPose().theta);
+            localization.resetPose(-FIELD_WALL + currentDistance, currentPose.y, chassis.getPose().theta);
             controller.rumble("-");
         } else if (fabs(normalizedAngle + 90) < ANGLE_TOLERANCE) {
             // Facing backward (180° or -180°)
             float offsetAngle = fabs(normalizedAngle + 90);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(currentPose.x, -FIELD_WALL + currentDistance, chassis.getPose().theta);
+            localization.resetPose(currentPose.x, -FIELD_WALL + currentDistance, chassis.getPose().theta);
             controller.rumble("-");
         }
     }
@@ -453,25 +450,25 @@ inline void rightResetPos() {
             // Facing right (90°)
             float offsetAngle = fabs(normalizedAngle + 90);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(currentPose.x, FIELD_WALL - currentDistance, chassis.getPose().theta);
+            localization.resetPose(currentPose.x, FIELD_WALL - currentDistance, chassis.getPose().theta);
             controller.rumble("-");
         } else if (fabs(normalizedAngle) < ANGLE_TOLERANCE) {
             // Facing right (90°)
             float offsetAngle = fabs(normalizedAngle);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(FIELD_WALL - currentDistance, currentPose.y, chassis.getPose().theta);
+            localization.resetPose(FIELD_WALL - currentDistance, currentPose.y, chassis.getPose().theta);
             controller.rumble("-");
         } else if (fabs(fabs(normalizedAngle) - 180) < ANGLE_TOLERANCE) {
             // Facing left (-90°)
             float offsetAngle = fabs(fabs(normalizedAngle) - 180);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(-FIELD_WALL + currentDistance, currentPose.y, chassis.getPose().theta);
+            localization.resetPose(-FIELD_WALL + currentDistance, currentPose.y, chassis.getPose().theta);
             controller.rumble("-");
         } else if (fabs(normalizedAngle - 90) < ANGLE_TOLERANCE) {
             // Facing backward (180° or -180°)
             float offsetAngle = fabs(normalizedAngle - 90);
             currentDistance *= cos(offsetAngle * DEG_TO_RAD);
-            chassis.setPose(currentPose.x, -FIELD_WALL + currentDistance, chassis.getPose().theta);
+            localization.resetPose(currentPose.x, -FIELD_WALL + currentDistance, chassis.getPose().theta);
             controller.rumble("-");
         }
     }
@@ -631,11 +628,11 @@ inline void skillsAcquireNeutralMatchload() {
     rightResetPos();
     isNeutralGoal = true;
     matchloadMode = true;
-    intakeLift.setState(true);
+    intake.setState(IntakeState::IDLE);
     hood.setState(true);
+    elevator.setState(ElevatorState::MATCHLOAD);
 
     moveToPoint(-62, 56, true, false);
-    intake.setState(IntakeState::INTAKE);
     leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 	rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
     turnToHeading(-90, true);
@@ -668,11 +665,11 @@ inline void skillsAquireAllianceMatchload() {
     leftResetPos();
     isNeutralGoal = false;
     matchloadMode = true;
-    intakeLift.setState(true);
+    intake.setState(IntakeState::IDLE);
     hood.setState(true);
+    elevator.setState(ElevatorState::MATCHLOAD);
 
     moveToPoint(-60, -60, true, false);
-    intake.setState(IntakeState::INTAKE);
     leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 	rightMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
     turnToHeading(-90, true);

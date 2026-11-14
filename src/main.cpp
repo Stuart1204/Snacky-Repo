@@ -1,30 +1,33 @@
-#include "auton_functions.cpp"
 #include "globals.hpp"
 #include "autons.cpp"
 #include "intake.cpp"
 #include "elevator.cpp"
 #include "controls.cpp"
-#include "lemlib/chassis/chassis.hpp"
-#include "lemlib/pose.hpp"
-#include "pros/misc.hpp"
-#include "pros/motors.h"
 #include "pros/rtos.hpp"
-#include <sys/types.h>
-
-#include "vision_drive.hpp"
-VisionDriveController *vdc = nullptr;
+#include "pin_colour.hpp"
 
 void initialize()
 {
 	chassis.calibrate();
+	// Set the chassis/raw telemetry pose before MCL begins field-wide initialization.
+	localization.resetPose(-48, -48, 0.0f);
+	localization.start();
+	pinColourDetector.initialize();
 
 	elevator.elevatorReset();
-	pros::Task elevatorTask([]
+	// The elevator task arbitrates intake and lift use of the shared intakevator.
+	pros::Task intakevatorTask([]
 							{
 		while (true) {
 			elevator.run();
-			intake.run();
 			pros::delay(40);
+		} });
+	// Optical sampling is read-only; it never commands the intake or elevator.
+	pros::Task pinColourTask([]
+							{
+		while (true) {
+			pinColourDetector.update();
+			pros::delay(20);
 		} });
 
 	allianceColour = AllianceColour::RED;
@@ -78,6 +81,8 @@ void opcontrol()
 	isAutoReset = true;
 	isAutonomous = false;
 	controller.print(0, 0, "%s", isNeutralGoal ? "NEUTRAL " : "ALLIANCE");
+	// Clear the autonomous selector before drawing the opcontrol telemetry page.
+	pros::screen::erase();
 
 	while (true)
 	{

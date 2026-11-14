@@ -2,8 +2,7 @@
 #define controls_cpp
 
 #include "globals.hpp"
-#include "other_functions.cpp"
-#include "auton_functions.cpp"
+#include "localization.hpp"
 #include "intake.cpp"
 #include "elevator.cpp"
 #include "piston.cpp"
@@ -11,6 +10,58 @@
 #include "pros/screen.h"
 #include "pros/screen.hpp"
 #include <cstring>
+
+
+#include <algorithm>
+#include <cmath>
+
+constexpr double MAX_ELEVATOR_HEIGHT = 50.0;
+constexpr double MIN_THROTTLE_CAP = 70.0;   // Maximum throttle when fully extended
+constexpr double DECEL_PER_SECOND = 600.0;  // Deceleration after stick release
+constexpr double LOW_SPEED_THRESHOLD = 50.0;
+constexpr double SMALL_CHANGE = 3.0;
+constexpr double DT = 0.02;
+
+inline double approach(double target, double current, double maxChange) {
+    if (target > current) {
+        return std::min(target, current + maxChange);
+    }
+    return std::max(target, current - maxChange);
+}
+
+inline double shapeDriveThrottle(double requested, double elevatorHeight) {
+    static double current = 0.0;
+
+    // 0 = retracted, 1 = fully extended.
+    const double heightAlpha = std::clamp(
+        elevatorHeight / MAX_ELEVATOR_HEIGHT, 0.0, 1.0);
+
+    // Only large outputs are limited; low-speed stick control is unchanged.
+    const double throttleCap = 127.0 -
+        heightAlpha * (127.0 - MIN_THROTTLE_CAP);
+
+    requested = std::clamp(requested, -throttleCap, throttleCap);
+
+    const bool slowingDown =
+        (current > 0.0 && requested < current) ||
+        (current < 0.0 && requested > current);
+
+    if (std::abs(current) < LOW_SPEED_THRESHOLD ||
+        std::abs(requested - current) < SMALL_CHANGE) {
+        // Keep fine low-speed adjustments immediate.
+        current = requested;
+    } else if (slowingDown) {
+        // Smooth braking and stick release, but allow direct acceleration.
+        current = approach(
+            requested, current, DECEL_PER_SECOND * DT);
+    } else {
+        current = requested;
+    }
+
+    return current;
+}
+
+
 
 inline bool targetMode = false;
 
@@ -21,14 +72,15 @@ inline void intakeControls() {
     }
     else if (controller.get_digital(Buttons::L1))
     {
-        intake.setState(IntakeState::INTAKE);
         if(elevator.getState() != ElevatorState::RESET && elevator.getState() != ElevatorState::STOW
              && elevator.getState() != ElevatorState::MANUAL && elevator.getState() != ElevatorState::PICKUP
                 && elevator.getState() != ElevatorState::PIN_HEIGHT) {
-                
             if(matchloadMode) {
+                // Direct match-load capture uses the extended wrist, never the intake.
+                intake.setState(IntakeState::IDLE);
                 elevator.setState(ElevatorState::MATCHLOAD);
             } else {
+                intake.setState(IntakeState::INTAKE);
                 elevator.setState(ElevatorState::LOAD);
             }
         }
@@ -115,12 +167,6 @@ inline void elevatorControls()
     // ─────────────────────────────────────────────────────
     // B PRESS: PICKUP or cycle pin heights
     // ─────────────────────────────────────────────────────
-    if(state == ElevatorState::PIN_HEIGHT) {
-        if(levelCounter != 1) {
-                elevator.goToPinHeight(levelCounter);
-                levelCounter = 1;
-            }
-    }
     if (controller.get_digital_new_press(Buttons::R1))
     {
         elevator.setMaxSpeed(127);
@@ -131,26 +177,10 @@ inline void elevatorControls()
             levelCounter = 1;
         }
         if(state == ElevatorState::GROUND_PICKUP || state == ElevatorState::GROUND_CLAMP) {
-            elevator.setState(PIN_HEIGHT);
+            elevator.setState(ElevatorState::PICKUP);
         }
         if(state == ElevatorState::PICKUP) {
             levelCounter++;
-        }
-        else if (state == ElevatorState::PIN_HEIGHT)
-        {
-            if (targetMode)
-            {
-                int nextLevel = elevator.getPinLevel() + 1;
-                if (nextLevel <= ElevatorConfig::NUM_PIN_LEVELS)
-                {
-                    elevator.goToPinHeight(nextLevel);
-                }
-            }
-            else
-            {
-                targetMode = true;
-                elevator.goToNextPinAboveCurrent();
-            }
         }
     }
 
@@ -168,23 +198,14 @@ inline void elevatorControls()
         controller.clear_line(0);
         pros::delay(50);
         controller.print(0, 0, "%s", isNeutralGoal ? "NEUTRAL " : "ALLIANCE");
-        if (elevator.getState() == ElevatorState::PIN_HEIGHT && elevator.getPinLevel() > 0) {
-            elevator.goToPinHeight(elevator.getPinLevel());
-        }
     }
 }
 
 inline void activatePistons()
 {
-    if (controller.get_digital_new_press(Buttons::R1))
-    {
-        if(!intakeLift.getState()) {
-            elevator.setState(ElevatorState::MATCHLOAD);
-        } else {
-            elevator.setState(ElevatorState::LOAD);
-        }
-    }
-    if (controller.get_digital_new_press(Buttons::A) && elevator.getWristPosition() < -150)
+    // The doinker is allowed only with the wrist retracted; extending the wrist retracts it.
+    if (controller.get_digital_new_press(Buttons::A) &&
+        wristPiston.getState() == ElevatorConfig::WRIST_RETRACTED)
     {
         doinker.toggle();
     }
@@ -192,7 +213,7 @@ inline void activatePistons()
     {
         clamp.toggle();
     }
-    if (elevator.getWristPosition() > -150) {
+    if (wristPiston.getState() == ElevatorConfig::WRIST_EXTENDED) {
         doinker.setState(false);
     }
     // if (controller.get_digital_new_press(Buttons::DOWN))
@@ -207,19 +228,16 @@ inline bool toggleFlipColourSeen = false;
 
 inline void drivetrainControls()
 {
-    leftMotors.set_brake_mode(MotorConfigs::BRAKE);
-    rightMotors.set_brake_mode(MotorConfigs::BRAKE);
     int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
     int rightX = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
-    if (abs(leftY) < 12)
-    {
-        leftY = 0;
-    }
-    if (abs(rightX) < 12)
-    {
-        rightX = 0;
-    }
-    chassis.arcade(leftY, rightX, false, 0.5);
+
+    if (std::abs(leftY) < 12) leftY = 0;
+    if (std::abs(rightX) < 12) rightX = 0;
+
+    const double throttle = shapeDriveThrottle(
+        leftY, elevator.getElevatorPosition());
+
+    chassis.arcade(throttle, rightX, true, 0.5);
 }
 
 inline void subsystemControls()
@@ -232,28 +250,21 @@ inline void subsystemControls()
     activatePistons();
 }
 
+/** Displays raw wheel/IMU odometry and the MCL estimate in LemLib units. */
 inline void displayData()
 {
-    float frontCurrentDistance = (frontDistSensor.get_distance() * MM_TO_INCHES) + FRONT_DIST_OFFSET;
-    float leftCurrentDistance = (leftDistSensor.get_distance() * MM_TO_INCHES) + LEFT_DIST_OFFSET;
-    float rightCurrentDistance = (rightDistSensor.get_distance() * MM_TO_INCHES) + RIGHT_DIST_OFFSET;
-    // display lemlib pose
-    lemlib::Pose pose = chassis.getPose();
-    pros::screen::print(TEXT_MEDIUM_CENTER, 1, "X: %f", pose.x);
-    pros::screen::print(TEXT_MEDIUM_CENTER, 2, "Y: %f", pose.y);
-    pros::screen::print(TEXT_MEDIUM_CENTER, 3, "Theta: %f", pose.theta);
-    pros::screen::print(TEXT_LARGE_CENTER, 5, "velo: %f", intakeMotor.get_actual_velocity());
-    //pros::screen::print(TEXT_LARGE_CENTER, 7, "Colour: %i", checkColour(toggleSensor));
-    // pros::screen::print(TEXT_LARGE_CENTER, 9, "dist: %f", rightCurrentDistance);
+    const lemlib::Pose trackingPose = localization.getTrackingPose();
+    const lemlib::Pose correctedPose = localization.getCorrectedPose();
 
-    pros::screen::print(TEXT_LARGE_CENTER, 7, "heading: %f", inertial_sensor.get_heading());
-    // pros::screen::print(TEXT_LARGE_CENTER, 3, "wristPos: %f", elevator.getWristPosition());
-    // pros::screen::print(TEXT_LARGE_CENTER, 9, "Proximity: %iu", vertical_rotation.get_position());
-    // // pros::screen::print(TEXT_LARGE_CENTER, 7, "ele: %f", (leftElevator.get_position() - rightElevator.get_position()) / 2.0);
-    pros::screen::print(TEXT_LARGE_CENTER, 9, "leftPower: %i", elevator.getLeftPower());
-    pros::screen::print(TEXT_LARGE_CENTER, 11, "rightPower: %i", elevator.getRightPower());
+    pros::screen::print(TEXT_MEDIUM_CENTER, 0, "TRACKING WHEEL ODOM");
+    pros::screen::print(TEXT_MEDIUM_CENTER, 1, "X: %.2f in", trackingPose.x);
+    pros::screen::print(TEXT_MEDIUM_CENTER, 2, "Y: %.2f in", trackingPose.y);
+    pros::screen::print(TEXT_MEDIUM_CENTER, 3, "Theta: %.2f deg", trackingPose.theta);
 
-
+    pros::screen::print(TEXT_MEDIUM_CENTER, 4, "MCL CORRECTED (%s)", enableMclCorrections ? "ON" : "OFF");
+    pros::screen::print(TEXT_MEDIUM_CENTER, 5, "X: %.2f in", correctedPose.x);
+    pros::screen::print(TEXT_MEDIUM_CENTER, 6, "Y: %.2f in", correctedPose.y);
+    pros::screen::print(TEXT_MEDIUM_CENTER, 7, "Theta: %.2f deg", correctedPose.theta);
 }
 
 class button

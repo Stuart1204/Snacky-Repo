@@ -2,60 +2,40 @@
 #define INTAKE_CPP
 
 #include "globals.hpp"
-#include "main.h"
 #include "piston.cpp"
-#include "pros/adi.hpp"
-#include "pros/misc.hpp"
-#include "pros/optical.h"
-#include "other_functions.cpp"
 
+/** Intake control through the shared two-motor intakevator. */
 class Intake {
    private:
       int currentState = IntakeState::IDLE;
-      int lastState = IntakeState::IDLE;
-      bool toggleFlipColourSeen = false;
-      uint32_t toggleStartTime = pros::millis();
+
+      void move(int speed) {
+         setIntakevatorPto(true);
+         intakevator.move(speed);
+      }
+
    public:
-      Intake(){} // constructor
+      void setState(int intakeState) {
+         currentState = intakeState;
+      }
 
-   void setState(int intakeState) {
-      lastState = currentState;
-      currentState = intakeState;
-      // switch case if any states need specific actions done when called
-      if(lastState != currentState) {
+      void run() {
          switch(currentState) {
-         case IntakeState::IDLE: 
-            break;
-         case IntakeState::INTAKE:
-            toggleFlipColourSeen = false;
-            break;
-         case IntakeState::OUTTAKE:
-            break;
+            case IntakeState::IDLE:
+               if (intakevatorPto.getState()) intakevator.move(0);
+               break;
+            case IntakeState::INTAKE:
+               move(127);
+               break;
+            case IntakeState::OUTTAKE:
+               move(-127);
+               break;
+         }
       }
+
+      int getState() const {
+         return currentState;
       }
-   }
-
-   void move(int speed) {
-      intakeMotor.move(speed);
-   }
-
-   void run() {
-      switch(currentState) {
-         case IntakeState::IDLE: 
-            move(0);
-            break;
-         case IntakeState::INTAKE:
-            move(127);
-            break;
-         case IntakeState::OUTTAKE:
-            move(-127);
-            break;
-      }
-   }
-
-   int getState() {
-      return currentState;
-   }
 };
 
 inline Intake intake;

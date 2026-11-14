@@ -4,6 +4,7 @@
 #include "lemlib/api.hpp"
 #include <optional>
 #include <cstdint>
+//Deprecated, ignore
 enum class GameObjectType : uint8_t
 {
     BLUE_BLUE_PIN,

@@ -8,8 +8,7 @@
 #include "pros/motors.hpp"
 #include "pros/optical.hpp"
 #include "pros/rotation.hpp"
-#include "pros/screen.h"
-#include "pros/screen.hpp"
+#include "lemlib/api.hpp"
 
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
@@ -17,38 +16,44 @@
 // -- Defined Ports -- //
 
 //motor ports
-#define lBPort 18
-#define lMPort 20
-#define lFPort -19
+#define lBPort -1
+#define lMPort -12
+#define lFPort -20
 
-#define rBPort -4
-#define rMPort -6
-#define rFPort -5
-
-#define intakePort -1
+#define rBPort 11
+#define rMPort 17
+#define rFPort 18
 
 #define rightElePort -12
 #define leftElePort -16
 
 //sensor ports
-#define wristPort 14
-#define imuPort 13
+#define imuPort 16
 #define matchloadDistPort 7
-#define leftDistPort 10
-#define rightDistPort 15
+#define leftDistPort 5
+#define rightDistPort 13
 #define frontDistPort 6
+// Provisional, currently unassigned in this project; confirm against the physical robot before upload.
+#define backDistPort 10
+#define upperPinColourPort 2
+#define lowerPinColourPort 3
+#define clampDistPort 11
 
-#define verticalEncoderPort -17
+#define verticalEncoderPort 4
 
 //solenoids
 #define intakeLiftPort 'D'
 #define clampPort 'E'
 #define hoodPort 'C'
 #define doinkerPort 'G'
+// Provisional ADI port for the two-state wrist piston; confirm before upload.
+#define wristPistonPort 'F'
+// Provisional ADI port for the intakevator PTO piston; confirm before upload.
+#define intakevatorPtoPort 'A'
 
 //drivetrain specs
 #define driveTrackWidth 11.375
-#define driveWheelType lemlib::Omniwheel::NEW_275
+#define driveWheelType lemlib::Omniwheel::NEW_325
 #define driveRPM 450
 
 // auton selection variable
@@ -57,7 +62,7 @@ inline int startingSide;
 
 //global variables
 inline int allianceColour;
-inline bool enableColourSort = false;
+inline bool enableMclCorrections = false;
 inline bool isNeutralGoal = true;
 inline bool matchloadMode = false;
 inline bool isAutoReset = true;
@@ -71,9 +76,12 @@ inline bool resetTime = false;
 inline bool fastMatchload = false;
 
 // global constants
+
+
 const inline float FRONT_DIST_OFFSET = 5.5;
-const inline float LEFT_DIST_OFFSET = 4.8;
-const inline float RIGHT_DIST_OFFSET = 4.8;
+const inline float LEFT_DIST_OFFSET = 2.5;
+const inline float RIGHT_DIST_OFFSET = 2.5;
+const inline float BACK_DIST_OFFSET = 4.5;
 const inline float MM_TO_INCHES = 0.03937007874;
 const inline float CENTIDEG_TO_INCHES = 0.00017889624;
 const inline float DEG_TO_RAD = (M_PI / 180.0);
@@ -169,19 +177,19 @@ namespace MotorConfigs {
 inline pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 // motors
-inline pros::Motor intakeMotor(intakePort, pros::v5::MotorGears::rpm_600);
-
 inline pros::MotorGroup leftMotors({lBPort, lMPort, lFPort});
 inline pros::MotorGroup rightMotors({rBPort, rMPort, rFPort});
 
-inline pros::Motor leftElevator(leftElePort, pros::v5::MotorGears::rpm_600);
-inline pros::Motor rightElevator(rightElePort, pros::v5::MotorGears::rpm_600);
+inline pros::MotorGroup intakevator(
+    {rightElePort, leftElePort}, pros::v5::MotorGears::rpm_600);
 
 // pneumatics
 inline pros::adi::DigitalOut intakeLiftPiston(intakeLiftPort, LOW);
 inline pros::adi::DigitalOut clampPiston(clampPort, LOW);
 inline pros::adi::DigitalOut hoodPiston(hoodPort, LOW);
 inline pros::adi::DigitalOut doinkerPiston(doinkerPort, LOW);
+inline pros::adi::DigitalOut wristPistonOutput(wristPistonPort, LOW);
+inline pros::adi::DigitalOut intakevatorPtoOutput(intakevatorPtoPort, LOW);
 
 
 
@@ -192,10 +200,13 @@ inline pros::Distance matchloadSensor(matchloadDistPort);
 inline pros::Distance leftDistSensor(leftDistPort);
 inline pros::Distance rightDistSensor(rightDistPort);
 inline pros::Distance frontDistSensor(frontDistPort);
+inline pros::Distance backDistSensor(backDistPort);
+inline pros::Optical upperPinColourSensor(upperPinColourPort);
+inline pros::Optical lowerPinColourSensor(lowerPinColourPort);
+inline pros::Distance clampDistSensor(clampDistPort);
 
-inline pros::Rotation wristRotation(wristPort);
 inline pros::Rotation vertical_rotation(verticalEncoderPort); 
-inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_rotation, 2.05, -.1875);
+inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_rotation, 2.05, 0);
 
 // drivetrain settings
 inline lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
