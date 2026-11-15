@@ -1,7 +1,8 @@
 #include "globals.hpp"
 #include "autons.cpp"
-#include "intake.cpp"
-#include "elevator.cpp"
+#include "claw.cpp"
+#include "intakevator.cpp"
+#include "turntable.cpp"
 #include "controls.cpp"
 #include "pros/rtos.hpp"
 #include "pin_colour.hpp"
@@ -14,12 +15,14 @@ void initialize()
 	localization.start();
 	pinColourDetector.initialize();
 
-	elevator.elevatorReset();
-	// The elevator task arbitrates intake and lift use of the shared intakevator.
+	intakevator.resetEncoders();
+	// Runs the claw, intakevator, and turntable position controller.
 	pros::Task intakevatorTask([]
 							{
 		while (true) {
-			elevator.run();
+			claw.run();
+			intakevator.run();
+			turntable.run();
 			pros::delay(40);
 		} });
 	// Optical sampling is read-only; it never commands the intake or elevator.

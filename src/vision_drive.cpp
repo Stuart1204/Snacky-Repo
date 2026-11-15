@@ -1,6 +1,6 @@
 #include "vision_drive.hpp"
 #include "globals.hpp"
-#include "elevator.cpp"
+#include "intakevator.cpp"
 #include "piston.cpp"
 #include <algorithm>
 #include <cmath>
@@ -343,8 +343,8 @@ DriveToResult VisionDriveController::acquireAlliancePin(
     // =========================================================================
     clamp.setState(false);
     hood.setState(true);
-    elevator.setState(ElevatorState::MATCHLOAD);
-    elevator.waitUntilComplete();
+    intakevator.setState(IntakevatorState::PICKUP);
+    intakevator.waitUntilComplete();
     m_intake_motor.move(127);
     intakeStartMs = pros::millis();
 
@@ -360,7 +360,7 @@ DriveToResult VisionDriveController::acquireAlliancePin(
         {
             stopDrive();
             m_intake_motor.move(0);
-            elevator.setState(ElevatorState::STOW);
+            intakevator.setState(IntakevatorState::STOW);
             m_running = false;
             return DriveToResult::ABORTED;
         }
@@ -379,9 +379,9 @@ DriveToResult VisionDriveController::acquireAlliancePin(
                 matchloadSensor.get_distance() < 70) {   
                 m_intake_motor.move(127);
                 pros::delay(750);
-                elevator.setState(ElevatorState::PICKUP);
+                intakevator.setState(IntakevatorState::PICKUP);
                 m_running = false;
-                if (elevator.isStateComplete()) {
+                if (intakevator.isStateComplete()) {
                     m_intake_motor.move(0);
                 }
                 return DriveToResult::SUCCESS;
@@ -391,9 +391,9 @@ DriveToResult VisionDriveController::acquireAlliancePin(
                 intakeLift.setState(false);
                 m_intake_motor.move(127);
                 pros::delay(750);
-                elevator.setState(ElevatorState::PICKUP);
+                intakevator.setState(IntakevatorState::PICKUP);
                 m_running = false;
-                if (elevator.isStateComplete()) {
+                if (intakevator.isStateComplete()) {
                     m_intake_motor.move(0);
                 }
                 return usedFallback ? DriveToResult::OBJECT_LOST : DriveToResult::TIMEOUT;
@@ -497,9 +497,9 @@ DriveToResult VisionDriveController::acquireAlliancePin(
             intakeLift.setState(false);
             m_intake_motor.move(127);
             pros::delay(750);
-            elevator.setState(ElevatorState::PICKUP);
+            intakevator.setState(IntakevatorState::PICKUP);
             m_running = false;
-            if (elevator.isStateComplete()) {
+            if (intakevator.isStateComplete()) {
                 m_intake_motor.move(0);
             }
             return DriveToResult::TIMEOUT;

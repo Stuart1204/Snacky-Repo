@@ -3,8 +3,7 @@
 
 #include "globals.hpp"
 #include "localization.hpp"
-#include "intake.cpp"
-#include "elevator.cpp"
+#include "intakevator.cpp"
 #include "piston.cpp"
 #include "pros/colors.hpp"
 #include "pros/screen.h"
@@ -63,134 +62,59 @@ inline double shapeDriveThrottle(double requested, double elevatorHeight) {
 
 
 
-inline bool targetMode = false;
-
 inline void intakeControls() {
-    if (controller.get_digital(Buttons::L2))
-    {
-        intake.setState(IntakeState::OUTTAKE);
-    }
-    else if (controller.get_digital(Buttons::L1))
-    {
-        if(elevator.getState() != ElevatorState::RESET && elevator.getState() != ElevatorState::STOW
-             && elevator.getState() != ElevatorState::MANUAL && elevator.getState() != ElevatorState::PICKUP
-                && elevator.getState() != ElevatorState::PIN_HEIGHT) {
-            if(matchloadMode) {
-                // Direct match-load capture uses the extended wrist, never the intake.
-                intake.setState(IntakeState::IDLE);
-                elevator.setState(ElevatorState::MATCHLOAD);
-            } else {
-                intake.setState(IntakeState::INTAKE);
-                elevator.setState(ElevatorState::LOAD);
-            }
+    const IntakevatorState state = intakevator.getState();
+
+    if (controller.get_digital(Buttons::L2)) {
+        intakevator.setState(IntakevatorState::OUTTAKE);
+    } else if (controller.get_digital(Buttons::L1)) {
+        if (state != IntakevatorState::RESET && state != IntakevatorState::STOW &&
+            state != IntakevatorState::MANUAL &&
+            state != IntakevatorState::PIN_HEIGHT) {
         }
+    } else if (state == IntakevatorState::INTAKE || state == IntakevatorState::OUTTAKE) {
+        intakevator.setState(IntakevatorState::IDLE);
     }
-    else if (elevator.getState() != ElevatorState::RESET)
-    {
-        intake.setState(IntakeState::IDLE);
-    }                                           
-}                                                                                                                                                                                             
+}
 inline bool manualActive = false; // tracks if any manual button is held this cycle
 
-inline int levelCounter = 1;
-inline void elevatorControls()
+inline void intakevatorControls()
 {
-    int state = elevator.getState();
-    bool wasManual = manualActive;
+    const IntakevatorState state = intakevator.getState();
+    const bool wasManual = manualActive;
     manualActive = false;
 
-    if (controller.get_digital_new_press(Buttons::R2))
-    {   
-        if(elevator.getState() == ElevatorState::PIN_HEIGHT || elevator.getState() == ElevatorState::STOW || elevator.getState() == ElevatorState::MANUAL) {
-            elevator.setState(ElevatorState::SCORE);
+    if (controller.get_digital_new_press(Buttons::R2)) {
+        if (state == IntakevatorState::PIN_HEIGHT || state == IntakevatorState::STOW ||
+            state == IntakevatorState::MANUAL) {
+            intakevator.setState(IntakevatorState::SCORE);
         }
-        if(elevator.getState() == ElevatorState::GROUND_PICKUP) {
-            elevator.setState(ElevatorState::GROUND_CLAMP);
-        }
-        if(elevator.getState() == ElevatorState::LOAD || elevator.getState() == ElevatorState::MATCHLOAD) {
-            elevator.setState(ElevatorState::GROUND_PICKUP);
-        }
-        // if(elevator.getState() == ElevatorState::MATCHLOAD_CLAMP) {
-        //     matchloadJitter = true;
-        //     resetTime = true;
-        // }
     }
     if (controller.get_digital_new_press(Buttons::B)) {
-        elevator.setState(ElevatorState::RESET);
+        intakevator.setState(IntakevatorState::RESET);
     }
 
-    if (controller.get_digital(Buttons::RIGHT))
-    {
-        if(elevator.getState() == ElevatorState::GROUND_PICKUP || elevator.getState() == ElevatorState::MATCHLOAD_CLAMP
-            || elevator.getState() == ElevatorState::GROUND_CLAMP) {
-            elevator.setState(ElevatorState::MATCHLOAD_CLAMP);
-        } else {
-            targetMode = false;
-            manualActive = true;
-            elevator.manualElevator(-1);
-            elevator.setMaxSpeed(70);
-        }
-    }
-    if (controller.get_digital(Buttons::Y))
-    {
-        targetMode = false;
+    if (controller.get_digital(Buttons::RIGHT)) {
         manualActive = true;
-        elevator.manualElevator(1);
-        elevator.setMaxSpeed(127);
+        intakevator.manualMove(-1);
+        intakevator.setMaxSpeed(70);
+    }
+    if (controller.get_digital(Buttons::Y)) {
+        manualActive = true;
+        intakevator.manualMove(1);
+        intakevator.setMaxSpeed(127);
+    }
+    if (wasManual && !manualActive) {
+        intakevator.manualStop();
     }
 
-    // ─────────────────────────────────────────────────────
-    // When all manual buttons released, snap to current position
-    // ─────────────────────────────────────────────────────
-    if (wasManual && !manualActive)
-    {
-        elevator.manualStop();
+    if (controller.get_digital_new_press(Buttons::R1)) {
+        intakevator.setMaxSpeed(127);
     }
 
-    // ─────────────────────────────────────────────────────
-    // Y PRESS: Toggle matchload mode
-    // ─────────────────────────────────────────────────────
-    if (controller.get_digital_new_press(Buttons::X))
-    {
-        matchloadMode = !matchloadMode;
-        intakeLift.setState(matchloadMode);
-
-        if (state == ElevatorState::LOAD || state == ElevatorState::MATCHLOAD)
-        {
-            if (matchloadMode)
-                elevator.setState(ElevatorState::MATCHLOAD);
-            else
-                elevator.setState(ElevatorState::LOAD);
-        }
-    }
-
-    // ─────────────────────────────────────────────────────
-    // B PRESS: PICKUP or cycle pin heights
-    // ─────────────────────────────────────────────────────
-    if (controller.get_digital_new_press(Buttons::R1))
-    {
-        elevator.setMaxSpeed(127);
-        if (state == ElevatorState::LOAD || state == ElevatorState::MATCHLOAD)
-        {
-            targetMode = true;
-            elevator.setState(ElevatorState::PICKUP);
-            levelCounter = 1;
-        }
-        if(state == ElevatorState::GROUND_PICKUP || state == ElevatorState::GROUND_CLAMP) {
-            elevator.setState(ElevatorState::PICKUP);
-        }
-        if(state == ElevatorState::PICKUP) {
-            levelCounter++;
-        }
-    }
-
-    // ─────────────────────────────────────────────────────
-    // ESTOP RECOVERY
-    // ─────────────────────────────────────────────────────
-    if (state == ElevatorState::ESTOP)
-    {
+    if (state == IntakevatorState::ESTOP) {
         controller.rumble("-");
-        elevator.setState(ElevatorState::REST);
+        intakevator.setState(IntakevatorState::IDLE);
     }
     if (controller.get_digital_new_press(Buttons::UP)) {
         isNeutralGoal = !isNeutralGoal;
@@ -205,7 +129,7 @@ inline void activatePistons()
 {
     // The doinker is allowed only with the wrist retracted; extending the wrist retracts it.
     if (controller.get_digital_new_press(Buttons::A) &&
-        wristPiston.getState() == ElevatorConfig::WRIST_RETRACTED)
+        wristPiston.getState() == IntakevatorConfig::WRIST_RETRACTED)
     {
         doinker.toggle();
     }
@@ -213,7 +137,7 @@ inline void activatePistons()
     {
         clamp.toggle();
     }
-    if (wristPiston.getState() == ElevatorConfig::WRIST_EXTENDED) {
+    if (wristPiston.getState() == IntakevatorConfig::WRIST_EXTENDED) {
         doinker.setState(false);
     }
     // if (controller.get_digital_new_press(Buttons::DOWN))
@@ -235,7 +159,7 @@ inline void drivetrainControls()
     if (std::abs(rightX) < 12) rightX = 0;
 
     const double throttle = shapeDriveThrottle(
-        leftY, elevator.getElevatorPosition());
+        leftY, intakevator.getPosition());
 
     chassis.arcade(throttle, rightX, true, 0.5);
 }
@@ -246,7 +170,7 @@ inline void subsystemControls()
     if (!toggleFlipActive) {
         intakeControls();
     }
-    elevatorControls();
+    intakevatorControls();
     activatePistons();
 }
 

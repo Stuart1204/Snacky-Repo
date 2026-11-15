@@ -4,8 +4,7 @@
 
 #include "globals.hpp"
 #include "localization.hpp"
-#include "intake.cpp"
-#include "elevator.cpp"
+#include "intakevator.cpp"
 #include "lemlib/pid.hpp"
 #include "lemlib/pose.hpp"
 #include "piston.cpp"
@@ -628,9 +627,9 @@ inline void skillsAcquireNeutralMatchload() {
     rightResetPos();
     isNeutralGoal = true;
     matchloadMode = true;
-    intake.setState(IntakeState::IDLE);
+    intakevator.setState(IntakevatorState::IDLE);
     hood.setState(true);
-    elevator.setState(ElevatorState::MATCHLOAD);
+    intakevator.setState(IntakevatorState::PICKUP);
 
     moveToPoint(-62, 56, true, false);
     leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
@@ -639,7 +638,7 @@ inline void skillsAcquireNeutralMatchload() {
     moveDrive(30, 750);
 	moveDrive(-12, 150);
     uint32_t startTime = pros::millis();
-    while(elevator.getState() != ElevatorState::PIN_HEIGHT) {
+    while(intakevator.getState() != IntakevatorState::PIN_HEIGHT) {
         pros::delay(10);
         if(pros::millis() - startTime > 2750) {
             break;
@@ -653,7 +652,7 @@ inline void skillsScoreOnNeutralGoal() {
     moveDrive(-35, 500);
     leftMotors.move(-30);
     rightMotors.move(-30);
-    elevator.setState(ElevatorState::SCORE);
+    intakevator.setState(IntakevatorState::SCORE);
 
     goalReset();
     pros::delay(350);
@@ -665,9 +664,9 @@ inline void skillsAquireAllianceMatchload() {
     leftResetPos();
     isNeutralGoal = false;
     matchloadMode = true;
-    intake.setState(IntakeState::IDLE);
+    intakevator.setState(IntakevatorState::IDLE);
     hood.setState(true);
-    elevator.setState(ElevatorState::MATCHLOAD);
+    intakevator.setState(IntakevatorState::PICKUP);
 
     moveToPoint(-60, -60, true, false);
     leftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
@@ -676,7 +675,7 @@ inline void skillsAquireAllianceMatchload() {
     moveDrive(30, 500);
 	moveDrive(-12, 150);
     uint32_t startTime = pros::millis();
-    while(elevator.getState() != ElevatorState::PIN_HEIGHT) {
+    while(intakevator.getState() != IntakevatorState::PIN_HEIGHT) {
         pros::delay(10);
         if(pros::millis() - startTime > 2750) {
             break;
@@ -693,7 +692,7 @@ inline void skillsScoreOnAllianceGoal() {
     leftMotors.move(-35);
     rightMotors.move(-35);
     pros::delay(500);
-    elevator.setState(ElevatorState::SCORE);
+    intakevator.setState(IntakevatorState::SCORE);
     goalReset();
     pros::delay(350);
 }

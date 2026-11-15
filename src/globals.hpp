@@ -27,22 +27,23 @@
 #define rightElePort -12
 #define leftElePort -16
 
+#define clawPort 5
+// Provisional turntable motor port
+#define turntablePort 9
 //sensor ports
 #define imuPort 16
 #define matchloadDistPort 7
 #define leftDistPort 5
 #define rightDistPort 13
 #define frontDistPort 6
-// Provisional, currently unassigned in this project; confirm against the physical robot before upload.
 #define backDistPort 10
 #define upperPinColourPort 2
 #define lowerPinColourPort 3
-#define clampDistPort 11
+#define clawDistancePort 11
 
 #define verticalEncoderPort 4
 
 //solenoids
-#define intakeLiftPort 'D'
 #define clampPort 'E'
 #define hoodPort 'C'
 #define doinkerPort 'G'
@@ -87,42 +88,6 @@ const inline float CENTIDEG_TO_INCHES = 0.00017889624;
 const inline float DEG_TO_RAD = (M_PI / 180.0);
 
 inline pros::Task* skillsTask = nullptr;
-
-// intake states enum
-enum IntakeState {
-    IDLE = 0,
-    INTAKE = 1,
-    OUTTAKE = 2,
-};
-
-// enum ElevatorState {
-//     STOW = 0,
-//     SCORE = 1,
-//     MANUAL = 2,
-//     REST = 3,
-//     RESET = 4,
-//     LOAD = 5,
-//     PICKUP = 6,
-//     MATCHLOAD = 7
-// };
-
-enum ElevatorState
-{
-    REST = 0,
-    STOW = 1,
-    SCORE = 2,
-    RESET = 3,
-    LOAD = 4,
-    MATCHLOAD = 5,
-    PICKUP = 6,
-    MANUAL = 7,
-    ESTOP = 8,
-    HOLD = 9,
-    PIN_HEIGHT = 10,
-    GROUND_PICKUP = 11,
-    GROUND_CLAMP = 12,
-    MATCHLOAD_CLAMP = 13
-};
 
 // aliance colour
 enum AllianceColour {
@@ -177,14 +142,15 @@ namespace MotorConfigs {
 inline pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 // motors
-inline pros::MotorGroup leftMotors({lBPort, lMPort, lFPort});
-inline pros::MotorGroup rightMotors({rBPort, rMPort, rFPort});
+inline pros::MotorGroup leftMotors({lBPort, lMPort, lFPort}, pros::v5::MotorGears::rpm_600);
+inline pros::MotorGroup rightMotors({rBPort, rMPort, rFPort}, pros::v5::MotorGears::rpm_600);
 
-inline pros::MotorGroup intakevator(
-    {rightElePort, leftElePort}, pros::v5::MotorGears::rpm_600);
+inline pros::MotorGroup intakevatorMotors({rightElePort, leftElePort}, pros::v5::MotorGears::rpm_600);
+
+inline pros::Motor clawMotor(clawPort, pros::v5::MotorGears::rpm_200);
+inline pros::Motor turntableMotor(turntablePort, pros::v5::MotorGears::rpm_200);
 
 // pneumatics
-inline pros::adi::DigitalOut intakeLiftPiston(intakeLiftPort, LOW);
 inline pros::adi::DigitalOut clampPiston(clampPort, LOW);
 inline pros::adi::DigitalOut hoodPiston(hoodPort, LOW);
 inline pros::adi::DigitalOut doinkerPiston(doinkerPort, LOW);
@@ -203,7 +169,7 @@ inline pros::Distance frontDistSensor(frontDistPort);
 inline pros::Distance backDistSensor(backDistPort);
 inline pros::Optical upperPinColourSensor(upperPinColourPort);
 inline pros::Optical lowerPinColourSensor(lowerPinColourPort);
-inline pros::Distance clampDistSensor(clampDistPort);
+inline pros::Distance clawDistanceSensor(clawDistancePort);
 
 inline pros::Rotation vertical_rotation(verticalEncoderPort); 
 inline lemlib::TrackingWheel vertical_tracking_wheel(&vertical_rotation, 2.05, 0);
