@@ -61,7 +61,7 @@ public:
             return;
         }
 
-        const double output = static_cast<double>(positionPID.update(targetAngle - getPosition()))
+        const double output = static_cast<double>(positionPID.update(targetAngle - getPosition()));
         turntableMotor.move(output);
     }
 };

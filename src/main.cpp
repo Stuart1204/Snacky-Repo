@@ -2,6 +2,7 @@
 #include "autons.cpp"
 #include "claw.cpp"
 #include "intakevator.cpp"
+#include "pros/abstract_motor.hpp"
 #include "turntable.cpp"
 #include "controls.cpp"
 #include "pros/rtos.hpp"
@@ -11,8 +12,8 @@ void initialize()
 {
 	chassis.calibrate();
 	// Set the chassis/raw telemetry pose before MCL begins field-wide initialization.
-	localization.resetPose(-48, -48, 0.0f);
-	localization.start();
+	// localization.resetPose(-48, -48, 0.0f);
+	// localization.start();
 	pinColourDetector.initialize();
 
 	intakevator.resetEncoders();
@@ -52,57 +53,24 @@ void competition_initialize() {}
 void autonomous()
 {
 	isAutonomous = true;
-
-	// runSelectedAuton();
-	elimsAutoConsistentRight();
-	// iceAutoRight();
-	// skillsAuton();
-	// TAWPRight();
-	// iceAutoRight();
-	// elimsAllianceGoalRight();
-	// elimsAllianceGoal();
-	// skillsAuton();
-	// TAWPLeft();
-	// TAWPRight();
-	// chassis.setPose(0,0,250);
-	// goalJiggle(270, 1000);
-	// TAWPRight();
-	// hybridRight();
 }
 
 
 void opcontrol()
 {
-
-	if (startingSide == Selection::SKILLS || autonSelectionEnum == Selection::SKILLS) {
-		skillsTask = new pros::Task([]{
-			skillsDriverMacro();
-		});
-		isSkillsMacro = true;
-	}
-
 	isAutoReset = true;
 	isAutonomous = false;
 	controller.print(0, 0, "%s", isNeutralGoal ? "NEUTRAL " : "ALLIANCE");
 	// Clear the autonomous selector before drawing the opcontrol telemetry page.
 	pros::screen::erase();
+	leftMotors.set_brake_mode(pros::MotorBrake::brake);
+	rightMotors.set_brake_mode(pros::MotorBrake::brake);
 
 	while (true)
 	{
-		if(!isSkillsMacro) {
-			drivetrainControls();
-    	}
 		subsystemControls();
+		drivetrainControls();
 		displayData();
 		pros::delay(20);
-
-		if (controller.get_digital_new_press(Buttons::DOWN) || 
-			abs(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)) > 20 || 
-				abs(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X)) > 20) {
-			if (skillsTask != nullptr) {
-				skillsTask->suspend();
-				isSkillsMacro = false;
-			}
-		}
 	}
 }

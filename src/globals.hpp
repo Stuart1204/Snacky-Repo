@@ -16,25 +16,25 @@
 // -- Defined Ports -- //
 
 //motor ports
-#define lBPort -1
-#define lMPort -12
-#define lFPort -20
+#define lBPort -20
+#define lMPort -18
+#define lFPort -19
 
-#define rBPort 11
-#define rMPort 17
-#define rFPort 18
+#define rBPort 9
+#define rMPort 8
+#define rFPort 21
 
-#define rightElePort -12
-#define leftElePort -16
+#define rightElePort -15
+#define leftElePort 16
 
-#define clawPort 5
+#define clawPort 5 // not measured
 // Provisional turntable motor port
-#define turntablePort 9
+#define turntablePort 17
 //sensor ports
 #define imuPort 16
-#define matchloadDistPort 7
-#define leftDistPort 5
-#define rightDistPort 13
+#define matchloadDistPort 7 
+#define leftDistPort 5 
+#define rightDistPort 13 
 #define frontDistPort 6
 #define backDistPort 10
 #define upperPinColourPort 2
@@ -53,8 +53,8 @@
 #define intakevatorPtoPort 'A'
 
 //drivetrain specs
-#define driveTrackWidth 11.375
-#define driveWheelType lemlib::Omniwheel::NEW_325
+#define driveTrackWidth 11.8125
+#define driveWheelType lemlib::Omniwheel::NEW_275
 #define driveRPM 450
 
 // auton selection variable
